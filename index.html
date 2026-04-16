@@ -95,6 +95,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ============ APP LAYOUT ============ */
 #app { max-width: 480px; margin: 0 auto; padding: var(--space-4); padding-bottom: calc(80px + var(--space-4)); min-height: 100dvh; }
+#app.no-nav { padding-bottom: var(--space-4); min-height: auto; }
 
 /* ============ HEADER ============ */
 .app-header { text-align: center; padding: var(--space-6) 0 var(--space-4); }
@@ -400,6 +401,7 @@ a { color: inherit; text-decoration: none; }
 
 /* History */
 .history-list { max-height: 200px; overflow-y: auto; }
+.journal-list { max-height: none; overflow-y: visible; }
 .history-item {
   display: flex; align-items: center; justify-content: space-between; padding: var(--space-2) 0;
   border-bottom: 1px solid var(--border); font-size: 0.85rem;
@@ -409,6 +411,29 @@ a { color: inherit; text-decoration: none; }
 .history-item-date { color: var(--text-muted); }
 .history-item-amount { font-weight: 600; color: var(--green-600); }
 .history-item-pieces { font-size: 0.75rem; color: var(--purple-600); font-weight: 500; }
+
+/* Journal entry actions */
+.journal-entry { position: relative; cursor: pointer; border-radius: var(--radius-md); transition: background var(--transition-fast); margin: 0 calc(-1 * var(--space-2)); padding-left: var(--space-2); padding-right: var(--space-2); }
+.journal-entry:hover { background: var(--purple-50); }
+.journal-entry-actions {
+  display: flex; gap: var(--space-2); margin-top: var(--space-2);
+}
+.journal-entry-actions .btn { font-size: 0.75rem; padding: var(--space-1) var(--space-3); }
+
+/* Inline edit form */
+.journal-edit-form {
+  background: var(--purple-50); border-radius: var(--radius-md); padding: var(--space-3);
+  margin: 0 calc(-1 * var(--space-2)); border: 1.5px solid var(--purple-300);
+}
+.journal-edit-form .form-group { margin-bottom: var(--space-2); }
+.journal-edit-form .form-label { font-size: 0.75rem; margin-bottom: 2px; }
+.journal-edit-form .form-input { font-size: 0.85rem; padding: var(--space-2) var(--space-3); }
+.journal-edit-form .amount-input-wrap .form-input { padding-left: calc(var(--space-3) + 0.9rem); }
+.journal-edit-form .amount-input-wrap::before { left: var(--space-3); font-size: 0.9rem; }
+.journal-edit-actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+.journal-edit-actions .btn { flex: 1; font-size: 0.8rem; padding: var(--space-2); }
+.btn-danger-outline { border: 1.5px solid #FCA5A5; color: #DC2626; background: #FFF5F5; border-radius: var(--radius-md); font-weight: 600; }
+.btn-danger-outline:hover { background: #FEE2E2; }
 
 /* Savings Preview */
 .savings-preview {
@@ -727,8 +752,11 @@ a { color: inherit; text-decoration: none; }
 
     <!-- Savings Journal -->
     <div class="card" style="margin-top:var(--space-5);">
-      <div class="form-label" style="margin-bottom:var(--space-2);">📒 Savings Journal</div>
-      <div id="savingsJournal" class="history-list"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
+        <span class="form-label" style="margin:0;">📒 Savings Journal</span>
+        <span id="journalTotal" style="font-size:0.8rem; color:var(--text-muted);"></span>
+      </div>
+      <div id="savingsJournal" class="journal-list"></div>
     </div>
   </div>
 </div>
@@ -898,8 +926,12 @@ function showView(viewId) {
   } else if (viewId === 'savingsEntryView') {
     document.getElementById('mainHeader').style.display = 'none';
     document.getElementById('bottomNav').style.display = 'none';
+    document.getElementById('app').classList.add('no-nav');
     renderSavingsEntry();
+    return; // skip the scroll-to-top below so we don't lose position
   }
+  // Remove no-nav class when not on savings view
+  document.getElementById('app').classList.remove('no-nav');
 }
 
 // ---- Render Home ----
@@ -1301,10 +1333,12 @@ function renderSavingsEntry() {
   const goal = goals.find(g => g.id === currentGoalId);
   if (!goal) return;
 
+  editingEntryIndex = null;
   document.getElementById('savingsEntryGoalName').textContent = `Saving for: ${goal.name}`;
   document.getElementById('savingsAmount').value = '';
   document.getElementById('savingsDate').value = new Date().toISOString().split('T')[0];
   document.getElementById('savingsPreview').style.display = 'none';
+  window.scrollTo(0, 0);
 
   renderSavingsJournal(goal);
 }
@@ -1428,15 +1462,21 @@ async function submitSavingsEntry() {
   }
 }
 
+let editingEntryIndex = null; // track which journal entry is being edited
+
 function renderSavingsJournal(goal) {
   const list = document.getElementById('savingsJournal');
+  const totalEl = document.getElementById('journalTotal');
   if (goal.history.length === 0) {
     list.innerHTML = '<p style="text-align:center; color:var(--text-faint); font-size:0.85rem; padding:var(--space-3);">No entries yet — log your first savings!</p>';
+    if (totalEl) totalEl.textContent = '';
     return;
   }
 
+  const totalSaved = goal.history.reduce((s, h) => s + h.amount, 0);
+  if (totalEl) totalEl.textContent = `Total: $${fmtNum(totalSaved)}`;
+
   const totalPieces = Math.ceil(goal.goalAmount / goal.pieceAmount);
-  // Build entries with cumulative piece counts
   let cumulative = 0;
   const entries = goal.history.map((h, i) => {
     const prevPieces = Math.min(totalPieces, Math.floor(cumulative / goal.pieceAmount));
@@ -1446,14 +1486,39 @@ function renderSavingsJournal(goal) {
     return { ...h, index: i, piecesRevealed, totalAfter: cumulative, piecesAfter: newPieces };
   });
 
-  list.innerHTML = entries.slice().reverse().map((e, i) => {
+  list.innerHTML = entries.slice().reverse().map((e) => {
+    const realIdx = e.index; // actual index in goal.history array
+
+    // If this entry is being edited, show inline form
+    if (editingEntryIndex === realIdx) {
+      const editDate = new Date(e.date).toISOString().split('T')[0];
+      return `
+        <div class="journal-edit-form" data-testid="journal-edit-${realIdx}">
+          <div class="form-group">
+            <label class="form-label">Amount</label>
+            <div class="amount-input-wrap">
+              <input type="number" id="editEntryAmount" class="form-input" value="${e.amount}" min="0.01" step="0.01" inputmode="decimal">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" id="editEntryDate" class="form-input" value="${editDate}">
+          </div>
+          <div class="journal-edit-actions">
+            <button class="btn btn-danger-outline" onclick="deleteJournalEntry(${realIdx})" data-testid="btn-delete-entry-${realIdx}">Delete</button>
+            <button class="btn btn-outline" onclick="cancelEditEntry()" data-testid="btn-cancel-edit">Cancel</button>
+            <button class="btn btn-green" onclick="saveEditEntry(${realIdx})" data-testid="btn-save-edit-${realIdx}">Save</button>
+          </div>
+        </div>`;
+    }
+
     const d = new Date(e.date);
     const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const pieceBadge = e.piecesRevealed > 0
       ? `<span class="history-item-pieces">🧩 +${e.piecesRevealed} piece${e.piecesRevealed !== 1 ? 's' : ''}</span>`
       : '';
     return `
-      <div class="history-item" data-testid="journal-item-${i}">
+      <div class="journal-entry history-item" onclick="startEditEntry(${realIdx})" data-testid="journal-item-${realIdx}">
         <div class="history-item-left">
           <span style="font-size:1rem;">🪙</span>
           <div>
@@ -1461,9 +1526,58 @@ function renderSavingsJournal(goal) {
             ${pieceBadge}
           </div>
         </div>
-        <span class="history-item-amount">+$${fmtNum(e.amount)}</span>
+        <div style="display:flex; align-items:center; gap:var(--space-2);">
+          <span class="history-item-amount">+$${fmtNum(e.amount)}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+        </div>
       </div>`;
   }).join('');
+}
+
+function startEditEntry(idx) {
+  editingEntryIndex = idx;
+  const goal = goals.find(g => g.id === currentGoalId);
+  if (goal) renderSavingsJournal(goal);
+}
+
+function cancelEditEntry() {
+  editingEntryIndex = null;
+  const goal = goals.find(g => g.id === currentGoalId);
+  if (goal) renderSavingsJournal(goal);
+}
+
+async function saveEditEntry(idx) {
+  const goal = goals.find(g => g.id === currentGoalId);
+  if (!goal || !goal.history[idx]) return;
+
+  const newAmount = parseFloat(document.getElementById('editEntryAmount').value);
+  const newDate = document.getElementById('editEntryDate').value;
+  if (!newAmount || newAmount <= 0) {
+    document.getElementById('editEntryAmount').style.animation = 'shake 0.4s ease';
+    setTimeout(() => document.getElementById('editEntryAmount').style.animation = '', 400);
+    return;
+  }
+  if (!newDate) {
+    document.getElementById('editEntryDate').style.animation = 'shake 0.4s ease';
+    setTimeout(() => document.getElementById('editEntryDate').style.animation = '', 400);
+    return;
+  }
+
+  goal.history[idx].amount = newAmount;
+  goal.history[idx].date = new Date(newDate + 'T12:00:00').toISOString();
+  await dbPut(goal);
+  editingEntryIndex = null;
+  renderSavingsEntry();
+}
+
+async function deleteJournalEntry(idx) {
+  const goal = goals.find(g => g.id === currentGoalId);
+  if (!goal || !goal.history[idx]) return;
+
+  goal.history.splice(idx, 1);
+  await dbPut(goal);
+  editingEntryIndex = null;
+  renderSavingsEntry();
 }
 
 // ---- Celebration ----
