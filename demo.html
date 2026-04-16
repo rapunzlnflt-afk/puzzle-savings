@@ -460,7 +460,7 @@ a { color: inherit; text-decoration: none; }
 .celebration-overlay.active { opacity: 1; pointer-events: auto; }
 .celebration-content { text-align: center; padding: var(--space-8); animation: celebBounce 0.6s var(--ease-bounce); }
 @keyframes celebBounce { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-.celebration-emoji { font-size: 5rem; margin-bottom: var(--space-4); animation: float 2s ease-in-out infinite; }
+
 .celebration-title {
   font-family: var(--font-display); font-weight: 700; font-size: 1.75rem;
   color: var(--gold-400); margin-bottom: var(--space-2);
@@ -601,10 +601,6 @@ a { color: inherit; text-decoration: none; }
 .celebration-content {
   max-width: 340px;
 }
-.celebration-emojis {
-  font-size: 2.5rem; margin-bottom: var(--space-2); letter-spacing: 0.3em;
-  animation: celebBounce 0.6s var(--ease-bounce);
-}
 .celebration-title {
   font-size: 2rem; background: linear-gradient(135deg, var(--gold-300), var(--gold-500), var(--gold-300));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -619,10 +615,29 @@ a { color: inherit; text-decoration: none; }
   color: rgba(255,255,255,0.9); font-size: 1.05rem; line-height: 1.5;
 }
 .celebration-amount {
-  display: inline-block; font-family: var(--font-display); font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4em;
+  font-family: var(--font-display); font-weight: 700;
   font-size: 1.3rem; color: var(--gold-400); margin: var(--space-3) 0;
   padding: var(--space-2) var(--space-5); border-radius: var(--radius-full);
   background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3);
+}
+.celebration-amount svg { flex-shrink: 0; }
+.celebration-btn {
+  font-size: 1.1rem; padding: var(--space-3) var(--space-8);
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-500), var(--gold-300));
+  background-size: 200% 200%; animation: btnShimmer 3s ease-in-out infinite;
+  color: #5C3A0A; font-weight: 700; letter-spacing: 0.02em;
+  border: none; border-radius: var(--radius-full);
+  box-shadow: 0 4px 20px rgba(212, 160, 60, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: all var(--transition-fast);
+}
+.celebration-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 28px rgba(212, 160, 60, 0.55), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+@keyframes btnShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 .celebration-image {
   width: 180px; height: 180px; border-radius: var(--radius-xl); overflow: hidden;
@@ -648,6 +663,26 @@ a { color: inherit; text-decoration: none; }
   100% { transform: translateY(-20px) rotate(720deg); opacity: 0; }
 }
 
+/* ============ ENCOURAGEMENT TOAST ============ */
+.encouragement-toast {
+  position: fixed; top: -80px; left: 50%; transform: translateX(-50%);
+  z-index: 10000; max-width: 340px; width: calc(100% - 2rem);
+  padding: var(--space-3) var(--space-5);
+  background: var(--surface); border: 1.5px solid var(--gold-400);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+  text-align: center; font-family: var(--font-body); font-size: 0.95rem;
+  color: var(--text); transition: top 0.5s var(--ease-bounce);
+  pointer-events: none;
+}
+.encouragement-toast.visible { top: var(--space-4); }
+.encouragement-toast .toast-icon {
+  display: block; margin: 0 auto var(--space-1); width: 28px; height: 28px;
+}
+.encouragement-toast .toast-msg {
+  font-weight: 600; font-family: var(--font-display); font-size: 1rem;
+  color: var(--purple-800);
+}
+
 /* ============ PRINT BUTTON ============ */
 .print-btn {
   display: inline-flex; align-items: center; gap: var(--space-1);
@@ -664,7 +699,7 @@ a { color: inherit; text-decoration: none; }
 @media print {
   /* Hide non-printable UI */
   .bottom-nav, .bottom-sheet-backdrop, .bottom-sheet, .modal-backdrop,
-  .celebration-overlay, #confetti-canvas, .btn, button, .print-btn,
+  .celebration-overlay, #confetti-canvas, .encouragement-toast, .btn, button, .print-btn,
   .save-money-area, .photo-upload-area, .photo-preview-change,
   .demo-banner, .nav-item, .puzzle-menu-btn, .puzzle-back,
   .journal-edit-form, .journal-entry-actions, .savings-preview,
@@ -940,17 +975,23 @@ a { color: inherit; text-decoration: none; }
 <div class="celebration-overlay" id="celebrationOverlay">
   <div class="celebration-stars" id="celebrationStars"></div>
   <div class="celebration-content">
-    <div class="celebration-emojis"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg> <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="var(--gold-500)" stroke="var(--gold-600)" stroke-width="1.5" style="vertical-align:-0.15em;"><path d="M6 9H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3M18 9h3a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-3M6 4h12v6a6 6 0 0 1-12 0V4zM9 20h6M12 16v4"/></svg> <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg></div>
+
     <h2 class="celebration-title">YOU DID IT!</h2>
     <p class="celebration-subtitle" id="celebrationText"></p>
     <div class="celebration-amount" id="celebrationAmount"></div>
     <div class="celebration-image" id="celebrationImage"></div>
-    <button class="btn btn-gold" onclick="closeCelebration()" data-testid="btn-close-celebration" style="font-size:1.05rem; padding:var(--space-3) var(--space-8);">
-      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="var(--gold-400)" stroke="var(--gold-500)" stroke-width="1.5" style="vertical-align:-0.125em;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Amazing! <svg width="1em" height="1em" viewBox="0 0 24 24" fill="var(--gold-400)" stroke="var(--gold-500)" stroke-width="1.5" style="vertical-align:-0.125em;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <button class="btn celebration-btn" onclick="closeCelebration()" data-testid="btn-close-celebration">
+      Amazing!
     </button>
   </div>
 </div>
 <canvas id="confetti-canvas"></canvas>
+
+<!-- ===== ENCOURAGEMENT TOAST ===== -->
+<div class="encouragement-toast" id="encouragementToast">
+  <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="var(--gold-500)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--gold-400)"/></svg>
+  <div class="toast-msg" id="encouragementMsg"></div>
+</div>
 
 <!-- ===== BOTTOM SHEET ===== -->
 <div class="bottom-sheet-backdrop" id="sheetBackdrop" onclick="closeGoalMenu()"></div>
@@ -1561,6 +1602,11 @@ async function submitSavingsEntry() {
   const piecesAfter = Math.min(totalPieces, Math.floor(savedAfter / goal.pieceAmount));
   const newPieces = piecesAfter - piecesBefore;
 
+  // Show encouragement (unless goal will complete — that gets its own celebration)
+  if (savedAfter < goal.goalAmount) {
+    showEncouragement(amount);
+  }
+
   // Set pending reveal count so renderPuzzle leaves those pieces hidden
   pendingRevealCount = newPieces;
 
@@ -1741,6 +1787,36 @@ async function deleteJournalEntry(idx) {
   await dbPut(goal);
   editingEntryIndex = null;
   renderSavingsEntry();
+}
+
+// ---- Encouragement Messages ----
+const encouragements = [
+  "Every penny counts!",
+  "You're doing amazing!",
+  "Great job saving today!",
+  "Keep it up, superstar!",
+  "Closer to your goal!",
+  "Way to go, saver!",
+  "That's the spirit!",
+  "Saving is your superpower!",
+  "One step closer!",
+  "You're on a roll!",
+  "Smart money move!",
+  "Future you says thanks!",
+  "Look at you saving!",
+  "Piggy bank approved!",
+  "Your puzzle grows!"
+];
+let lastEncouragementIdx = -1;
+function showEncouragement(amount) {
+  let idx;
+  do { idx = Math.floor(Math.random() * encouragements.length); } while (idx === lastEncouragementIdx);
+  lastEncouragementIdx = idx;
+  const toast = document.getElementById('encouragementToast');
+  const msg = document.getElementById('encouragementMsg');
+  msg.textContent = encouragements[idx];
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 2800);
 }
 
 // ---- Celebration ----
