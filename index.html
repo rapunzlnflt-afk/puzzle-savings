@@ -15,7 +15,6 @@
    ============================================================ */
 
 :root {
-  /* Color System — Playful purple-to-gold for kids */
   --purple-50: #FAF5FF;
   --purple-100: #F3E8FF;
   --purple-200: #E9D5FF;
@@ -49,11 +48,9 @@
   --text-faint: #A99BC0;
   --border: #E8DFF5;
 
-  /* Type */
   --font-display: 'Chillax', 'Trebuchet MS', sans-serif;
   --font-body: 'General Sans', 'Helvetica Neue', sans-serif;
 
-  /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -64,7 +61,6 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
 
-  /* Radius */
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
@@ -72,13 +68,10 @@
   --radius-2xl: 1.5rem;
   --radius-full: 9999px;
 
-  /* Shadows */
   --shadow-sm: 0 1px 3px rgba(108, 63, 197, 0.08);
   --shadow-md: 0 4px 16px rgba(108, 63, 197, 0.1);
   --shadow-lg: 0 8px 32px rgba(108, 63, 197, 0.14);
-  --shadow-glow: 0 0 24px rgba(168, 85, 247, 0.25);
 
-  /* Transitions */
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast: 200ms var(--ease-smooth);
@@ -88,766 +81,390 @@
 
 /* ============ RESET ============ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html {
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
-  -webkit-font-smoothing: antialiased;
-  scroll-behavior: smooth;
-}
+html { -webkit-text-size-adjust: none; text-size-adjust: none; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
 body {
-  min-height: 100dvh;
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--text);
-  background: var(--bg);
-  overflow-x: hidden;
+  min-height: 100dvh; font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  color: var(--text); background: var(--bg); overflow-x: hidden;
 }
 img, picture, svg { display: block; max-width: 100%; height: auto; }
 button { cursor: pointer; font: inherit; border: none; background: none; color: inherit; }
 input, select, textarea { font: inherit; color: inherit; }
 ul, ol { list-style: none; }
 a { color: inherit; text-decoration: none; }
-
-/* ============ UTILITIES ============ */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 /* ============ APP LAYOUT ============ */
-#app {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: var(--space-4);
-  padding-bottom: calc(80px + var(--space-4));
-  min-height: 100dvh;
-}
+#app { max-width: 480px; margin: 0 auto; padding: var(--space-4); padding-bottom: calc(80px + var(--space-4)); min-height: 100dvh; }
 
 /* ============ HEADER ============ */
-.app-header {
-  text-align: center;
-  padding: var(--space-6) 0 var(--space-4);
-}
+.app-header { text-align: center; padding: var(--space-6) 0 var(--space-4); }
 .app-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: var(--purple-800);
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; color: var(--purple-800);
 }
 .app-logo svg { flex-shrink: 0; }
-.app-tagline {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-top: var(--space-1);
-}
+.app-tagline { font-size: 0.85rem; color: var(--text-muted); margin-top: var(--space-1); }
 
 /* ============ VIEWS ============ */
 .view { display: none; animation: fadeIn 0.35s var(--ease-smooth); }
 .view.active { display: block; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ============ CARD ============ */
 .card {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
+  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-5);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
 }
 .card + .card { margin-top: var(--space-4); }
 
 /* ============ BUTTONS ============ */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-full);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-5); border-radius: var(--radius-full);
+  font-family: var(--font-display); font-weight: 600; font-size: 0.95rem;
+  transition: all var(--transition-fast); white-space: nowrap;
 }
 .btn:active { transform: scale(0.96); }
-
 .btn-primary {
-  background: linear-gradient(135deg, var(--purple-600), var(--purple-800));
-  color: #FFF;
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-800)); color: #FFF;
   box-shadow: var(--shadow-md), 0 2px 8px rgba(108, 63, 197, 0.3);
 }
 .btn-primary:hover { box-shadow: var(--shadow-lg), 0 4px 16px rgba(108, 63, 197, 0.4); transform: translateY(-1px); }
-
 .btn-gold {
-  background: linear-gradient(135deg, var(--gold-400), var(--gold-500));
-  color: #78350F;
+  background: linear-gradient(135deg, var(--gold-400), var(--gold-500)); color: #78350F;
   box-shadow: var(--shadow-md), 0 2px 8px rgba(245, 158, 11, 0.3);
 }
-.btn-gold:hover { box-shadow: var(--shadow-lg), 0 4px 16px rgba(245, 158, 11, 0.4); transform: translateY(-1px); }
-
+.btn-gold:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
 .btn-green {
-  background: linear-gradient(135deg, var(--green-400), var(--green-600));
-  color: #FFF;
+  background: linear-gradient(135deg, var(--green-400), var(--green-600)); color: #FFF;
   box-shadow: var(--shadow-md), 0 2px 8px rgba(34, 197, 94, 0.3);
 }
 .btn-green:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
-
-.btn-outline {
-  border: 2px solid var(--border);
-  color: var(--text-muted);
-  background: var(--surface);
-}
+.btn-outline { border: 2px solid var(--border); color: var(--text-muted); background: var(--surface); }
 .btn-outline:hover { border-color: var(--purple-300); color: var(--purple-700); background: var(--purple-50); }
-
 .btn-sm { padding: var(--space-2) var(--space-3); font-size: 0.85rem; }
 .btn-block { width: 100%; }
-.btn-icon { padding: var(--space-2); border-radius: var(--radius-md); }
-
-.btn-danger {
-  background: #FEE2E2;
-  color: #DC2626;
-  border: 1px solid #FECACA;
-}
+.btn-danger { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; }
 .btn-danger:hover { background: #FCA5A5; color: #7F1D1D; }
 
 /* ============ FORM ELEMENTS ============ */
 .form-group { margin-bottom: var(--space-4); }
 .form-label {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text);
-  margin-bottom: var(--space-2);
+  display: block; font-family: var(--font-display); font-weight: 600; font-size: 0.9rem;
+  color: var(--text); margin-bottom: var(--space-2);
 }
 .form-input {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  font-size: 1rem;
-  transition: all var(--transition-fast);
-  -webkit-appearance: none;
+  width: 100%; padding: var(--space-3) var(--space-4); border: 2px solid var(--border);
+  border-radius: var(--radius-lg); background: var(--surface); font-size: 1rem;
+  transition: all var(--transition-fast); -webkit-appearance: none;
 }
-.form-input:focus {
-  outline: none;
-  border-color: var(--purple-400);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
-}
+.form-input:focus { outline: none; border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15); }
 .form-input::placeholder { color: var(--text-faint); }
 .form-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: var(--space-1); }
 
 /* ============ HOME VIEW ============ */
-.goals-empty {
-  text-align: center;
-  padding: var(--space-12) var(--space-4);
-}
-.goals-empty-icon {
-  font-size: 4rem;
-  margin-bottom: var(--space-4);
-  animation: float 3s ease-in-out infinite;
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-.goals-empty h2 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.25rem;
-  margin-bottom: var(--space-2);
-}
-.goals-empty p {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  max-width: 280px;
-  margin: 0 auto var(--space-6);
-}
+.goals-empty { text-align: center; padding: var(--space-12) var(--space-4); }
+.goals-empty-icon { font-size: 4rem; margin-bottom: var(--space-4); animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.goals-empty h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; margin-bottom: var(--space-2); }
+.goals-empty p { color: var(--text-muted); font-size: 0.9rem; max-width: 280px; margin: 0 auto var(--space-6); }
 
-/* Goal Cards in List */
 .goal-card {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
-  margin-bottom: var(--space-3);
-  cursor: pointer;
-  transition: all var(--transition-fast);
+  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-4);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: var(--space-3);
+  cursor: pointer; transition: all var(--transition-fast);
 }
 .goal-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .goal-card:active { transform: scale(0.98); }
-
-.goal-card-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
+.goal-card-header { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
 .goal-card-thumb {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--purple-100);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  width: 56px; height: 56px; border-radius: var(--radius-md); overflow: hidden;
+  background: var(--purple-100); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.goal-card-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.goal-card-thumb .preset-emoji {
-  font-size: 1.8rem;
-}
+.goal-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.goal-card-thumb .placeholder-icon { font-size: 1.5rem; }
 .goal-card-info { flex: 1; min-width: 0; }
 .goal-card-name {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-family: var(--font-display); font-weight: 600; font-size: 1rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.goal-card-amount {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
+.goal-card-amount { font-size: 0.85rem; color: var(--text-muted); }
 .goal-card-amount strong { color: var(--purple-700); font-weight: 600; }
-
-.goal-card-progress {
-  height: 10px;
-  background: var(--purple-100);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
+.goal-card-progress { height: 10px; background: var(--purple-100); border-radius: var(--radius-full); overflow: hidden; }
 .goal-card-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--purple-400), var(--purple-600));
-  border-radius: var(--radius-full);
-  transition: width 0.6s var(--ease-smooth);
+  height: 100%; background: linear-gradient(90deg, var(--purple-400), var(--purple-600));
+  border-radius: var(--radius-full); transition: width 0.6s var(--ease-smooth);
 }
 .goal-card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--space-2);
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: var(--space-2); font-size: 0.8rem; color: var(--text-muted);
 }
 
 /* ============ CREATE GOAL VIEW ============ */
-.image-picker {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+/* Upload-first photo area */
+.photo-upload-area {
+  border: 2px dashed var(--purple-300); border-radius: var(--radius-xl); padding: var(--space-8) var(--space-4);
+  text-align: center; background: var(--purple-50); cursor: pointer; transition: all var(--transition-fast);
+  position: relative; overflow: hidden;
 }
-.image-picker-tabs {
-  display: flex;
-  gap: var(--space-2);
-  background: var(--purple-50);
-  padding: var(--space-1);
-  border-radius: var(--radius-full);
+.photo-upload-area:hover { border-color: var(--purple-500); background: var(--purple-100); }
+.photo-upload-area.has-image { border: none; padding: 0; }
+.photo-upload-icon { font-size: 3rem; margin-bottom: var(--space-3); }
+.photo-upload-title {
+  font-family: var(--font-display); font-weight: 600; font-size: 1rem; margin-bottom: var(--space-1);
 }
-.image-picker-tab {
-  flex: 1;
-  padding: var(--space-2);
-  text-align: center;
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  transition: all var(--transition-fast);
-}
-.image-picker-tab.active {
-  background: var(--surface);
-  color: var(--purple-700);
-  box-shadow: var(--shadow-sm);
-}
+.photo-upload-hint { font-size: 0.85rem; color: var(--text-muted); }
+.photo-upload-hint strong { color: var(--purple-700); }
 
-.preset-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-2);
+.photo-preview { position: relative; border-radius: var(--radius-xl); overflow: hidden; }
+.photo-preview img {
+  width: 100%; aspect-ratio: 1; object-fit: cover; display: block; border-radius: var(--radius-xl);
 }
-.preset-item {
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  transition: all var(--transition-fast);
-  cursor: pointer;
+.photo-preview-change {
+  position: absolute; bottom: var(--space-3); right: var(--space-3);
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius-full);
+  background: rgba(0,0,0,0.65); color: #FFF; font-size: 0.8rem; font-weight: 600;
+  backdrop-filter: blur(4px); display: flex; align-items: center; gap: var(--space-1);
 }
-.preset-item:hover { border-color: var(--purple-300); background: var(--purple-50); }
-.preset-item.selected { border-color: var(--purple-500); background: var(--purple-100); box-shadow: 0 0 0 2px rgba(168,85,247,0.2); }
-.preset-item .emoji { font-size: 1.6rem; }
-.preset-item .label { font-size: 0.65rem; font-weight: 600; color: var(--text-muted); text-align: center; line-height: 1.1; }
+.photo-preview-change:hover { background: rgba(0,0,0,0.8); }
 
-.upload-zone {
-  border: 2px dashed var(--purple-300);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6) var(--space-4);
-  text-align: center;
-  background: var(--purple-50);
-  cursor: pointer;
-  transition: all var(--transition-fast);
+/* Category tags */
+.category-tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.category-tag {
+  padding: var(--space-1) var(--space-3); border-radius: var(--radius-full);
+  border: 2px solid var(--border); font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+  background: var(--surface); transition: all var(--transition-fast); cursor: pointer;
 }
-.upload-zone:hover { border-color: var(--purple-500); background: var(--purple-100); }
-.upload-zone-icon { font-size: 2rem; margin-bottom: var(--space-2); }
-.upload-zone-text { font-size: 0.9rem; color: var(--text-muted); }
-.upload-zone-text strong { color: var(--purple-700); }
+.category-tag:hover { border-color: var(--purple-300); color: var(--purple-700); }
+.category-tag.selected { border-color: var(--purple-500); background: var(--purple-100); color: var(--purple-700); }
 
-.upload-preview {
-  position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  aspect-ratio: 1;
-  max-width: 200px;
-  margin: 0 auto;
-}
-.upload-preview img { width: 100%; height: 100%; object-fit: cover; }
-.upload-preview-remove {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.6);
-  color: #FFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  line-height: 1;
-}
-
-/* Amount input with dollar sign */
-.amount-input-wrap {
-  position: relative;
-}
+/* Amount with dollar sign */
+.amount-input-wrap { position: relative; }
 .amount-input-wrap::before {
-  content: '$';
-  position: absolute;
-  left: var(--space-4);
-  top: 50%;
-  transform: translateY(-50%);
-  font-weight: 600;
-  color: var(--text-muted);
-  font-size: 1rem;
+  content: '$'; position: absolute; left: var(--space-4); top: 50%; transform: translateY(-50%);
+  font-weight: 600; color: var(--text-muted); font-size: 1rem;
 }
-.amount-input-wrap .form-input {
-  padding-left: calc(var(--space-4) + 1rem);
-}
+.amount-input-wrap .form-input { padding-left: calc(var(--space-4) + 1rem); }
 
-/* Calculated info box */
+/* Calc info box */
 .calc-info {
-  background: var(--gold-300);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #78350F;
+  background: var(--gold-300); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+  display: flex; align-items: center; gap: var(--space-3); font-size: 0.9rem; font-weight: 500; color: #78350F;
 }
 .calc-info-icon { font-size: 1.4rem; flex-shrink: 0; }
 
+/* Goal date section */
+.date-row { display: flex; gap: var(--space-3); align-items: flex-end; }
+.date-row .form-group { flex: 1; margin-bottom: 0; }
+.date-info {
+  background: var(--purple-50); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+  font-size: 0.85rem; color: var(--purple-800); margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);
+}
+.date-info-icon { font-size: 1.1rem; flex-shrink: 0; }
+
 /* ============ PUZZLE VIEW ============ */
-.puzzle-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-}
-.puzzle-back {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
+.puzzle-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+.puzzle-back { display: flex; align-items: center; gap: var(--space-1); font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
 .puzzle-back svg { width: 20px; height: 20px; }
 .puzzle-menu-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  display: flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+  border-radius: var(--radius-md); transition: all var(--transition-fast);
 }
 .puzzle-menu-btn:hover { background: var(--purple-100); }
+.puzzle-goal-name { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; text-align: center; margin-bottom: var(--space-2); }
 
-.puzzle-goal-name {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.25rem;
-  text-align: center;
-  margin-bottom: var(--space-2);
+/* Countdown bar */
+.countdown-bar {
+  display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-3); background: var(--purple-50); border-radius: var(--radius-full);
+  font-size: 0.8rem; color: var(--purple-700); font-weight: 500; margin-bottom: var(--space-3);
 }
+.countdown-bar .cb-icon { font-size: 0.9rem; }
+.countdown-bar.urgent { background: #FEF3C7; color: #92400E; }
+.countdown-bar.overdue { background: #FEE2E2; color: #991B1B; }
 
 /* Progress stats */
-.puzzle-stats {
-  display: flex;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
+.puzzle-stats { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); }
 .puzzle-stat {
-  flex: 1;
-  text-align: center;
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-3);
-  border: 1px solid var(--border);
+  flex: 1; text-align: center; background: var(--surface); border-radius: var(--radius-lg);
+  padding: var(--space-3); border: 1px solid var(--border);
 }
-.puzzle-stat-value {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--purple-700);
-}
+.puzzle-stat-value { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--purple-700); }
 .puzzle-stat-label {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 2px;
+  font-size: 0.7rem; color: var(--text-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;
 }
 
-/* The Puzzle Grid */
+/* ===== THE PUZZLE GRID ===== */
 .puzzle-container {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-  margin-bottom: var(--space-4);
-  background: var(--purple-100);
+  position: relative; width: 100%; aspect-ratio: 1; border-radius: var(--radius-xl);
+  overflow: hidden; box-shadow: var(--shadow-lg); margin-bottom: var(--space-4); background: var(--purple-100);
 }
-
-.puzzle-grid {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
+.puzzle-grid { display: grid; width: 100%; height: 100%; position: relative; }
 
 .puzzle-piece {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.15);
-  cursor: default;
+  position: relative; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* The image portion — clipped to show only this cell's part */
-.puzzle-piece-img {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+/* Each piece shows its slice of the real image using background-position */
+.puzzle-piece-bg {
+  position: absolute; inset: 0;
+  background-size: var(--grid-cols-pct) var(--grid-rows-pct);
   transition: opacity 0.5s var(--ease-smooth), filter 0.5s var(--ease-smooth);
 }
 
 /* Overlay that covers unrevealed pieces */
 .puzzle-piece-overlay {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: linear-gradient(145deg, var(--purple-200) 0%, var(--purple-300) 60%, var(--purple-400) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.6s var(--ease-smooth);
-  z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.6s var(--ease-smooth); z-index: 2;
   border: 1px solid rgba(255,255,255,0.3);
 }
 .puzzle-piece-overlay::before {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  right: 50%;
-  bottom: 50%;
-  background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent);
-  border-radius: 2px;
+  content: ''; position: absolute; top: 3px; left: 3px; right: 50%; bottom: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent); border-radius: 2px;
 }
-.puzzle-piece-overlay .piece-icon {
-  font-size: 1.4rem;
-  opacity: 0.45;
-  transition: transform 0.3s var(--ease-bounce);
-  filter: grayscale(0.3);
-}
+.puzzle-piece-overlay .piece-icon { font-size: 1.4rem; opacity: 0.4; filter: grayscale(0.3); }
 
-/* Revealed state */
+/* Revealed piece */
 .puzzle-piece.revealed .puzzle-piece-overlay {
-  opacity: 0;
-  transform: scale(0.8) rotateY(90deg);
-  pointer-events: none;
+  opacity: 0; transform: scale(0.8) rotateY(90deg); pointer-events: none;
 }
 .puzzle-piece.revealing .puzzle-piece-overlay {
   animation: pieceReveal 0.8s var(--ease-bounce) forwards;
 }
-
 @keyframes pieceReveal {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.1) rotateY(90deg); opacity: 0.5; }
   100% { transform: scale(0) rotateY(180deg); opacity: 0; }
 }
 
-/* Shimmer on the latest revealed piece */
+/* Shimmer on latest reveal */
 .puzzle-piece.just-revealed::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmer 0.8s ease-out forwards;
-  z-index: 3;
-  pointer-events: none;
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.5), transparent);
+  animation: shimmer 0.8s ease-out forwards; z-index: 3; pointer-events: none;
 }
 @keyframes shimmer {
   0% { opacity: 1; transform: translateX(-100%); }
   100% { opacity: 0; transform: translateX(100%); }
 }
 
-/* Save money button area */
-.save-money-area {
-  text-align: center;
-  padding: var(--space-2) 0;
+/* No-image fallback: gradient mosaic */
+.puzzle-piece-fallback {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
 }
+
+/* Save money area */
+.save-money-area { text-align: center; padding: var(--space-2) 0; }
 .save-money-btn {
-  font-size: 1.1rem;
-  padding: var(--space-4) var(--space-8);
-  border-radius: var(--radius-full);
+  font-size: 1.1rem; padding: var(--space-4) var(--space-8); border-radius: var(--radius-full);
 }
-.save-money-btn .coin-icon {
-  display: inline-block;
-  animation: coinBounce 2s ease-in-out infinite;
-}
+.save-money-btn .coin-icon { display: inline-block; animation: coinBounce 2s ease-in-out infinite; }
 @keyframes coinBounce {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   25% { transform: translateY(-3px) rotate(-5deg); }
   75% { transform: translateY(-3px) rotate(5deg); }
 }
 
-/* Savings history */
-.history-list {
-  max-height: 200px;
-  overflow-y: auto;
+/* Weekly suggestion */
+.weekly-suggestion {
+  text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: var(--space-2);
+  font-weight: 500;
 }
+.weekly-suggestion strong { color: var(--purple-700); }
+
+/* History */
+.history-list { max-height: 200px; overflow-y: auto; }
 .history-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: space-between; padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border); font-size: 0.85rem;
 }
 .history-item:last-child { border-bottom: none; }
 .history-item-left { display: flex; align-items: center; gap: var(--space-2); }
-.history-item-icon { font-size: 1rem; }
 .history-item-date { color: var(--text-muted); }
 .history-item-amount { font-weight: 600; color: var(--green-600); }
 
-/* ============ CELEBRATION OVERLAY ============ */
+/* ============ CELEBRATION ============ */
 .celebration-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(30, 16, 51, 0.85);
-  backdrop-filter: blur(8px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s var(--ease-smooth);
+  position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; background: rgba(30, 16, 51, 0.85);
+  backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease-smooth);
 }
-.celebration-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-.celebration-content {
-  text-align: center;
-  padding: var(--space-8);
-  animation: celebBounce 0.6s var(--ease-bounce);
-}
-@keyframes celebBounce {
-  0% { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
+.celebration-overlay.active { opacity: 1; pointer-events: auto; }
+.celebration-content { text-align: center; padding: var(--space-8); animation: celebBounce 0.6s var(--ease-bounce); }
+@keyframes celebBounce { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 .celebration-emoji { font-size: 5rem; margin-bottom: var(--space-4); animation: float 2s ease-in-out infinite; }
 .celebration-title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.75rem;
-  color: var(--gold-400);
-  margin-bottom: var(--space-2);
+  font-family: var(--font-display); font-weight: 700; font-size: 1.75rem;
+  color: var(--gold-400); margin-bottom: var(--space-2);
 }
 .celebration-subtitle { color: rgba(255,255,255,0.8); font-size: 1rem; margin-bottom: var(--space-6); }
 .celebration-image {
-  width: 200px;
-  height: 200px;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  margin: 0 auto var(--space-6);
-  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.4);
+  width: 200px; height: 200px; border-radius: var(--radius-xl); overflow: hidden;
+  margin: 0 auto var(--space-6); box-shadow: 0 8px 32px rgba(168, 85, 247, 0.4);
   border: 3px solid var(--gold-400);
 }
 .celebration-image img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Confetti canvas */
-#confetti-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1001;
-}
+#confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1001; }
 
-/* ============ GOAL MENU (bottom sheet) ============ */
+/* ============ BOTTOM SHEET ============ */
 .bottom-sheet-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 500;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 500;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
 }
 .bottom-sheet-backdrop.active { opacity: 1; pointer-events: auto; }
-
 .bottom-sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--surface);
-  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-  padding: var(--space-4) var(--space-5) var(--space-8);
-  z-index: 501;
-  transform: translateY(100%);
-  transition: transform 0.35s var(--ease-smooth);
-  max-width: 480px;
-  margin: 0 auto;
+  position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; padding: var(--space-4) var(--space-5) var(--space-8);
+  z-index: 501; transform: translateY(100%); transition: transform 0.35s var(--ease-smooth);
+  max-width: 480px; margin: 0 auto;
 }
 .bottom-sheet.active { transform: translateY(0); }
-
-.bottom-sheet-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--border);
-  border-radius: var(--radius-full);
-  margin: 0 auto var(--space-4);
-}
+.bottom-sheet-handle { width: 40px; height: 4px; background: var(--border); border-radius: var(--radius-full); margin: 0 auto var(--space-4); }
 .bottom-sheet-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) 0;
-  font-size: 0.95rem;
-  font-weight: 500;
-  width: 100%;
-  transition: color var(--transition-fast);
+  display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0;
+  font-size: 0.95rem; font-weight: 500; width: 100%; transition: color var(--transition-fast);
 }
 .bottom-sheet-item:hover { color: var(--purple-700); }
 .bottom-sheet-item svg { width: 20px; height: 20px; opacity: 0.6; }
 .bottom-sheet-item.danger { color: #DC2626; }
 .bottom-sheet-item.danger svg { opacity: 0.8; }
 
-/* ============ CUSTOM AMOUNT MODAL ============ */
+/* ============ MODALS ============ */
 .modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 600;
+  display: flex; align-items: center; justify-content: center; padding: var(--space-4);
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
 }
 .modal-backdrop.active { opacity: 1; pointer-events: auto; }
 .modal {
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  width: 100%;
-  max-width: 360px;
-  transform: scale(0.9);
-  transition: transform 0.35s var(--ease-bounce);
+  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-6);
+  width: 100%; max-width: 360px; transform: scale(0.9); transition: transform 0.35s var(--ease-bounce);
 }
 .modal-backdrop.active .modal { transform: scale(1); }
-.modal h3 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.1rem;
-  margin-bottom: var(--space-4);
-  text-align: center;
-}
-.modal-actions {
-  display: flex;
-  gap: var(--space-3);
-  margin-top: var(--space-4);
-}
+.modal h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin-bottom: var(--space-4); text-align: center; }
+.modal-actions { display: flex; gap: var(--space-3); margin-top: var(--space-4); }
 .modal-actions .btn { flex: 1; }
+.confirm-delete h3 { color: #DC2626; }
 
 /* ============ BOTTOM NAV ============ */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding: var(--space-2) var(--space-4);
-  display: flex;
-  justify-content: center;
-  gap: var(--space-8);
-  z-index: 100;
-  max-width: 480px;
-  margin: 0 auto;
+  position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface);
+  border-top: 1px solid var(--border); padding: var(--space-2) var(--space-4);
+  display: flex; justify-content: center; gap: var(--space-8); z-index: 100;
+  max-width: 480px; margin: 0 auto;
 }
 .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  color: var(--text-faint);
-  font-size: 0.7rem;
-  font-weight: 600;
-  transition: color var(--transition-fast);
-  padding: var(--space-1) var(--space-2);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  color: var(--text-faint); font-size: 0.7rem; font-weight: 600;
+  transition: color var(--transition-fast); padding: var(--space-1) var(--space-2);
 }
 .nav-item.active { color: var(--purple-700); }
 .nav-item svg { width: 22px; height: 22px; }
-
-/* ============ DELETE CONFIRM ============ */
-.confirm-delete h3 { color: #DC2626; }
 
 /* ============ RESPONSIVE ============ */
 @media (min-width: 500px) {
@@ -855,12 +472,9 @@ a { color: inherit; text-decoration: none; }
   .bottom-nav { left: 50%; transform: translateX(-50%); }
 }
 
-/* ============ ANIMATION HELPERS ============ */
+/* ============ ANIMATIONS ============ */
 .coin-fly {
-  position: fixed;
-  font-size: 1.5rem;
-  pointer-events: none;
-  z-index: 999;
+  position: fixed; font-size: 1.5rem; pointer-events: none; z-index: 999;
   animation: coinFly 0.8s var(--ease-smooth) forwards;
 }
 @keyframes coinFly {
@@ -868,31 +482,21 @@ a { color: inherit; text-decoration: none; }
   50% { transform: translateY(-60px) scale(1.3); }
   100% { opacity: 0; transform: translateY(-120px) scale(0.5); }
 }
-
-/* Loading state for image */
-.puzzle-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  padding: var(--space-8);
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 
-/* ============ EDIT VIEW OVERRIDES ============ */
-.view-title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.15rem;
-  text-align: center;
-  margin-bottom: var(--space-4);
-}
+.view-title { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; text-align: center; margin-bottom: var(--space-4); }
 </style>
 </head>
 <body>
 
 <div id="app">
-  <!-- ==================== HEADER ==================== -->
+  <!-- ===== HEADER ===== -->
   <header class="app-header" id="mainHeader">
     <div class="app-logo">
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
@@ -907,13 +511,13 @@ a { color: inherit; text-decoration: none; }
     <p class="app-tagline">Save, Reveal, Celebrate!</p>
   </header>
 
-  <!-- ==================== HOME VIEW ==================== -->
+  <!-- ===== HOME VIEW ===== -->
   <div id="homeView" class="view active">
     <div id="goalsList"></div>
     <div id="goalsEmpty" class="goals-empty" style="display:none;">
       <div class="goals-empty-icon">🧩</div>
       <h2>Start Your First Puzzle!</h2>
-      <p>Pick something you want to save for, and watch it appear piece by piece!</p>
+      <p>Upload a picture of what you want, and watch it appear piece by piece as you save!</p>
       <button class="btn btn-primary" onclick="showView('createView')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Savings Goal
@@ -925,55 +529,66 @@ a { color: inherit; text-decoration: none; }
     </button>
   </div>
 
-  <!-- ==================== CREATE GOAL VIEW ==================== -->
+  <!-- ===== CREATE GOAL VIEW ===== -->
   <div id="createView" class="view">
     <h2 class="view-title" id="createViewTitle">Create a New Goal</h2>
     <div class="card">
+      <!-- Step 1: Photo (THE key element) -->
       <div class="form-group">
-        <label class="form-label" for="goalName">What are you saving for?</label>
-        <input type="text" id="goalName" class="form-input" placeholder="e.g., New Bicycle" maxlength="40" autocomplete="off">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Pick a picture</label>
-        <div class="image-picker">
-          <div class="image-picker-tabs">
-            <button class="image-picker-tab active" onclick="switchImageTab('presets')" id="tabPresets">Choose One</button>
-            <button class="image-picker-tab" onclick="switchImageTab('upload')" id="tabUpload">Upload Photo</button>
-          </div>
-
-          <div id="presetsPanel">
-            <div class="preset-grid" id="presetGrid"></div>
-          </div>
-
-          <div id="uploadPanel" style="display:none;">
-            <div id="uploadZone" class="upload-zone" onclick="document.getElementById('fileInput').click()">
-              <div class="upload-zone-icon">📷</div>
-              <div class="upload-zone-text">Tap to <strong>upload a photo</strong></div>
-            </div>
-            <div id="uploadPreview" class="upload-preview" style="display:none;">
-              <img id="uploadPreviewImg" alt="Uploaded goal image">
-              <button class="upload-preview-remove" onclick="removeUpload()" aria-label="Remove photo">✕</button>
-            </div>
-            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
-          </div>
+        <label class="form-label">Upload a picture of your goal item</label>
+        <div id="photoUploadArea" class="photo-upload-area" onclick="document.getElementById('fileInput').click()">
+          <div class="photo-upload-icon">📸</div>
+          <div class="photo-upload-title">Tap to add a photo</div>
+          <div class="photo-upload-hint">Find a picture of the <strong>exact item</strong> you want.<br>It becomes your savings puzzle!</div>
         </div>
+        <div id="photoPreview" class="photo-preview" style="display:none;">
+          <img id="photoPreviewImg" alt="Your goal item">
+          <button class="photo-preview-change" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
+            📷 Change Photo
+          </button>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
+        <p class="form-hint" style="margin-top:var(--space-2);">Tip: Search online for a picture of the item, save it, then upload it here.</p>
       </div>
 
+      <!-- Step 2: Name -->
       <div class="form-group">
-        <label class="form-label" for="goalAmount">Total goal amount</label>
+        <label class="form-label" for="goalName">What is it?</label>
+        <input type="text" id="goalName" class="form-input" placeholder="e.g., Purple Hoverboard" maxlength="40" autocomplete="off">
+      </div>
+
+      <!-- Step 3: Category (optional tag) -->
+      <div class="form-group">
+        <label class="form-label">Category <span style="font-weight:400; color:var(--text-faint);">(optional)</span></label>
+        <div class="category-tags" id="categoryTags"></div>
+      </div>
+
+      <!-- Step 4: Amounts -->
+      <div class="form-group">
+        <label class="form-label" for="goalAmount">How much does it cost?</label>
         <div class="amount-input-wrap">
           <input type="number" id="goalAmount" class="form-input" placeholder="0.00" min="1" step="0.01" inputmode="decimal">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="pieceAmount">Save this much per piece</label>
+        <label class="form-label" for="pieceAmount">How much will you save at a time?</label>
         <div class="amount-input-wrap">
           <input type="number" id="pieceAmount" class="form-input" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal">
         </div>
       </div>
 
+      <!-- Step 5: Goal Date (optional) -->
+      <div class="form-group">
+        <label class="form-label" for="goalDate">Goal date <span style="font-weight:400; color:var(--text-faint);">(optional)</span></label>
+        <input type="date" id="goalDate" class="form-input" min="">
+        <div id="dateInfo" class="date-info" style="display:none;">
+          <span class="date-info-icon">💡</span>
+          <span id="dateInfoText"></span>
+        </div>
+      </div>
+
+      <!-- Calc info -->
       <div id="calcInfo" class="calc-info" style="display:none;">
         <span class="calc-info-icon">🧩</span>
         <span id="calcInfoText"></span>
@@ -986,7 +601,7 @@ a { color: inherit; text-decoration: none; }
     </div>
   </div>
 
-  <!-- ==================== PUZZLE VIEW ==================== -->
+  <!-- ===== PUZZLE VIEW ===== -->
   <div id="puzzleView" class="view">
     <div class="puzzle-header">
       <button class="puzzle-back" onclick="showView('homeView')" data-testid="btn-back-home">
@@ -999,6 +614,7 @@ a { color: inherit; text-decoration: none; }
     </div>
 
     <h2 class="puzzle-goal-name" id="puzzleGoalName"></h2>
+    <div id="countdownBar" class="countdown-bar" style="display:none;"></div>
 
     <div class="puzzle-stats" id="puzzleStats">
       <div class="puzzle-stat">
@@ -1019,12 +635,8 @@ a { color: inherit; text-decoration: none; }
       <div class="puzzle-grid" id="puzzleGrid"></div>
     </div>
 
-    <div class="save-money-area" id="saveBtnArea">
-      <button class="btn btn-gold save-money-btn" onclick="saveMoney()" data-testid="btn-save-money" id="saveMoneyBtn">
-        <span class="coin-icon">🪙</span>
-        <span id="saveMoneyLabel">Save $5.00</span>
-      </button>
-    </div>
+    <div class="save-money-area" id="saveBtnArea"></div>
+    <div id="weeklySuggestion" class="weekly-suggestion" style="display:none;"></div>
 
     <div class="card" style="margin-top:var(--space-3);">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
@@ -1038,19 +650,19 @@ a { color: inherit; text-decoration: none; }
   </div>
 </div>
 
-<!-- ==================== CELEBRATION OVERLAY ==================== -->
+<!-- ===== CELEBRATION ===== -->
 <div class="celebration-overlay" id="celebrationOverlay">
   <div class="celebration-content">
     <div class="celebration-emoji">🎉</div>
     <h2 class="celebration-title">YOU DID IT!</h2>
-    <p class="celebration-subtitle" id="celebrationText">You saved enough for your goal!</p>
+    <p class="celebration-subtitle" id="celebrationText"></p>
     <div class="celebration-image" id="celebrationImage"></div>
     <button class="btn btn-gold" onclick="closeCelebration()" data-testid="btn-close-celebration">Amazing!</button>
   </div>
 </div>
 <canvas id="confetti-canvas"></canvas>
 
-<!-- ==================== BOTTOM SHEET (Goal Menu) ==================== -->
+<!-- ===== BOTTOM SHEET ===== -->
 <div class="bottom-sheet-backdrop" id="sheetBackdrop" onclick="closeGoalMenu()"></div>
 <div class="bottom-sheet" id="goalSheet">
   <div class="bottom-sheet-handle"></div>
@@ -1072,7 +684,7 @@ a { color: inherit; text-decoration: none; }
   </button>
 </div>
 
-<!-- ==================== CUSTOM AMOUNT MODAL ==================== -->
+<!-- ===== CUSTOM AMOUNT MODAL ===== -->
 <div class="modal-backdrop" id="customAmountModal">
   <div class="modal">
     <h3>Add Custom Amount</h3>
@@ -1088,7 +700,7 @@ a { color: inherit; text-decoration: none; }
   </div>
 </div>
 
-<!-- ==================== DELETE CONFIRM MODAL ==================== -->
+<!-- ===== DELETE MODAL ===== -->
 <div class="modal-backdrop" id="deleteModal">
   <div class="modal confirm-delete">
     <h3>Delete This Goal?</h3>
@@ -1100,7 +712,7 @@ a { color: inherit; text-decoration: none; }
   </div>
 </div>
 
-<!-- ==================== BOTTOM NAV ==================== -->
+<!-- ===== BOTTOM NAV ===== -->
 <nav class="bottom-nav" id="bottomNav">
   <button class="nav-item active" onclick="showView('homeView')" data-testid="nav-home" id="navHome">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
@@ -1114,40 +726,33 @@ a { color: inherit; text-decoration: none; }
 
 <script>
 // ============================================================
-//  PUZZLE PIGGY — Core Application Logic
+//  PUZZLE PIGGY — Core Application Logic (v2)
 // ============================================================
 
-// ---- Preset Goal Images ----
-const PRESETS = [
-  { id: 'bicycle', emoji: '🚲', label: 'Bicycle', img: null },
-  { id: 'game', emoji: '🎮', label: 'Video Game', img: null },
-  { id: 'tablet', emoji: '📱', label: 'Tablet', img: null },
-  { id: 'headphones', emoji: '🎧', label: 'Headphones', img: null },
-  { id: 'skateboard', emoji: '🛹', label: 'Skateboard', img: null },
-  { id: 'camera', emoji: '📸', label: 'Camera', img: null },
-  { id: 'toy', emoji: '🧸', label: 'Toy', img: null },
-  { id: 'sneakers', emoji: '👟', label: 'Sneakers', img: null },
-  { id: 'lego', emoji: '🧱', label: 'LEGO Set', img: null },
-  { id: 'pet', emoji: '🐶', label: 'Pet Stuff', img: null },
-  { id: 'art', emoji: '🎨', label: 'Art Supply', img: null },
-  { id: 'book', emoji: '📚', label: 'Books', img: null },
-  { id: 'trip', emoji: '✈️', label: 'Trip', img: null },
-  { id: 'guitar', emoji: '🎸', label: 'Guitar', img: null },
-  { id: 'watch', emoji: '⌚', label: 'Watch', img: null },
-  { id: 'custom', emoji: '⭐', label: 'Other', img: null },
+// ---- Categories (just labels, no images) ----
+const CATEGORIES = [
+  { id: 'toys', label: '🧸 Toys' },
+  { id: 'electronics', label: '🎮 Electronics' },
+  { id: 'sports', label: '⚽ Sports' },
+  { id: 'fashion', label: '👟 Fashion' },
+  { id: 'music', label: '🎸 Music' },
+  { id: 'books', label: '📚 Books' },
+  { id: 'pets', label: '🐶 Pets' },
+  { id: 'travel', label: '✈️ Trip' },
+  { id: 'art', label: '🎨 Art' },
+  { id: 'other', label: '⭐ Other' },
 ];
 
 // ---- State ----
 let goals = [];
 let currentGoalId = null;
 let editingGoalId = null;
-let selectedPreset = null;
+let selectedCategory = null;
 let uploadedImageData = null;
-let imageTab = 'presets';
 
 // ---- IndexedDB ----
 const DB_NAME = 'PuzzlePiggyDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'goals';
 let db = null;
 
@@ -1155,9 +760,9 @@ function openDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION);
     req.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STORE_NAME)) {
+        d.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
     };
     req.onsuccess = (e) => { db = e.target.result; resolve(db); };
@@ -1196,17 +801,18 @@ function dbGetAll() {
 async function init() {
   await openDB();
   goals = await dbGetAll();
-  renderPresets();
+  renderCategories();
   renderHome();
   setupCalcListeners();
+  // Set min date on the date picker to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('goalDate').min = today;
 }
 
 // ---- Navigation ----
 function showView(viewId) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(viewId).classList.add('active');
-
-  // Update nav
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (viewId === 'homeView') {
     document.getElementById('navHome').classList.add('active');
@@ -1218,6 +824,7 @@ function showView(viewId) {
     if (!editingGoalId) resetCreateForm();
   } else if (viewId === 'puzzleView') {
     document.getElementById('mainHeader').style.display = 'none';
+    renderPuzzle();
   }
 }
 
@@ -1240,15 +847,23 @@ function renderHome() {
   list.innerHTML = goals.map(g => {
     const saved = g.history.reduce((sum, h) => sum + h.amount, 0);
     const pct = Math.min(100, (saved / g.goalAmount) * 100);
-    const piecesRevealed = Math.floor(saved / g.pieceAmount);
     const totalPieces = Math.ceil(g.goalAmount / g.pieceAmount);
+    const piecesRevealed = Math.min(totalPieces, Math.floor(saved / g.pieceAmount));
 
     let thumbHTML = '';
-    if (g.imageType === 'upload' && g.imageData) {
-      thumbHTML = `<img src="${g.imageData}" alt="${g.name}">`;
-    } else if (g.imageType === 'preset') {
-      const preset = PRESETS.find(p => p.id === g.presetId);
-      thumbHTML = `<span class="preset-emoji">${preset ? preset.emoji : '⭐'}</span>`;
+    if (g.imageData) {
+      thumbHTML = `<img src="${g.imageData}" alt="${esc(g.name)}">`;
+    } else {
+      thumbHTML = `<span class="placeholder-icon">🧩</span>`;
+    }
+
+    // Countdown text
+    let countdownText = '';
+    if (g.goalDate && pct < 100) {
+      const daysLeft = daysUntil(g.goalDate);
+      if (daysLeft < 0) countdownText = '⏰ Past due';
+      else if (daysLeft === 0) countdownText = '⏰ Due today';
+      else countdownText = `📅 ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`;
     }
 
     return `
@@ -1257,43 +872,29 @@ function renderHome() {
           <div class="goal-card-thumb">${thumbHTML}</div>
           <div class="goal-card-info">
             <div class="goal-card-name">${esc(g.name)}</div>
-            <div class="goal-card-amount"><strong>$${formatNum(saved)}</strong> of $${formatNum(g.goalAmount)}</div>
+            <div class="goal-card-amount"><strong>$${fmtNum(saved)}</strong> of $${fmtNum(g.goalAmount)}</div>
           </div>
         </div>
         <div class="goal-card-progress"><div class="goal-card-progress-fill" style="width:${pct}%"></div></div>
         <div class="goal-card-footer">
           <span>🧩 ${piecesRevealed}/${totalPieces} pieces</span>
-          <span>${pct >= 100 ? '✅ Complete!' : Math.round(pct) + '% done'}</span>
+          <span>${pct >= 100 ? '✅ Complete!' : countdownText || Math.round(pct) + '% done'}</span>
         </div>
       </div>
     `;
   }).join('');
 }
 
-// ---- Presets Grid ----
-function renderPresets() {
-  const grid = document.getElementById('presetGrid');
-  grid.innerHTML = PRESETS.map(p => `
-    <button class="preset-item${selectedPreset === p.id ? ' selected' : ''}" onclick="selectPreset('${p.id}')" data-testid="preset-${p.id}">
-      <span class="emoji">${p.emoji}</span>
-      <span class="label">${p.label}</span>
-    </button>
+// ---- Categories ----
+function renderCategories() {
+  document.getElementById('categoryTags').innerHTML = CATEGORIES.map(c => `
+    <button class="category-tag${selectedCategory === c.id ? ' selected' : ''}" onclick="selectCategory('${c.id}')">${c.label}</button>
   `).join('');
 }
 
-function selectPreset(id) {
-  selectedPreset = id;
-  uploadedImageData = null;
-  renderPresets();
-}
-
-// ---- Image Tab Switching ----
-function switchImageTab(tab) {
-  imageTab = tab;
-  document.getElementById('tabPresets').classList.toggle('active', tab === 'presets');
-  document.getElementById('tabUpload').classList.toggle('active', tab === 'upload');
-  document.getElementById('presetsPanel').style.display = tab === 'presets' ? '' : 'none';
-  document.getElementById('uploadPanel').style.display = tab === 'upload' ? '' : 'none';
+function selectCategory(id) {
+  selectedCategory = selectedCategory === id ? null : id;
+  renderCategories();
 }
 
 // ---- File Upload ----
@@ -1302,84 +903,111 @@ function handleFileUpload(e) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = (ev) => {
-    // Resize to max 600x600 to save storage
     const img = new Image();
     img.onload = () => {
+      // Resize and crop to square
       const canvas = document.createElement('canvas');
+      const size = Math.min(img.width, img.height);
+      const sx = (img.width - size) / 2;
+      const sy = (img.height - size) / 2;
       const MAX = 600;
-      let w = img.width, h = img.height;
-      if (w > MAX || h > MAX) {
-        const ratio = Math.min(MAX / w, MAX / h);
-        w *= ratio;
-        h *= ratio;
-      }
-      canvas.width = w;
-      canvas.height = h;
+      const outSize = Math.min(size, MAX);
+      canvas.width = outSize;
+      canvas.height = outSize;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, outSize, outSize);
       uploadedImageData = canvas.toDataURL('image/jpeg', 0.85);
-      selectedPreset = null;
-      renderPresets();
-      showUploadPreview();
+      showPhotoPreview();
     };
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
 
-function showUploadPreview() {
-  document.getElementById('uploadZone').style.display = 'none';
-  document.getElementById('uploadPreview').style.display = '';
-  document.getElementById('uploadPreviewImg').src = uploadedImageData;
+function showPhotoPreview() {
+  document.getElementById('photoUploadArea').style.display = 'none';
+  document.getElementById('photoPreview').style.display = '';
+  document.getElementById('photoPreviewImg').src = uploadedImageData;
 }
 
-function removeUpload() {
+function hidePhotoPreview() {
   uploadedImageData = null;
   document.getElementById('fileInput').value = '';
-  document.getElementById('uploadZone').style.display = '';
-  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('photoUploadArea').style.display = '';
+  document.getElementById('photoPreview').style.display = 'none';
 }
 
 // ---- Calculation ----
 function setupCalcListeners() {
   const goalInput = document.getElementById('goalAmount');
   const pieceInput = document.getElementById('pieceAmount');
-  const calc = () => updateCalcInfo();
+  const dateInput = document.getElementById('goalDate');
+  const calc = () => { updateCalcInfo(); updateDateInfo(); };
   goalInput.addEventListener('input', calc);
   pieceInput.addEventListener('input', calc);
+  dateInput.addEventListener('input', calc);
 }
 
 function updateCalcInfo() {
   const goalAmt = parseFloat(document.getElementById('goalAmount').value);
   const pieceAmt = parseFloat(document.getElementById('pieceAmount').value);
-  const calcEl = document.getElementById('calcInfo');
-  const calcText = document.getElementById('calcInfoText');
+  const el = document.getElementById('calcInfo');
+  const txt = document.getElementById('calcInfoText');
 
   if (goalAmt > 0 && pieceAmt > 0 && pieceAmt <= goalAmt) {
     const pieces = Math.ceil(goalAmt / pieceAmt);
-    const cols = getGridSize(pieces);
-    calcText.textContent = `Your puzzle will have ${pieces} pieces (${cols}×${Math.ceil(pieces/cols)} grid)!`;
-    calcEl.style.display = '';
+    const cols = gridCols(pieces);
+    txt.textContent = `Your puzzle will have ${pieces} pieces (${cols}×${Math.ceil(pieces/cols)} grid)!`;
+    el.style.display = '';
   } else {
-    calcEl.style.display = 'none';
+    el.style.display = 'none';
   }
 }
 
-function getGridSize(pieces) {
-  // Find the best square-ish grid
-  const sqrt = Math.sqrt(pieces);
-  let cols = Math.ceil(sqrt);
-  // For small numbers, prefer certain grids
+function updateDateInfo() {
+  const goalAmt = parseFloat(document.getElementById('goalAmount').value);
+  const pieceAmt = parseFloat(document.getElementById('pieceAmount').value);
+  const dateVal = document.getElementById('goalDate').value;
+  const el = document.getElementById('dateInfo');
+  const txt = document.getElementById('dateInfoText');
+
+  if (dateVal && goalAmt > 0) {
+    const days = daysUntil(dateVal);
+    if (days <= 0) {
+      txt.textContent = 'That date has passed — pick a future date!';
+      el.style.display = '';
+      return;
+    }
+    const weeks = Math.max(1, Math.ceil(days / 7));
+    const perWeek = goalAmt / weeks;
+    txt.textContent = `That's ${weeks} week${weeks !== 1 ? 's' : ''} away. Save about $${fmtNum(perWeek)} per week to reach your goal!`;
+    el.style.display = '';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function gridCols(pieces) {
+  // Choose columns that fill the grid completely or nearly so,
+  // while keeping the grid visually balanced on a square canvas.
+  if (pieces <= 2) return 2;
   if (pieces <= 4) return 2;
-  if (pieces <= 6) return 3;
-  if (pieces <= 9) return 3;
-  if (pieces <= 12) return 4;
-  if (pieces <= 16) return 4;
-  if (pieces <= 20) return 5;
-  if (pieces <= 25) return 5;
-  if (pieces <= 30) return 6;
-  if (pieces <= 36) return 6;
-  return cols;
+  const candidates = [2, 3, 4, 5, 6];
+  let bestCols = Math.ceil(Math.sqrt(pieces));
+  let bestScore = Infinity;
+  for (const c of candidates) {
+    const r = Math.ceil(pieces / c);
+    const waste = (c * r) - pieces;
+    const ratio = r / c;
+    // Score: heavily penalize empty cells, lightly penalize non-square grids
+    const squareness = Math.abs(1 - ratio);
+    const score = waste * 5 + squareness;
+    if (ratio >= 0.3 && ratio <= 2.5 && score < bestScore) {
+      bestScore = score;
+      bestCols = c;
+    }
+  }
+  return bestCols;
 }
 
 // ---- Save Goal ----
@@ -1387,40 +1015,30 @@ async function saveGoal() {
   const name = document.getElementById('goalName').value.trim();
   const goalAmount = parseFloat(document.getElementById('goalAmount').value);
   const pieceAmount = parseFloat(document.getElementById('pieceAmount').value);
+  const goalDate = document.getElementById('goalDate').value || null;
 
-  if (!name) return shake('goalName');
-  if (!goalAmount || goalAmount <= 0) return shake('goalAmount');
-  if (!pieceAmount || pieceAmount <= 0 || pieceAmount > goalAmount) return shake('pieceAmount');
-  if (!selectedPreset && !uploadedImageData) {
-    // Flash the image picker area
-    document.querySelector('.image-picker').style.animation = 'none';
-    document.querySelector('.image-picker').offsetHeight;
-    document.querySelector('.image-picker').style.animation = 'shake 0.4s ease';
+  if (!uploadedImageData) {
+    document.getElementById('photoUploadArea').style.animation = 'shake 0.4s ease';
+    setTimeout(() => document.getElementById('photoUploadArea').style.animation = '', 400);
     return;
   }
+  if (!name) return shakeInput('goalName');
+  if (!goalAmount || goalAmount <= 0) return shakeInput('goalAmount');
+  if (!pieceAmount || pieceAmount <= 0 || pieceAmount > goalAmount) return shakeInput('pieceAmount');
 
   if (editingGoalId) {
-    // Update existing goal
     const goal = goals.find(g => g.id === editingGoalId);
     if (goal) {
       goal.name = name;
       goal.goalAmount = goalAmount;
       goal.pieceAmount = pieceAmount;
-      if (uploadedImageData) {
-        goal.imageType = 'upload';
-        goal.imageData = uploadedImageData;
-        goal.presetId = null;
-      } else if (selectedPreset) {
-        goal.imageType = 'preset';
-        goal.presetId = selectedPreset;
-        // Keep imageData if it was already an upload and user is just editing name/amounts
-        if (goal.imageType !== 'upload') goal.imageData = null;
-      }
+      goal.goalDate = goalDate;
+      goal.category = selectedCategory;
+      if (uploadedImageData) goal.imageData = uploadedImageData;
       await dbPut(goal);
       editingGoalId = null;
       currentGoalId = goal.id;
       showView('puzzleView');
-      renderPuzzle();
     }
     return;
   }
@@ -1430,56 +1048,47 @@ async function saveGoal() {
     name,
     goalAmount,
     pieceAmount,
-    imageType: uploadedImageData ? 'upload' : 'preset',
-    imageData: uploadedImageData || null,
-    presetId: selectedPreset,
+    goalDate,
+    category: selectedCategory,
+    imageData: uploadedImageData,
     history: [],
     createdAt: new Date().toISOString(),
   };
 
   goals.push(goal);
   await dbPut(goal);
-
   currentGoalId = goal.id;
   showView('puzzleView');
-  renderPuzzle();
 }
 
-function shake(inputId) {
-  const el = document.getElementById(inputId);
+function shakeInput(id) {
+  const el = document.getElementById(id);
   el.style.animation = 'none';
   el.offsetHeight;
   el.style.animation = 'shake 0.4s ease';
   el.focus();
 }
 
-// ---- Reset Create Form ----
 function resetCreateForm() {
   document.getElementById('goalName').value = '';
   document.getElementById('goalAmount').value = '';
   document.getElementById('pieceAmount').value = '';
+  document.getElementById('goalDate').value = '';
   document.getElementById('calcInfo').style.display = 'none';
-  selectedPreset = null;
+  document.getElementById('dateInfo').style.display = 'none';
+  selectedCategory = null;
   uploadedImageData = null;
   editingGoalId = null;
   document.getElementById('createViewTitle').textContent = 'Create a New Goal';
   document.getElementById('saveGoalBtn').textContent = 'Create Goal';
-  removeUpload();
-  switchImageTab('presets');
-  renderPresets();
+  hidePhotoPreview();
+  renderCategories();
 }
 
-function cancelCreate() {
-  editingGoalId = null;
-  showView('homeView');
-}
+function cancelCreate() { editingGoalId = null; showView('homeView'); }
 
-// ---- Open Goal (Puzzle View) ----
-function openGoal(id) {
-  currentGoalId = id;
-  showView('puzzleView');
-  renderPuzzle();
-}
+// ---- Open Goal ----
+function openGoal(id) { currentGoalId = id; showView('puzzleView'); }
 
 // ---- Render Puzzle ----
 function renderPuzzle() {
@@ -1490,47 +1099,64 @@ function renderPuzzle() {
   const saved = goal.history.reduce((sum, h) => sum + h.amount, 0);
   const piecesRevealed = Math.min(totalPieces, Math.floor(saved / goal.pieceAmount));
   const remaining = Math.max(0, goal.goalAmount - saved);
-  const cols = getGridSize(totalPieces);
+  const cols = gridCols(totalPieces);
   const rows = Math.ceil(totalPieces / cols);
   const isComplete = saved >= goal.goalAmount;
 
   // Header
   document.getElementById('puzzleGoalName').textContent = goal.name;
 
+  // Countdown bar
+  const cdBar = document.getElementById('countdownBar');
+  if (goal.goalDate && !isComplete) {
+    const days = daysUntil(goal.goalDate);
+    cdBar.style.display = '';
+    cdBar.className = 'countdown-bar' + (days < 0 ? ' overdue' : days <= 7 ? ' urgent' : '');
+    if (days < 0) cdBar.innerHTML = `<span class="cb-icon">⏰</span> ${Math.abs(days)} day${Math.abs(days)!==1?'s':''} past your goal date`;
+    else if (days === 0) cdBar.innerHTML = `<span class="cb-icon">⏰</span> Goal date is today!`;
+    else cdBar.innerHTML = `<span class="cb-icon">📅</span> ${days} day${days!==1?'s':''} left to reach your goal`;
+  } else {
+    cdBar.style.display = 'none';
+  }
+
   // Stats
-  document.getElementById('statSaved').textContent = '$' + formatNum(saved);
-  document.getElementById('statRemaining').textContent = '$' + formatNum(remaining);
+  document.getElementById('statSaved').textContent = '$' + fmtNum(saved);
+  document.getElementById('statRemaining').textContent = '$' + fmtNum(remaining);
   document.getElementById('statPieces').textContent = piecesRevealed + '/' + totalPieces;
 
   // Save button
-  const saveBtn = document.getElementById('saveMoneyBtn');
   const saveBtnArea = document.getElementById('saveBtnArea');
   if (isComplete) {
     saveBtnArea.innerHTML = `
       <div style="text-align:center; padding:var(--space-3);">
         <span style="font-size:1.5rem;">🎉</span>
         <p style="font-family:var(--font-display); font-weight:600; color:var(--green-600); margin-top:var(--space-1);">Goal Complete!</p>
-      </div>
-    `;
+      </div>`;
   } else {
     saveBtnArea.innerHTML = `
-      <button class="btn btn-gold save-money-btn" onclick="saveMoney()" data-testid="btn-save-money" id="saveMoneyBtn">
-        <span class="coin-icon">🪙</span>
-        <span>Save $${formatNum(goal.pieceAmount)}</span>
-      </button>
-    `;
+      <button class="btn btn-gold save-money-btn" onclick="saveMoney()" data-testid="btn-save-money">
+        <span class="coin-icon">🪙</span> Save $${fmtNum(goal.pieceAmount)}
+      </button>`;
   }
 
-  // Build puzzle grid
+  // Weekly suggestion
+  const wkEl = document.getElementById('weeklySuggestion');
+  if (goal.goalDate && !isComplete && remaining > 0) {
+    const days = daysUntil(goal.goalDate);
+    if (days > 0) {
+      const weeks = Math.max(1, Math.ceil(days / 7));
+      const perWeek = remaining / weeks;
+      wkEl.innerHTML = `Save about <strong>$${fmtNum(perWeek)}/week</strong> to finish on time`;
+      wkEl.style.display = '';
+    } else { wkEl.style.display = 'none'; }
+  } else { wkEl.style.display = 'none'; }
+
+  // ===== BUILD THE PUZZLE GRID =====
   const grid = document.getElementById('puzzleGrid');
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
-  // Get the image source
-  let imgSrc = null;
-  if (goal.imageType === 'upload' && goal.imageData) {
-    imgSrc = goal.imageData;
-  }
+  const hasImage = !!goal.imageData;
 
   grid.innerHTML = '';
   for (let i = 0; i < totalPieces; i++) {
@@ -1542,35 +1168,29 @@ function renderPuzzle() {
     piece.className = 'puzzle-piece' + (isRevealed ? ' revealed' : '');
     piece.dataset.index = i;
 
-    if (imgSrc) {
-      // Use background-position to show the correct portion of the image
-      const xPct = cols > 1 ? (col / (cols - 1)) * 100 : 50;
-      const yPct = rows > 1 ? (row / (rows - 1)) * 100 : 50;
+    if (hasImage) {
+      // Each piece clips one section of the full image
+      const xPos = cols > 1 ? (col / (cols - 1)) * 100 : 50;
+      const yPos = rows > 1 ? (row / (rows - 1)) * 100 : 50;
       piece.innerHTML = `
-        <div style="position:absolute;inset:0;background-image:url('${imgSrc}');background-size:${cols * 100}% ${rows * 100}%;background-position:${xPct}% ${yPct}%;"></div>
-        <div class="puzzle-piece-overlay"><span class="piece-icon">🧩</span></div>
-      `;
+        <div class="puzzle-piece-bg" style="
+          background-image: url('${goal.imageData}');
+          --grid-cols-pct: ${cols * 100}%;
+          --grid-rows-pct: ${rows * 100}%;
+          background-position: ${xPos}% ${yPos}%;
+        "></div>
+        <div class="puzzle-piece-overlay"><span class="piece-icon">🧩</span></div>`;
     } else {
-      // Preset emoji — use a unified gradient mosaic
-      const preset = PRESETS.find(p => p.id === goal.presetId);
-      // Create a cohesive gradient that varies by position
-      const hueBase = 260; // purple base
-      const hueShift = ((col + row * cols) / totalPieces) * 120;
-      const hue1 = hueBase + hueShift;
-      const hue2 = hue1 + 30;
-      const lightness = 70 + (row / rows) * 15;
+      // Fallback: no image (shouldn't happen in v2 but just in case)
+      const hue = (260 + (i / totalPieces) * 120);
       piece.innerHTML = `
-        <div style="position:absolute;inset:0;background:linear-gradient(${135 + (col * 45)}deg, hsl(${hue1}, 55%, ${lightness}%), hsl(${hue2}, 65%, ${lightness - 10}%));display:flex;align-items:center;justify-content:center;">
-          <span style="font-size:${Math.max(1.2, 3.5 - cols * 0.4)}rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));">${preset ? preset.emoji : '⭐'}</span>
-        </div>
-        <div class="puzzle-piece-overlay"><span class="piece-icon">🧩</span></div>
-      `;
+        <div class="puzzle-piece-fallback" style="background:linear-gradient(135deg, hsl(${hue},55%,75%), hsl(${hue+30},65%,65%));"></div>
+        <div class="puzzle-piece-overlay"><span class="piece-icon">🧩</span></div>`;
     }
 
     grid.appendChild(piece);
   }
 
-  // History
   renderHistory(goal);
 }
 
@@ -1580,19 +1200,17 @@ function renderHistory(goal) {
     list.innerHTML = '<p style="text-align:center; color:var(--text-faint); font-size:0.85rem; padding:var(--space-3);">No savings yet — start saving!</p>';
     return;
   }
-
   list.innerHTML = goal.history.slice().reverse().map((h, i) => {
     const d = new Date(h.date);
     const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     return `
       <div class="history-item" data-testid="history-item-${i}">
         <div class="history-item-left">
-          <span class="history-item-icon">🪙</span>
+          <span style="font-size:1rem;">🪙</span>
           <span class="history-item-date">${dateStr}</span>
         </div>
-        <span class="history-item-amount">+$${formatNum(h.amount)}</span>
-      </div>
-    `;
+        <span class="history-item-amount">+$${fmtNum(h.amount)}</span>
+      </div>`;
   }).join('');
 }
 
@@ -1600,26 +1218,20 @@ function renderHistory(goal) {
 async function saveMoney() {
   const goal = goals.find(g => g.id === currentGoalId);
   if (!goal) return;
-
   const saved = goal.history.reduce((sum, h) => sum + h.amount, 0);
   if (saved >= goal.goalAmount) return;
 
-  goal.history.push({
-    amount: goal.pieceAmount,
-    date: new Date().toISOString(),
-  });
+  goal.history.push({ amount: goal.pieceAmount, date: new Date().toISOString() });
   await dbPut(goal);
 
-  // Animate the new piece reveal
   const newSaved = goal.history.reduce((sum, h) => sum + h.amount, 0);
   const totalPieces = Math.ceil(goal.goalAmount / goal.pieceAmount);
   const newPieces = Math.min(totalPieces, Math.floor(newSaved / goal.pieceAmount));
   const pieceIndex = newPieces - 1;
 
-  // Coin fly animation
   spawnCoinFly();
 
-  // Reveal the piece with animation
+  // Animate piece reveal
   const pieces = document.querySelectorAll('.puzzle-piece');
   if (pieces[pieceIndex] && !pieces[pieceIndex].classList.contains('revealed')) {
     pieces[pieceIndex].classList.add('revealing');
@@ -1631,23 +1243,20 @@ async function saveMoney() {
   }
 
   // Update stats
-  document.getElementById('statSaved').textContent = '$' + formatNum(newSaved);
-  document.getElementById('statRemaining').textContent = '$' + formatNum(Math.max(0, goal.goalAmount - newSaved));
+  document.getElementById('statSaved').textContent = '$' + fmtNum(newSaved);
+  document.getElementById('statRemaining').textContent = '$' + fmtNum(Math.max(0, goal.goalAmount - newSaved));
   document.getElementById('statPieces').textContent = newPieces + '/' + totalPieces;
-
-  // Update history
   renderHistory(goal);
 
   // Check completion
   if (newSaved >= goal.goalAmount) {
     setTimeout(() => {
-      // Replace save button
       document.getElementById('saveBtnArea').innerHTML = `
         <div style="text-align:center; padding:var(--space-3);">
           <span style="font-size:1.5rem;">🎉</span>
           <p style="font-family:var(--font-display); font-weight:600; color:var(--green-600); margin-top:var(--space-1);">Goal Complete!</p>
-        </div>
-      `;
+        </div>`;
+      document.getElementById('weeklySuggestion').style.display = 'none';
       celebrate(goal);
     }, 1000);
   }
@@ -1659,90 +1268,59 @@ function addCustomAmount() {
   document.getElementById('customAmountInput').value = '';
   setTimeout(() => document.getElementById('customAmountInput').focus(), 350);
 }
-
-function closeCustomAmount() {
-  document.getElementById('customAmountModal').classList.remove('active');
-}
-
+function closeCustomAmount() { document.getElementById('customAmountModal').classList.remove('active'); }
 async function submitCustomAmount() {
   const goal = goals.find(g => g.id === currentGoalId);
   if (!goal) return;
   const amount = parseFloat(document.getElementById('customAmountInput').value);
   if (!amount || amount <= 0) return;
-
-  goal.history.push({
-    amount: amount,
-    date: new Date().toISOString(),
-  });
+  goal.history.push({ amount, date: new Date().toISOString() });
   await dbPut(goal);
   closeCustomAmount();
   renderPuzzle();
-
   const saved = goal.history.reduce((sum, h) => sum + h.amount, 0);
-  if (saved >= goal.goalAmount) {
-    setTimeout(() => celebrate(goal), 500);
-  }
+  if (saved >= goal.goalAmount) setTimeout(() => celebrate(goal), 500);
 }
 
 // ---- Celebration ----
 function celebrate(goal) {
-  const overlay = document.getElementById('celebrationOverlay');
-  document.getElementById('celebrationText').textContent = `You saved $${formatNum(goal.goalAmount)} for your ${goal.name}!`;
-
-  const imgContainer = document.getElementById('celebrationImage');
-  if (goal.imageType === 'upload' && goal.imageData) {
-    imgContainer.innerHTML = `<img src="${goal.imageData}" alt="${goal.name}">`;
-    imgContainer.style.display = '';
+  document.getElementById('celebrationText').textContent = `You saved $${fmtNum(goal.goalAmount)} for your ${goal.name}!`;
+  const imgC = document.getElementById('celebrationImage');
+  if (goal.imageData) {
+    imgC.innerHTML = `<img src="${goal.imageData}" alt="${esc(goal.name)}">`;
   } else {
-    const preset = PRESETS.find(p => p.id === goal.presetId);
-    imgContainer.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--purple-100);font-size:4rem;">${preset ? preset.emoji : '⭐'}</div>`;
-    imgContainer.style.display = '';
+    imgC.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--purple-100);font-size:4rem;">🎉</div>`;
   }
-
-  overlay.classList.add('active');
+  imgC.style.display = '';
+  document.getElementById('celebrationOverlay').classList.add('active');
   launchConfetti();
 }
-
 function closeCelebration() {
   document.getElementById('celebrationOverlay').classList.remove('active');
   stopConfetti();
 }
 
 // ---- Confetti ----
-let confettiInterval = null;
-let confettiPieces = [];
-let confettiCtx = null;
-
+let confettiRAF = null, confettiPieces = [], confettiCtx = null;
 function launchConfetti() {
-  const canvas = document.getElementById('confetti-canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  confettiCtx = canvas.getContext('2d');
+  const c = document.getElementById('confetti-canvas');
+  c.width = window.innerWidth; c.height = window.innerHeight;
+  confettiCtx = c.getContext('2d');
   confettiPieces = [];
-
-  const colors = ['#A855F7', '#FBBF24', '#EC4899', '#22C55E', '#38BDF8', '#F97316', '#6366F1'];
-
+  const colors = ['#A855F7','#FBBF24','#EC4899','#22C55E','#38BDF8','#F97316','#6366F1'];
   for (let i = 0; i < 150; i++) {
     confettiPieces.push({
-      x: Math.random() * canvas.width,
-      y: -10 - Math.random() * canvas.height,
-      w: 6 + Math.random() * 6,
-      h: 4 + Math.random() * 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      vx: (Math.random() - 0.5) * 4,
-      vy: 2 + Math.random() * 4,
-      rot: Math.random() * 360,
-      rotV: (Math.random() - 0.5) * 10,
+      x: Math.random()*c.width, y: -10 - Math.random()*c.height,
+      w: 6+Math.random()*6, h: 4+Math.random()*4,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      vx: (Math.random()-0.5)*4, vy: 2+Math.random()*4,
+      rot: Math.random()*360, rotV: (Math.random()-0.5)*10,
     });
   }
-
-  function animate() {
-    confettiCtx.clearRect(0, 0, canvas.width, canvas.height);
+  (function draw() {
+    confettiCtx.clearRect(0, 0, c.width, c.height);
     confettiPieces.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.rot += p.rotV;
-      p.vy += 0.05;
+      p.x += p.vx; p.y += p.vy; p.rot += p.rotV; p.vy += 0.05;
       confettiCtx.save();
       confettiCtx.translate(p.x, p.y);
       confettiCtx.rotate(p.rot * Math.PI / 180);
@@ -1750,32 +1328,23 @@ function launchConfetti() {
       confettiCtx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
       confettiCtx.restore();
     });
-    confettiInterval = requestAnimationFrame(animate);
-  }
-  animate();
+    confettiRAF = requestAnimationFrame(draw);
+  })();
 }
-
 function stopConfetti() {
-  if (confettiInterval) cancelAnimationFrame(confettiInterval);
-  const canvas = document.getElementById('confetti-canvas');
-  if (confettiCtx) confettiCtx.clearRect(0, 0, canvas.width, canvas.height);
+  if (confettiRAF) cancelAnimationFrame(confettiRAF);
+  const c = document.getElementById('confetti-canvas');
+  if (confettiCtx) confettiCtx.clearRect(0, 0, c.width, c.height);
   confettiPieces = [];
 }
 
-// ---- Coin Fly Animation ----
+// ---- Coin Fly ----
 function spawnCoinFly() {
   const el = document.createElement('div');
-  el.className = 'coin-fly';
-  el.textContent = '🪙';
+  el.className = 'coin-fly'; el.textContent = '🪙';
   const btn = document.querySelector('.save-money-btn');
-  if (btn) {
-    const rect = btn.getBoundingClientRect();
-    el.style.left = (rect.left + rect.width / 2 - 12) + 'px';
-    el.style.top = (rect.top) + 'px';
-  } else {
-    el.style.left = '50%';
-    el.style.bottom = '100px';
-  }
+  if (btn) { const r = btn.getBoundingClientRect(); el.style.left = (r.left+r.width/2-12)+'px'; el.style.top = r.top+'px'; }
+  else { el.style.left = '50%'; el.style.bottom = '100px'; }
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 800);
 }
@@ -1785,7 +1354,6 @@ function openGoalMenu() {
   document.getElementById('sheetBackdrop').classList.add('active');
   document.getElementById('goalSheet').classList.add('active');
 }
-
 function closeGoalMenu() {
   document.getElementById('sheetBackdrop').classList.remove('active');
   document.getElementById('goalSheet').classList.remove('active');
@@ -1795,26 +1363,21 @@ function editCurrentGoal() {
   closeGoalMenu();
   const goal = goals.find(g => g.id === currentGoalId);
   if (!goal) return;
-
   editingGoalId = goal.id;
   document.getElementById('createViewTitle').textContent = 'Edit Goal';
   document.getElementById('saveGoalBtn').textContent = 'Save Changes';
   document.getElementById('goalName').value = goal.name;
   document.getElementById('goalAmount').value = goal.goalAmount;
   document.getElementById('pieceAmount').value = goal.pieceAmount;
-
-  if (goal.imageType === 'upload' && goal.imageData) {
+  document.getElementById('goalDate').value = goal.goalDate || '';
+  selectedCategory = goal.category;
+  if (goal.imageData) {
     uploadedImageData = goal.imageData;
-    selectedPreset = null;
-    switchImageTab('upload');
-    showUploadPreview();
-  } else {
-    selectedPreset = goal.presetId;
-    uploadedImageData = null;
-    switchImageTab('presets');
+    showPhotoPreview();
   }
-  renderPresets();
+  renderCategories();
   updateCalcInfo();
+  updateDateInfo();
   showView('createView');
 }
 
@@ -1840,11 +1403,7 @@ function confirmDeleteGoal() {
   closeGoalMenu();
   document.getElementById('deleteModal').classList.add('active');
 }
-
-function closeDeleteModal() {
-  document.getElementById('deleteModal').classList.remove('active');
-}
-
+function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('active'); }
 async function deleteCurrentGoal() {
   closeDeleteModal();
   const id = currentGoalId;
@@ -1855,58 +1414,32 @@ async function deleteCurrentGoal() {
 }
 
 // ---- Helpers ----
-function formatNum(n) {
-  return Number(n).toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+function fmtNum(n) { return Number(n).toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1'); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function daysUntil(dateStr) {
+  const target = new Date(dateStr + 'T23:59:59');
+  const now = new Date();
+  return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
 }
 
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-// ---- Shake Animation ----
-const shakeCSS = document.createElement('style');
-shakeCSS.textContent = `
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-}`;
-document.head.appendChild(shakeCSS);
-
-// ---- PWA Service Worker (inline) ----
+// ---- PWA ----
 if ('serviceWorker' in navigator) {
   const swCode = `
-    const CACHE = 'puzzle-piggy-v1';
-    const ASSETS = ['/'];
-    self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS))); self.skipWaiting(); });
-    self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
-    self.addEventListener('fetch', e => {
-      e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-    });
+    const CACHE='puzzle-piggy-v2';
+    self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/'])));self.skipWaiting();});
+    self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});
+    self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});
   `;
   const blob = new Blob([swCode], { type: 'application/javascript' });
-  const swURL = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swURL).catch(() => {});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
 }
-
-// ---- Manifest (inline) ----
 const manifest = {
-  name: 'Puzzle Piggy',
-  short_name: 'Puzzle Piggy',
-  description: 'Save, Reveal, Celebrate! A fun savings tracker for kids.',
-  start_url: '.',
-  display: 'standalone',
-  background_color: '#F5F0FF',
-  theme_color: '#6C3FC5',
-  icons: []
+  name: 'Puzzle Piggy', short_name: 'Puzzle Piggy',
+  description: 'Save, Reveal, Celebrate!', start_url: '.', display: 'standalone',
+  background_color: '#F5F0FF', theme_color: '#6C3FC5', icons: []
 };
-const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-const manifestURL = URL.createObjectURL(manifestBlob);
-document.querySelector('link[rel="manifest"]').href = manifestURL;
+const mBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+document.querySelector('link[rel="manifest"]').href = URL.createObjectURL(mBlob);
 
 // ---- Boot ----
 init();
