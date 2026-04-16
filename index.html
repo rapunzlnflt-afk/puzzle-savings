@@ -527,17 +527,204 @@ a { color: inherit; text-decoration: none; }
 /* ============ BOTTOM NAV ============ */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface);
-  border-top: 1px solid var(--border); padding: var(--space-2) var(--space-4);
-  display: flex; justify-content: center; gap: var(--space-8); z-index: 100;
+  border-top: 1px solid var(--border); padding: var(--space-2) var(--space-3);
+  display: flex; justify-content: space-around; z-index: 100;
   max-width: 480px; margin: 0 auto;
 }
 .nav-item {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  color: var(--text-faint); font-size: 0.7rem; font-weight: 600;
+  color: var(--text-faint); font-size: 0.65rem; font-weight: 600;
   transition: color var(--transition-fast); padding: var(--space-1) var(--space-2);
+  position: relative;
 }
 .nav-item.active { color: var(--purple-700); }
-.nav-item svg { width: 22px; height: 22px; }
+.nav-item svg { width: 20px; height: 20px; }
+.nav-badge {
+  position: absolute; top: 0; right: 2px;
+  min-width: 16px; height: 16px; border-radius: var(--radius-full);
+  background: #DC2626; color: #fff; font-size: 0.6rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px; line-height: 1;
+}
+
+/* ============ JARS VIEW ============ */
+.jars-summary-bar {
+  background: linear-gradient(135deg, var(--silver-600) 0%, var(--silver-500) 30%, var(--silver-400) 50%, var(--silver-500) 70%, var(--silver-600) 100%);
+  border-radius: var(--radius-xl); padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-4); color: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 4px 16px rgba(110, 110, 126, 0.3);
+}
+.jars-summary-label { font-size: 0.8rem; font-weight: 600; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.05em; }
+.jars-summary-amount { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; }
+
+.jar-card {
+  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-4);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: var(--space-3);
+  cursor: pointer; transition: all var(--transition-fast);
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.jar-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.jar-card:active { transform: scale(0.98); }
+.jar-icon {
+  width: 48px; height: 48px; border-radius: var(--radius-md); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.jar-icon svg { width: 28px; height: 28px; }
+.jar-info { flex: 1; min-width: 0; }
+.jar-name { font-family: var(--font-display); font-weight: 600; font-size: 1rem; }
+.jar-balance { font-size: 1.25rem; font-family: var(--font-display); font-weight: 700; color: var(--purple-700); }
+.jar-type-badge {
+  font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full);
+  background: var(--purple-100); color: var(--purple-700); text-transform: uppercase; letter-spacing: 0.04em;
+}
+
+.jar-detail-header {
+  display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);
+}
+.jar-detail-icon {
+  width: 56px; height: 56px; border-radius: var(--radius-lg); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.jar-detail-icon svg { width: 32px; height: 32px; }
+.jar-detail-info { flex: 1; }
+.jar-detail-name { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; }
+.jar-detail-balance { font-size: 1.5rem; font-family: var(--font-display); font-weight: 700; color: var(--purple-700); }
+
+.jar-tx-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-2) 0; border-bottom: 1px solid var(--border); font-size: 0.85rem;
+}
+.jar-tx-item:last-child { border-bottom: none; }
+.jar-tx-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+.jar-tx-positive { color: var(--green-600); font-weight: 600; }
+.jar-tx-negative { color: #DC2626; font-weight: 600; }
+
+/* Jar setup */
+.jar-setup-option {
+  display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3);
+  border-radius: var(--radius-md); border: 1.5px solid var(--border);
+  background: var(--surface); margin-bottom: var(--space-2); transition: all var(--transition-fast);
+}
+.jar-setup-option.selected { border-color: var(--purple-400); background: var(--purple-50); }
+.jar-setup-option input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--purple-600); flex-shrink: 0; }
+.jar-setup-color-dot { width: 20px; height: 20px; border-radius: var(--radius-full); flex-shrink: 0; }
+.jar-setup-name-input {
+  flex: 1; border: none; background: transparent; font: inherit; font-weight: 600;
+  color: var(--text); padding: 0; outline: none;
+}
+
+/* ============ CHORES VIEW ============ */
+.chore-card {
+  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-4);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: var(--space-3);
+}
+.chore-card-header { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+.chore-icon {
+  width: 44px; height: 44px; border-radius: var(--radius-md); flex-shrink: 0;
+  background: var(--purple-100); display: flex; align-items: center; justify-content: center;
+}
+.chore-icon svg { width: 22px; height: 22px; color: var(--purple-700); }
+.chore-info { flex: 1; min-width: 0; }
+.chore-name { font-family: var(--font-display); font-weight: 600; font-size: 1rem; }
+.chore-amount { font-size: 0.85rem; color: var(--text-muted); }
+.chore-amount strong { color: var(--purple-700); font-weight: 600; }
+.chore-badges { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-2); }
+.chore-badge {
+  font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full);
+  background: var(--purple-100); color: var(--purple-700); text-transform: capitalize;
+}
+.chore-badge.pending-badge { background: #FEF3C7; color: #92400E; }
+.chore-badge.approved-badge { background: #D1FAE5; color: #065F46; }
+.chore-did-it-btn {
+  width: 100%; padding: var(--space-3); border-radius: var(--radius-full);
+  font-family: var(--font-display); font-weight: 700; font-size: 1rem;
+  background: linear-gradient(135deg, var(--purple-600), var(--purple-800)); color: #fff;
+  box-shadow: var(--shadow-md), 0 2px 8px rgba(108, 63, 197, 0.3);
+  transition: all var(--transition-fast);
+}
+.chore-did-it-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+.chore-did-it-btn:active { transform: scale(0.97); }
+.chore-did-it-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.chore-pending-note {
+  text-align: center; font-size: 0.82rem; color: #92400E; font-weight: 500;
+  background: #FEF3C7; border-radius: var(--radius-md); padding: var(--space-2) var(--space-3);
+}
+
+.manage-chores-section { margin-top: var(--space-5); }
+.manage-chores-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+.chore-manage-card {
+  background: var(--surface); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border); margin-bottom: var(--space-2);
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.chore-manage-info { flex: 1; min-width: 0; }
+.chore-manage-name { font-weight: 600; font-size: 0.9rem; }
+.chore-manage-meta { font-size: 0.78rem; color: var(--text-muted); }
+
+/* Approval modal */
+.review-item {
+  background: var(--surface-alt); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border); margin-bottom: var(--space-3);
+}
+.review-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); }
+.review-item-name { font-weight: 600; font-size: 0.95rem; }
+.review-item-amount { font-family: var(--font-display); font-weight: 700; color: var(--purple-700); }
+.review-item-actions { display: flex; gap: var(--space-2); }
+.review-item-actions .btn { flex: 1; font-size: 0.82rem; padding: var(--space-2) var(--space-2); }
+
+/* Jar allocation modal */
+.jar-alloc-jar-btn {
+  display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg); border: 2px solid var(--border);
+  background: var(--surface); width: 100%; margin-bottom: var(--space-2);
+  transition: all var(--transition-fast); text-align: left;
+  font-family: var(--font-body);
+}
+.jar-alloc-jar-btn:hover { border-color: var(--purple-400); background: var(--purple-50); }
+.jar-alloc-jar-btn.selected { border-color: var(--purple-500); background: var(--purple-100); }
+.jar-alloc-icon { width: 36px; height: 36px; border-radius: var(--radius-md); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.jar-alloc-icon svg { width: 20px; height: 20px; }
+.jar-alloc-info { flex: 1; }
+.jar-alloc-name { font-weight: 600; font-size: 0.95rem; }
+.jar-alloc-bal { font-size: 0.8rem; color: var(--text-muted); }
+
+/* Add chore form */
+.chore-form-card {
+  background: var(--purple-50); border-radius: var(--radius-lg); padding: var(--space-4);
+  border: 1.5px solid var(--purple-300); margin-bottom: var(--space-3);
+}
+.chore-form-card .form-group { margin-bottom: var(--space-3); }
+.chore-form-card .form-group:last-child { margin-bottom: 0; }
+.chore-recurring-options { display: flex; gap: var(--space-2); }
+.chore-recurring-option {
+  flex: 1; padding: var(--space-2) var(--space-1); border-radius: var(--radius-md);
+  border: 2px solid var(--border); font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+  background: var(--surface); transition: all var(--transition-fast); text-align: center;
+  cursor: pointer;
+}
+.chore-recurring-option.selected { border-color: var(--purple-500); background: var(--purple-100); color: var(--purple-700); }
+
+/* Home jars bar */
+.home-jars-bar {
+  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border); margin-bottom: var(--space-4);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  cursor: pointer; transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+.home-jars-bar:hover { box-shadow: var(--shadow-md); }
+.home-jars-bar-left { display: flex; align-items: center; gap: var(--space-3); }
+.home-jars-total { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--purple-700); }
+.home-jars-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+.home-jars-mini { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.home-jar-chip {
+  font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full);
+  color: #fff;
+}
 
 
 /* ============ USER SELECT SCREEN ============ */
@@ -952,6 +1139,7 @@ a { color: inherit; text-decoration: none; }
 
   <!-- ===== HOME VIEW ===== -->
   <div id="homeView" class="view active">
+    <div id="homeJarsBar" style="display:none;"></div>
     <div id="goalsList"></div>
     <div id="goalsEmpty" class="goals-empty" style="display:none;">
       <h2>Start Your First Puzzle!</h2>
@@ -1153,6 +1341,13 @@ a { color: inherit; text-decoration: none; }
       <div id="savingsJournal" class="journal-list"></div>
     </div>
   </div>
+
+  <!-- ===== JARS VIEW ===== -->
+  <div id="jarsView" class="view"></div>
+
+  <!-- ===== CHORES VIEW ===== -->
+  <div id="choresView" class="view"></div>
+
 </div>
 
 <!-- ===== CELEBRATION ===== -->
@@ -1211,11 +1406,100 @@ a { color: inherit; text-decoration: none; }
   </div>
 </div>
 
+<!-- ===== JAR ALLOCATION MODAL ===== -->
+<div class="modal-backdrop" id="jarAllocModal">
+  <div class="modal">
+    <h3 id="jarAllocTitle">Where should your money go?</h3>
+    <p id="jarAllocSubtitle" style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:var(--space-4);"></p>
+    <div id="jarAllocJars"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeJarAllocModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmJarAlloc()" id="jarAllocConfirmBtn">Add to Jar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REVIEW CHORES MODAL ===== -->
+<div class="modal-backdrop" id="reviewChoresModal">
+  <div class="modal" style="max-width:420px;">
+    <h3>Review Chores</h3>
+    <div id="reviewChoresList" style="max-height:60vh; overflow-y:auto;"></div>
+    <div style="margin-top:var(--space-3);">
+      <button class="btn btn-outline btn-block" onclick="closeReviewChoresModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TRANSFER MODAL ===== -->
+<div class="modal-backdrop" id="transferModal">
+  <div class="modal">
+    <h3>Move Money</h3>
+    <div class="form-group">
+      <label class="form-label" for="transferFromJar">From</label>
+      <select id="transferFromJar" class="form-input"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="transferToJar">To</label>
+      <select id="transferToJar" class="form-input"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="transferAmount">Amount</label>
+      <div class="amount-input-wrap">
+        <input type="number" id="transferAmount" class="form-input" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeTransferModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmTransfer()">Transfer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADD/EDIT CHORE MODAL ===== -->
+<div class="modal-backdrop" id="addChoreModal">
+  <div class="modal">
+    <h3 id="addChoreTitle">Add Chore</h3>
+    <div class="form-group">
+      <label class="form-label" for="choreName">Chore Name</label>
+      <input type="text" id="choreName" class="form-input" placeholder="e.g., Make bed" maxlength="40" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="choreAmount">Earn</label>
+      <div class="amount-input-wrap">
+        <input type="number" id="choreAmountInput" class="form-input" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Frequency</label>
+      <div class="chore-recurring-options" id="choreRecurringOptions">
+        <button class="chore-recurring-option selected" data-val="daily" onclick="selectChoreRecurring('daily')">Daily</button>
+        <button class="chore-recurring-option" data-val="weekly" onclick="selectChoreRecurring('weekly')">Weekly</button>
+        <button class="chore-recurring-option" data-val="once" onclick="selectChoreRecurring('once')">Once</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeAddChoreModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveChore()" id="saveChoreBtn">Add Chore</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== BOTTOM NAV ===== -->
 <nav class="bottom-nav" id="bottomNav">
   <button class="nav-item active" onclick="showView('homeView')" data-testid="nav-home" id="navHome">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
     Goals
+  </button>
+  <button class="nav-item" onclick="showView('jarsView')" data-testid="nav-jars" id="navJars">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
+    Jars
+  </button>
+  <button class="nav-item" onclick="showView('choresView')" data-testid="nav-chores" id="navChores">
+    <div style="position:relative;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+      <span class="nav-badge" id="choresBadge" style="display:none;"></span>
+    </div>
+    Chores
   </button>
   <button class="nav-item" onclick="showView('createView')" data-testid="nav-add" id="navAdd">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -1249,12 +1533,39 @@ let editingGoalId = null;
 let selectedCategory = null;
 let uploadedImageData = null;
 
+// ---- Jars + Chores State ----
+let jars = [];
+let jarTxs = [];
+let chores = [];
+let choreLogs = [];
+let currentJarId = null;  // jar being viewed for detail
+let jarSetupMode = false;
+let selectedAllocJarId = null;
+let pendingAllocChoreLogId = null;
+let pendingAllocAmount = 0;
+let editingChoreId = null;
+let newChoreRecurring = 'daily';
+
+// Jar color palette
+const JAR_COLORS = ['#8E6BBF','#E67E22','#27AE60','#2980B9','#E74C3C','#1ABC9C','#9B59B6','#F39C12'];
+
+// Default jar definitions
+const DEFAULT_JARS = [
+  { name: 'Save', type: 'save', color: '#27AE60' },
+  { name: 'Spend', type: 'spend', color: '#2980B9' },
+  { name: 'Give', type: 'give', color: '#E74C3C' },
+];
+
 // ---- IndexedDB ----
 const DB_NAME = 'PuzzlePigDB';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 const STORE_NAME = 'goals';
 const USER_STORE = 'users';
 const SETTINGS_STORE = 'settings';
+const JARS_STORE = 'jars';
+const JAR_TX_STORE = 'jarTransactions';
+const CHORES_STORE = 'chores';
+const CHORE_LOG_STORE = 'choreLog';
 let db = null;
 
 function openDB() {
@@ -1270,6 +1581,19 @@ function openDB() {
       }
       if (!d.objectStoreNames.contains(SETTINGS_STORE)) {
         d.createObjectStore(SETTINGS_STORE, { keyPath: 'key' });
+      }
+      // v4: Jars + Chores
+      if (!d.objectStoreNames.contains(JARS_STORE)) {
+        d.createObjectStore(JARS_STORE, { keyPath: 'id' });
+      }
+      if (!d.objectStoreNames.contains(JAR_TX_STORE)) {
+        d.createObjectStore(JAR_TX_STORE, { keyPath: 'id' });
+      }
+      if (!d.objectStoreNames.contains(CHORES_STORE)) {
+        d.createObjectStore(CHORES_STORE, { keyPath: 'id' });
+      }
+      if (!d.objectStoreNames.contains(CHORE_LOG_STORE)) {
+        d.createObjectStore(CHORE_LOG_STORE, { keyPath: 'id' });
       }
     };
     req.onsuccess = (e) => { db = e.target.result; resolve(db); };
@@ -1350,6 +1674,90 @@ function dbPutSetting(key, value) {
   });
 }
 
+// ---- Jars DB helpers ----
+function dbPutJar(jar) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(JARS_STORE, 'readwrite');
+    tx.objectStore(JARS_STORE).put(jar);
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e.target.error);
+  });
+}
+function dbDeleteJar(id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(JARS_STORE, 'readwrite');
+    tx.objectStore(JARS_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e.target.error);
+  });
+}
+function dbGetAllJars() {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(JARS_STORE, 'readonly');
+    const req = tx.objectStore(JARS_STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+function dbPutJarTx(txObj) {
+  return new Promise((resolve, reject) => {
+    const t = db.transaction(JAR_TX_STORE, 'readwrite');
+    t.objectStore(JAR_TX_STORE).put(txObj);
+    t.oncomplete = () => resolve();
+    t.onerror = (e) => reject(e.target.error);
+  });
+}
+function dbGetAllJarTxs() {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(JAR_TX_STORE, 'readonly');
+    const req = tx.objectStore(JAR_TX_STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+
+// ---- Chores DB helpers ----
+function dbPutChore(chore) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHORES_STORE, 'readwrite');
+    tx.objectStore(CHORES_STORE).put(chore);
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e.target.error);
+  });
+}
+function dbDeleteChore(id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHORES_STORE, 'readwrite');
+    tx.objectStore(CHORES_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e.target.error);
+  });
+}
+function dbGetAllChores() {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHORES_STORE, 'readonly');
+    const req = tx.objectStore(CHORES_STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+function dbPutChoreLog(entry) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHORE_LOG_STORE, 'readwrite');
+    tx.objectStore(CHORE_LOG_STORE).put(entry);
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e.target.error);
+  });
+}
+function dbGetAllChoreLogs() {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(CHORE_LOG_STORE, 'readonly');
+    const req = tx.objectStore(CHORE_LOG_STORE).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = (e) => reject(e.target.error);
+  });
+}
+
 
 // ---- Multi-user state ----
 let users = [];
@@ -1415,12 +1823,28 @@ async function selectUser(id) {
   const allGoals = await dbGetAll();
   goals = allGoals.filter(g => g.userId === id);
 
+  // Load jars + chores data for this user
+  const allJars = await dbGetAllJars();
+  jars = allJars.filter(j => j.userId === id).sort((a,b) => a.order - b.order);
+  const allJarTxs = await dbGetAllJarTxs();
+  jarTxs = allJarTxs.filter(t => t.userId === id);
+  const allChores = await dbGetAllChores();
+  chores = allChores.filter(c => c.userId === id);
+  const allChoreLogs = await dbGetAllChoreLogs();
+  choreLogs = allChoreLogs.filter(cl => cl.userId === id);
+
   // Show the main app
   document.getElementById('userSelectScreen').style.display = 'none';
   document.getElementById('app').style.display = '';
   document.getElementById('bottomNav').style.display = '';
   showCurrentUserBar();
-  showView('homeView');
+
+  // If no jars yet, prompt jar setup (PIN-gated)
+  if (jars.length === 0) {
+    showView('jarsView');
+  } else {
+    showView('homeView');
+  }
 }
 
 function showCurrentUserBar() {
@@ -1438,6 +1862,10 @@ function showCurrentUserBar() {
 function switchUser() {
   currentUserId = null;
   goals = [];
+  jars = [];
+  jarTxs = [];
+  chores = [];
+  choreLogs = [];
   managingUsers = false;
   document.getElementById('app').style.display = 'none';
   document.getElementById('bottomNav').style.display = 'none';
@@ -1541,6 +1969,20 @@ async function submitPin() {
     renderUserSelect();
   } else if (action === 'remove') {
     await doRemoveUser(savedExtra);
+  } else if (action === 'jar-setup') {
+    showJarSetup();
+  } else if (action === 'jar-setup-save') {
+    await saveJarSetup();
+  } else if (action === 'jar-transfer') {
+    openTransferModal();
+  } else if (action === 'manage-chores') {
+    showManageChores();
+  } else if (action === 'review-chores') {
+    openReviewChoresModal();
+  } else if (action === 'delete-chore') {
+    await doDeleteChore(savedExtra);
+  } else if (action === 'save-chore') {
+    await doSaveChore();
   }
 }
 
@@ -1688,9 +2130,22 @@ function showView(viewId) {
     document.getElementById('app').classList.add('no-nav');
     renderSavingsEntry();
     return; // skip the scroll-to-top below so we don't lose position
+  } else if (viewId === 'jarsView') {
+    document.getElementById('navJars').classList.add('active');
+    document.getElementById('mainHeader').style.display = '';
+    document.getElementById('bottomNav').style.display = '';
+    showCurrentUserBar();
+    renderJarsView();
+  } else if (viewId === 'choresView') {
+    document.getElementById('navChores').classList.add('active');
+    document.getElementById('mainHeader').style.display = '';
+    document.getElementById('bottomNav').style.display = '';
+    showCurrentUserBar();
+    renderChoresView();
   }
   // Remove no-nav class when not on savings view
   document.getElementById('app').classList.remove('no-nav');
+  window.scrollTo(0, 0);
 }
 
 // ---- Render Home ----
@@ -1698,6 +2153,26 @@ function renderHome() {
   const list = document.getElementById('goalsList');
   const empty = document.getElementById('goalsEmpty');
   const homeActions = document.getElementById('homeActions');
+
+  // Jars summary bar
+  const jarsBar = document.getElementById('homeJarsBar');
+  if (jars.length > 0) {
+    const totalBalance = jars.reduce((s, j) => s + (j.balance || 0), 0);
+    const chips = jars.map(j => `<span class="home-jar-chip" style="background:${j.color}">${esc(j.name)}: $${fmtNum(j.balance || 0)}</span>`).join('');
+    jarsBar.innerHTML = `
+      <div class="home-jars-bar-left" onclick="showView('jarsView')" style="cursor:pointer;flex:1;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
+        <div>
+          <div class="home-jars-total">$${fmtNum(totalBalance)}</div>
+          <div class="home-jars-label">Total in Jars</div>
+        </div>
+      </div>
+      <div class="home-jars-mini">${chips}</div>
+    `;
+    jarsBar.style.display = '';
+  } else {
+    jarsBar.style.display = 'none';
+  }
 
   if (goals.length === 0) {
     list.innerHTML = '';
@@ -2598,8 +3073,693 @@ async function deleteCurrentGoal() {
   showView('homeView');
 }
 
+// ============================================================
+//  JARS FEATURE
+// ============================================================
+
+// ---- Jar SVG Icon ----
+function jarSVG(color, size) {
+  const sz = size || 28;
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>`;
+}
+
+// ---- Render Jars View ----
+function renderJarsView() {
+  const view = document.getElementById('jarsView');
+  if (!currentUserId) { view.innerHTML = ''; return; }
+
+  if (jars.length === 0) {
+    view.innerHTML = `
+      <h2 class="view-title">Jars</h2>
+      <div class="card" style="text-align:center; padding:var(--space-8) var(--space-5);">
+        <div style="margin-bottom:var(--space-4);">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--purple-400)" stroke-width="1.5" style="display:block;margin:0 auto;"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
+        </div>
+        <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:var(--space-2);">Set Up Your Jars</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem;max-width:260px;margin:0 auto var(--space-5);">Jars help you split your money into Save, Spend, and Give buckets.</p>
+        <button class="btn btn-primary btn-block" onclick="requestPinFor('jar-setup')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Set Up Jars
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  // Show jar detail if one is selected
+  if (currentJarId) {
+    renderJarDetail();
+    return;
+  }
+
+  const totalBalance = jars.reduce((s, j) => s + (j.balance || 0), 0);
+
+  const jarCards = jars.map(j => `
+    <div class="jar-card" onclick="openJarDetail('${j.id}')" data-testid="jar-card-${j.id}">
+      <div class="jar-icon" style="background:${j.color}">
+        ${jarSVG(j.color)}
+      </div>
+      <div class="jar-info">
+        <div class="jar-name">${esc(j.name)}</div>
+        <div class="jar-balance">$${fmtNum(j.balance || 0)}</div>
+      </div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+  `).join('');
+
+  view.innerHTML = `
+    <h2 class="view-title">Jars</h2>
+    <div class="jars-summary-bar">
+      <div>
+        <div class="jars-summary-label">Total Balance</div>
+        <div class="jars-summary-amount">$${fmtNum(totalBalance)}</div>
+      </div>
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
+    </div>
+    ${jarCards}
+    <div style="display:flex; gap:var(--space-3); margin-top:var(--space-4);">
+      <button class="btn btn-outline btn-block" onclick="requestPinFor('jar-transfer')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        Move Money
+      </button>
+      <button class="btn btn-outline" onclick="requestPinFor('jar-setup')" style="white-space:nowrap;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Edit
+      </button>
+    </div>
+  `;
+}
+
+function openJarDetail(id) {
+  currentJarId = id;
+  renderJarDetail();
+}
+
+function renderJarDetail() {
+  const view = document.getElementById('jarsView');
+  const jar = jars.find(j => j.id === currentJarId);
+  if (!jar) { currentJarId = null; renderJarsView(); return; }
+
+  const txList = jarTxs
+    .filter(t => t.jarId === currentJarId)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 30);
+
+  const txHTML = txList.length === 0
+    ? '<p style="text-align:center;color:var(--text-faint);font-size:0.85rem;padding:var(--space-3);">No transactions yet.</p>'
+    : txList.map(tx => {
+        const d = new Date(tx.date);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const amtClass = tx.amount >= 0 ? 'jar-tx-positive' : 'jar-tx-negative';
+        const amtStr = (tx.amount >= 0 ? '+' : '-') + '$' + fmtNum(Math.abs(tx.amount));
+        const typeLabel = tx.type === 'chore' ? 'Chore' : tx.type === 'transfer' ? 'Transfer' : 'Manual';
+        return `
+          <div class="jar-tx-item">
+            <div>
+              <div>${esc(tx.note || typeLabel)}</div>
+              <div class="jar-tx-note">${dateStr} &middot; ${typeLabel}</div>
+            </div>
+            <span class="${amtClass}">${amtStr}</span>
+          </div>
+        `;
+      }).join('');
+
+  view.innerHTML = `
+    <div class="puzzle-header">
+      <button class="puzzle-back" onclick="backFromJarDetail()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        Jars
+      </button>
+    </div>
+    <div class="jar-detail-header">
+      <div class="jar-detail-icon" style="background:${jar.color}">
+        ${jarSVG(jar.color, 32)}
+      </div>
+      <div class="jar-detail-info">
+        <div class="jar-detail-name">${esc(jar.name)}</div>
+        <div class="jar-detail-balance">$${fmtNum(jar.balance || 0)}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3);">
+        <span class="form-label" style="margin:0;">Transactions</span>
+      </div>
+      ${txHTML}
+    </div>
+  `;
+}
+
+function backFromJarDetail() {
+  currentJarId = null;
+  renderJarsView();
+}
+
+// ---- Jar Setup ----
+let jarSetupSelections = null;
+
+function showJarSetup() {
+  if (jars.length > 0) {
+    jarSetupSelections = jars.map(j => ({ id: j.id, type: j.type, name: j.name, color: j.color, checked: true }));
+  } else {
+    jarSetupSelections = DEFAULT_JARS.map((d, i) => ({
+      id: null, type: d.type, name: d.name, color: d.color, checked: true
+    }));
+  }
+  renderJarSetupForm();
+}
+
+function renderJarSetupForm() {
+  const view = document.getElementById('jarsView');
+  const optionsHTML = jarSetupSelections.map((s, i) => {
+    const isSave = s.type === 'save';
+    const disabledAttr = isSave ? 'disabled' : '';
+    return `
+      <div class="jar-setup-option${s.checked ? ' selected' : ''}" id="jarSetupOpt_${i}">
+        <input type="checkbox" ${s.checked ? 'checked' : ''} ${disabledAttr}
+          onchange="toggleJarSetupOption(${i}, this.checked)">
+        <div class="jar-setup-color-dot" style="background:${s.color}"></div>
+        <input type="text" class="jar-setup-name-input" value="${esc(s.name)}"
+          onchange="updateJarSetupName(${i}, this.value)"
+          onblur="updateJarSetupName(${i}, this.value)"
+          ${isSave ? 'readonly' : ''} style="${isSave ? 'opacity:0.7;' : ''}">
+      </div>
+    `;
+  }).join('');
+
+  view.innerHTML = `
+    <div class="puzzle-header">
+      <button class="puzzle-back" onclick="cancelJarSetup()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        ${jars.length > 0 ? 'Back' : 'Skip'}
+      </button>
+    </div>
+    <h2 class="view-title">Set Up Jars</h2>
+    <div class="card">
+      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:var(--space-4);">Choose which jars to use. The Save jar is required. You can rename any jar.</p>
+      ${optionsHTML}
+    </div>
+    <div style="margin-top:var(--space-4);">
+      <button class="btn btn-primary btn-block" onclick="requestPinFor('jar-setup-save')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        Save Jars
+      </button>
+    </div>
+  `;
+}
+
+function toggleJarSetupOption(i, checked) {
+  if (jarSetupSelections) jarSetupSelections[i].checked = checked;
+  const opt = document.getElementById('jarSetupOpt_' + i);
+  if (opt) opt.classList.toggle('selected', checked);
+}
+
+function updateJarSetupName(i, val) {
+  if (jarSetupSelections) jarSetupSelections[i].name = val.trim() || jarSetupSelections[i].name;
+}
+
+function cancelJarSetup() {
+  currentJarId = null;
+  if (jars.length > 0) {
+    renderJarsView();
+  } else {
+    showView('homeView');
+  }
+}
+
+async function saveJarSetup() {
+  if (!jarSetupSelections) return;
+  const selections = jarSetupSelections.filter(s => s.checked);
+  if (selections.length === 0) return;
+  const now = new Date().toISOString();
+  const newJars = [];
+  for (let i = 0; i < selections.length; i++) {
+    const s = selections[i];
+    const existing = s.id ? jars.find(j => j.id === s.id) : null;
+    newJars.push({
+      id: s.id || ('jar_' + Date.now() + '_' + i),
+      userId: currentUserId,
+      name: s.name || s.type,
+      type: s.type,
+      balance: existing ? (existing.balance || 0) : 0,
+      color: s.color,
+      order: i,
+      createdAt: existing ? existing.createdAt : now,
+    });
+  }
+  const selectedIds = selections.filter(s => s.id).map(s => s.id);
+  for (const j of jars) {
+    if (!selectedIds.includes(j.id)) await dbDeleteJar(j.id);
+  }
+  for (const j of newJars) await dbPutJar(j);
+  jars = newJars;
+  currentJarId = null;
+  renderJarsView();
+}
+
+// ---- Transfer Modal ----
+function openTransferModal() {
+  const fromSel = document.getElementById('transferFromJar');
+  const toSel = document.getElementById('transferToJar');
+  const opts = jars.map(j => `<option value="${j.id}">${esc(j.name)} ($${fmtNum(j.balance || 0)})</option>`).join('');
+  fromSel.innerHTML = opts;
+  toSel.innerHTML = opts;
+  if (jars.length > 1) toSel.selectedIndex = 1;
+  document.getElementById('transferAmount').value = '';
+  document.getElementById('transferModal').classList.add('active');
+}
+function closeTransferModal() {
+  document.getElementById('transferModal').classList.remove('active');
+}
+async function confirmTransfer() {
+  const fromId = document.getElementById('transferFromJar').value;
+  const toId = document.getElementById('transferToJar').value;
+  const amount = parseFloat(document.getElementById('transferAmount').value);
+  if (!amount || amount <= 0 || fromId === toId) {
+    document.getElementById('transferAmount').style.animation = 'shake 0.4s ease';
+    setTimeout(() => document.getElementById('transferAmount').style.animation = '', 400);
+    return;
+  }
+  const fromJar = jars.find(j => j.id === fromId);
+  const toJar = jars.find(j => j.id === toId);
+  if (!fromJar || !toJar) return;
+  if ((fromJar.balance || 0) < amount) {
+    document.getElementById('transferAmount').style.animation = 'shake 0.4s ease';
+    setTimeout(() => document.getElementById('transferAmount').style.animation = '', 400);
+    return;
+  }
+  const now = new Date().toISOString();
+  fromJar.balance = (fromJar.balance || 0) - amount;
+  toJar.balance = (toJar.balance || 0) + amount;
+  await dbPutJar(fromJar);
+  await dbPutJar(toJar);
+  const txNote = `Transfer: ${fromJar.name} to ${toJar.name}`;
+  const txOut = { id: 'jartx_' + Date.now() + 'a', userId: currentUserId, jarId: fromId, amount: -amount, type: 'transfer', note: txNote, date: now.split('T')[0], createdAt: now };
+  const txIn  = { id: 'jartx_' + (Date.now()+1) + 'b', userId: currentUserId, jarId: toId, amount: amount, type: 'transfer', note: txNote, date: now.split('T')[0], createdAt: now };
+  await dbPutJarTx(txOut);
+  await dbPutJarTx(txIn);
+  jarTxs.push(txOut, txIn);
+  closeTransferModal();
+  renderJarsView();
+}
+
+// ============================================================
+//  CHORES FEATURE
+// ============================================================
+
+function choreIconSVG() {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg>`;
+}
+
+function updateChoresBadge() {
+  const pending = choreLogs.filter(cl => cl.status === 'pending');
+  const badge = document.getElementById('choresBadge');
+  if (!badge) return;
+  if (pending.length > 0) {
+    badge.textContent = pending.length > 9 ? '9+' : String(pending.length);
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+let choreMgmtOpen = false;
+
+function renderChoresView() {
+  updateChoresBadge();
+  const view = document.getElementById('choresView');
+  const today = new Date().toISOString().split('T')[0];
+
+  if (chores.length === 0 && !choreMgmtOpen) {
+    view.innerHTML = `
+      <h2 class="view-title">Chores</h2>
+      <div class="card" style="text-align:center;padding:var(--space-8) var(--space-5);">
+        <div style="margin-bottom:var(--space-4);">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--purple-400)" stroke-width="1.5" style="display:block;margin:0 auto;"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:var(--space-2);">No Chores Yet</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem;max-width:260px;margin:0 auto var(--space-5);">Parents can add chores for you to earn money!</p>
+        <button class="btn btn-primary btn-block" onclick="requestPinFor('manage-chores')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Chores
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  const pendingLogs = choreLogs.filter(cl => cl.status === 'pending');
+
+  const choreCards = chores.map(c => {
+    const hasPending = choreLogs.some(cl => cl.choreId === c.id && cl.status === 'pending');
+    const todayApproved = choreLogs.filter(cl => cl.choreId === c.id && cl.status === 'approved' && cl.date === today);
+    const isDoneToday = c.recurring === 'daily' && todayApproved.length > 0;
+    const isOnceCompleted = c.recurring === 'once' && choreLogs.some(cl => cl.choreId === c.id && cl.status === 'approved');
+
+    let actionHTML;
+    if (hasPending) {
+      actionHTML = `<div class="chore-pending-note">Waiting for parent approval...</div>`;
+    } else if (isDoneToday || isOnceCompleted) {
+      actionHTML = `<div class="chore-pending-note" style="background:#D1FAE5;color:#065F46;">Completed!</div>`;
+    } else {
+      actionHTML = `<button class="chore-did-it-btn" onclick="choreDidIt('${c.id}')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+        I Did It!
+      </button>`;
+    }
+
+    return `
+      <div class="chore-card">
+        <div class="chore-card-header">
+          <div class="chore-icon">${choreIconSVG()}</div>
+          <div class="chore-info">
+            <div class="chore-name">${esc(c.name)}</div>
+            <div class="chore-amount">Earn <strong>$${fmtNum(c.amount)}</strong></div>
+          </div>
+          <div><span class="chore-badge">${c.recurring}</span></div>
+        </div>
+        ${actionHTML}
+      </div>
+    `;
+  }).join('');
+
+  const reviewBtn = pendingLogs.length > 0 ? `
+    <button class="btn btn-gold btn-block" onclick="requestPinFor('review-chores')" style="margin-bottom:var(--space-4);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Review ${pendingLogs.length} Pending Chore${pendingLogs.length !== 1 ? 's' : ''}
+    </button>
+  ` : '';
+
+  const mgmtSection = choreMgmtOpen ? buildManageChoresSection() : `
+    <div class="manage-chores-section">
+      <button class="btn btn-outline btn-block" onclick="requestPinFor('manage-chores')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Manage Chores
+      </button>
+    </div>
+  `;
+
+  view.innerHTML = `
+    <h2 class="view-title">Chores</h2>
+    ${reviewBtn}
+    ${choreCards}
+    ${mgmtSection}
+  `;
+}
+
+function showManageChores() {
+  choreMgmtOpen = true;
+  editingChoreId = null;
+  newChoreRecurring = 'daily';
+  renderChoresView();
+}
+
+function buildManageChoresSection() {
+  const choreList = chores.map(c => `
+    <div class="chore-manage-card">
+      <div class="chore-icon" style="width:36px;height:36px;">${choreIconSVG()}</div>
+      <div class="chore-manage-info">
+        <div class="chore-manage-name">${esc(c.name)}</div>
+        <div class="chore-manage-meta">$${fmtNum(c.amount)} &middot; ${c.recurring}</div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="openEditChoreModal('${c.id}')" style="margin-right:4px;">Edit</button>
+      <button class="btn btn-sm btn-danger" onclick="requestPinFor('delete-chore','${c.id}')">Delete</button>
+    </div>
+  `).join('');
+
+  return `
+    <div class="manage-chores-section">
+      <div class="manage-chores-header">
+        <span class="form-label" style="margin:0;">Manage Chores</span>
+        <button class="btn btn-sm btn-outline" onclick="closeMgmt()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Close
+        </button>
+      </div>
+      ${choreList.length ? choreList : '<p style="color:var(--text-faint);font-size:0.85rem;text-align:center;padding:var(--space-3);">No chores yet.</p>'}
+      <button class="btn btn-primary btn-block" style="margin-top:var(--space-3);" onclick="openAddChoreModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add New Chore
+      </button>
+    </div>
+  `;
+}
+
+function closeMgmt() {
+  choreMgmtOpen = false;
+  renderChoresView();
+}
+
+function openAddChoreModal() {
+  editingChoreId = null;
+  newChoreRecurring = 'daily';
+  document.getElementById('addChoreTitle').textContent = 'Add Chore';
+  document.getElementById('saveChoreBtn').textContent = 'Add Chore';
+  document.getElementById('choreName').value = '';
+  document.getElementById('choreAmountInput').value = '';
+  document.querySelectorAll('.chore-recurring-option').forEach(b => {
+    b.classList.toggle('selected', b.dataset.val === 'daily');
+  });
+  document.getElementById('addChoreModal').classList.add('active');
+}
+
+function openEditChoreModal(id) {
+  const c = chores.find(x => x.id === id);
+  if (!c) return;
+  editingChoreId = id;
+  newChoreRecurring = c.recurring;
+  document.getElementById('addChoreTitle').textContent = 'Edit Chore';
+  document.getElementById('saveChoreBtn').textContent = 'Save Changes';
+  document.getElementById('choreName').value = c.name;
+  document.getElementById('choreAmountInput').value = c.amount;
+  document.querySelectorAll('.chore-recurring-option').forEach(b => {
+    b.classList.toggle('selected', b.dataset.val === c.recurring);
+  });
+  document.getElementById('addChoreModal').classList.add('active');
+}
+
+function closeAddChoreModal() {
+  document.getElementById('addChoreModal').classList.remove('active');
+}
+
+function selectChoreRecurring(val) {
+  newChoreRecurring = val;
+  document.querySelectorAll('.chore-recurring-option').forEach(b => {
+    b.classList.toggle('selected', b.dataset.val === val);
+  });
+}
+
+function saveChore() {
+  const name = document.getElementById('choreName').value.trim();
+  const amount = parseFloat(document.getElementById('choreAmountInput').value);
+  if (!name) { shakeInput('choreName'); return; }
+  if (!amount || amount <= 0) { shakeInput('choreAmountInput'); return; }
+  closeAddChoreModal();
+  requestPinFor('save-chore');
+}
+
+async function doSaveChore() {
+  const name = document.getElementById('choreName').value.trim();
+  const amount = parseFloat(document.getElementById('choreAmountInput').value);
+  if (!name || !amount || amount <= 0) return;
+  if (editingChoreId) {
+    const c = chores.find(x => x.id === editingChoreId);
+    if (c) {
+      c.name = name; c.amount = amount; c.recurring = newChoreRecurring;
+      await dbPutChore(c);
+    }
+  } else {
+    const chore = {
+      id: 'chore_' + Date.now(),
+      userId: currentUserId,
+      name, amount, recurring: newChoreRecurring,
+      icon: '', createdAt: new Date().toISOString(),
+    };
+    chores.push(chore);
+    await dbPutChore(chore);
+  }
+  editingChoreId = null;
+  choreMgmtOpen = true;
+  renderChoresView();
+}
+
+async function doDeleteChore(id) {
+  chores = chores.filter(c => c.id !== id);
+  await dbDeleteChore(id);
+  choreMgmtOpen = chores.length > 0;
+  renderChoresView();
+}
+
+async function choreDidIt(choreId) {
+  const chore = chores.find(c => c.id === choreId);
+  if (!chore) return;
+  const now = new Date().toISOString();
+  const today = now.split('T')[0];
+  const entry = {
+    id: 'clog_' + Date.now(),
+    userId: currentUserId,
+    choreId,
+    status: 'pending',
+    date: today,
+    approvedAt: null,
+    createdAt: now,
+  };
+  choreLogs.push(entry);
+  await dbPutChoreLog(entry);
+  updateChoresBadge();
+  renderChoresView();
+}
+
+function openReviewChoresModal() {
+  renderReviewChoresList();
+  document.getElementById('reviewChoresModal').classList.add('active');
+}
+function closeReviewChoresModal() {
+  document.getElementById('reviewChoresModal').classList.remove('active');
+  renderChoresView();
+}
+
+function renderReviewChoresList() {
+  const pending = choreLogs.filter(cl => cl.status === 'pending');
+  const list = document.getElementById('reviewChoresList');
+  if (pending.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--text-faint);padding:var(--space-4);">No pending chores!</p>';
+    return;
+  }
+  list.innerHTML = pending.map(cl => {
+    const chore = chores.find(c => c.id === cl.choreId);
+    if (!chore) return '';
+    const d = new Date(cl.createdAt);
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `
+      <div class="review-item">
+        <div class="review-item-header">
+          <span class="review-item-name">${esc(chore.name)}</span>
+          <span class="review-item-amount">$${fmtNum(chore.amount)}</span>
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:var(--space-2);">Completed ${dateStr}</div>
+        <div class="review-item-actions">
+          <button class="btn btn-danger" onclick="rejectChoreLog('${cl.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Reject
+          </button>
+          <button class="btn btn-green" onclick="approveChoreLog('${cl.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+            Approve
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function rejectChoreLog(logId) {
+  const cl = choreLogs.find(x => x.id === logId);
+  if (!cl) return;
+  cl.status = 'rejected';
+  await dbPutChoreLog(cl);
+  updateChoresBadge();
+  renderReviewChoresList();
+  if (!choreLogs.some(x => x.status === 'pending')) closeReviewChoresModal();
+}
+
+async function approveChoreLog(logId) {
+  const cl = choreLogs.find(x => x.id === logId);
+  if (!cl) return;
+  cl.status = 'approved';
+  cl.approvedAt = new Date().toISOString();
+  await dbPutChoreLog(cl);
+  updateChoresBadge();
+  document.getElementById('reviewChoresModal').classList.remove('active');
+  const chore = chores.find(c => c.id === cl.choreId);
+  if (chore && jars.length > 0) {
+    pendingAllocChoreLogId = cl.id;
+    pendingAllocAmount = chore.amount;
+    openJarAllocModal(chore.amount, chore.name);
+  } else {
+    renderChoresView();
+  }
+}
+
+function openJarAllocModal(amount, choreName) {
+  selectedAllocJarId = jars.length > 0 ? jars[0].id : null;
+  document.getElementById('jarAllocTitle').textContent = `Great job! Where should your money go?`;
+  document.getElementById('jarAllocSubtitle').textContent = `You earned $${fmtNum(amount)} for "${choreName}"`;
+  renderJarAllocButtons();
+  document.getElementById('jarAllocModal').classList.add('active');
+}
+
+function renderJarAllocButtons() {
+  const container = document.getElementById('jarAllocJars');
+  if (jars.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);text-align:center;">No jars set up yet.</p>';
+    return;
+  }
+  container.innerHTML = jars.map(j => `
+    <button class="jar-alloc-jar-btn${selectedAllocJarId === j.id ? ' selected' : ''}" onclick="selectAllocJar('${j.id}')">
+      <div class="jar-alloc-icon" style="background:${j.color}">
+        ${jarSVG(j.color, 20)}
+      </div>
+      <div class="jar-alloc-info">
+        <div class="jar-alloc-name">${esc(j.name)}</div>
+        <div class="jar-alloc-bal">Balance: $${fmtNum(j.balance || 0)}</div>
+      </div>
+      ${selectedAllocJarId === j.id ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
+    </button>
+  `).join('');
+}
+
+function selectAllocJar(id) {
+  selectedAllocJarId = id;
+  renderJarAllocButtons();
+}
+
+function closeJarAllocModal() {
+  document.getElementById('jarAllocModal').classList.remove('active');
+  pendingAllocChoreLogId = null;
+  pendingAllocAmount = 0;
+  selectedAllocJarId = null;
+  renderChoresView();
+}
+
+async function confirmJarAlloc() {
+  if (!selectedAllocJarId || !pendingAllocAmount) { closeJarAllocModal(); return; }
+  const jar = jars.find(j => j.id === selectedAllocJarId);
+  if (!jar) { closeJarAllocModal(); return; }
+  const cl = choreLogs.find(x => x.id === pendingAllocChoreLogId);
+  const chore = cl ? chores.find(c => c.id === cl.choreId) : null;
+  const note = chore ? `Chore: ${chore.name}` : 'Chore earnings';
+  jar.balance = (jar.balance || 0) + pendingAllocAmount;
+  await dbPutJar(jar);
+  const now = new Date().toISOString();
+  const txEntry = {
+    id: 'jartx_' + Date.now(),
+    userId: currentUserId,
+    jarId: jar.id,
+    amount: pendingAllocAmount,
+    type: 'chore',
+    note,
+    date: cl ? cl.date : now.split('T')[0],
+    createdAt: now,
+  };
+  await dbPutJarTx(txEntry);
+  jarTxs.push(txEntry);
+  document.getElementById('jarAllocModal').classList.remove('active');
+  pendingAllocChoreLogId = null;
+  selectedAllocJarId = null;
+  showEncouragement(pendingAllocAmount);
+  pendingAllocAmount = 0;
+  const stillPending = choreLogs.filter(x => x.status === 'pending');
+  if (stillPending.length > 0) {
+    openReviewChoresModal();
+  } else {
+    renderChoresView();
+  }
+  // Refresh home bar
+  if (document.getElementById('homeView').classList.contains('active')) renderHome();
+}
+
 // ---- Helpers ----
-function fmtNum(n) { return Number(n).toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1'); }
+function fmtNum(n) { return Number(n).toFixed(2).replace(/\.00$/, '').replace(/(\..\d)0$/, '$1'); }
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function daysUntil(dateStr) {
   const target = new Date(dateStr + 'T23:59:59');
