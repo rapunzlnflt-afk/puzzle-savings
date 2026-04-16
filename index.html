@@ -554,6 +554,155 @@ a { color: inherit; text-decoration: none; }
 }
 
 .view-title { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; text-align: center; margin-bottom: var(--space-4); }
+
+/* ============ NOTE FIELD ============ */
+.form-textarea {
+  width: 100%; padding: var(--space-3) var(--space-4); border: 2px solid var(--border);
+  border-radius: var(--radius-lg); background: var(--surface); font-size: 0.9rem;
+  transition: all var(--transition-fast); -webkit-appearance: none; resize: vertical;
+  min-height: 48px; font-family: var(--font-body); line-height: 1.5;
+}
+.form-textarea:focus { outline: none; border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15); }
+.form-textarea::placeholder { color: var(--text-faint); }
+.history-item-note {
+  font-size: 0.78rem; color: var(--text-muted); font-style: italic;
+  margin-top: 2px; line-height: 1.35; max-width: 200px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.journal-edit-form .form-textarea { font-size: 0.82rem; padding: var(--space-2) var(--space-3); min-height: 40px; }
+
+/* ============ MINI CONFETTI / SPARKLE PER PIECE ============ */
+.piece-sparkle-container {
+  position: absolute; inset: 0; pointer-events: none; z-index: 10; overflow: hidden;
+}
+.piece-sparkle {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  animation: sparkleFloat 0.9s ease-out forwards;
+}
+@keyframes sparkleFloat {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  60% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
+}
+.piece-star {
+  position: absolute; pointer-events: none; font-size: 0.8rem;
+  animation: starPop 0.7s var(--ease-bounce) forwards;
+}
+@keyframes starPop {
+  0% { opacity: 0; transform: translate(0, 0) scale(0) rotate(0deg); }
+  40% { opacity: 1; transform: translate(var(--sx), var(--sy)) scale(1.2) rotate(180deg); }
+  100% { opacity: 0; transform: translate(calc(var(--sx) * 1.5), calc(var(--sy) * 1.5)) scale(0.3) rotate(360deg); }
+}
+
+/* ============ IMPROVED CELEBRATION ============ */
+.celebration-overlay {
+  background: radial-gradient(ellipse at center, rgba(108, 63, 197, 0.92) 0%, rgba(30, 16, 51, 0.95) 100%);
+}
+.celebration-content {
+  max-width: 340px;
+}
+.celebration-emojis {
+  font-size: 2.5rem; margin-bottom: var(--space-2); letter-spacing: 0.3em;
+  animation: celebBounce 0.6s var(--ease-bounce);
+}
+.celebration-title {
+  font-size: 2rem; background: linear-gradient(135deg, var(--gold-300), var(--gold-500), var(--gold-300));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; text-shadow: none;
+  animation: titleGlow 2s ease-in-out infinite alternate;
+}
+@keyframes titleGlow {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.3); }
+}
+.celebration-subtitle {
+  color: rgba(255,255,255,0.9); font-size: 1.05rem; line-height: 1.5;
+}
+.celebration-amount {
+  display: inline-block; font-family: var(--font-display); font-weight: 700;
+  font-size: 1.3rem; color: var(--gold-400); margin: var(--space-3) 0;
+  padding: var(--space-2) var(--space-5); border-radius: var(--radius-full);
+  background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3);
+}
+.celebration-image {
+  width: 180px; height: 180px; border-radius: var(--radius-xl); overflow: hidden;
+  margin: var(--space-4) auto; box-shadow: 0 8px 40px rgba(168, 85, 247, 0.5), 0 0 60px rgba(251, 191, 36, 0.2);
+  border: 3px solid var(--gold-400);
+  animation: imageFloat 3s ease-in-out infinite;
+}
+@keyframes imageFloat {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+.celebration-stars {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.celebration-star {
+  position: absolute; animation: cstarFloat linear infinite;
+  opacity: 0.6;
+}
+@keyframes cstarFloat {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.7; }
+  100% { transform: translateY(-20px) rotate(720deg); opacity: 0; }
+}
+
+/* ============ PRINT STYLES ============ */
+@media print {
+  /* Hide non-printable UI */
+  .bottom-nav, .bottom-sheet-backdrop, .bottom-sheet, .modal-backdrop,
+  .celebration-overlay, #confetti-canvas, .btn, button,
+  .save-money-area, .photo-upload-area, .photo-preview-change,
+  .demo-banner, .nav-item, .puzzle-menu-btn, .puzzle-back,
+  .journal-edit-form, .journal-entry-actions, .savings-preview,
+  #submitSavingsBtn, .weekly-suggestion { display: none !important; }
+
+  /* Reset layout */
+  body { background: #FFF !important; color: #000 !important; font-size: 12pt; }
+  #app { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+  .view { display: none !important; }
+  .view.active { display: block !important; }
+
+  /* Cards on paper */
+  .card { box-shadow: none !important; border: 1px solid #CCC !important; break-inside: avoid; }
+
+  /* Header styling for print */
+  .app-header { padding: 8pt 0 !important; }
+  .app-logo { color: #333 !important; }
+  .app-logo svg { display: none; }
+
+  /* Puzzle grid prints revealed pieces naturally; overlay hides unrevealed */
+  .puzzle-container { box-shadow: none !important; break-inside: avoid; }
+  .puzzle-piece-overlay { background: #E0E0E0 !important; }
+
+  /* Stats */
+  .puzzle-stats { break-inside: avoid; }
+  .puzzle-stat { border: 1px solid #CCC !important; }
+  .puzzle-stat-value { color: #333 !important; }
+
+  /* Goal cards */
+  .goal-card { box-shadow: none !important; border: 1px solid #CCC !important; break-inside: avoid; page-break-inside: avoid; }
+  .goal-card-progress-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Journal */
+  .journal-list { max-height: none !important; overflow: visible !important; }
+  .history-list { max-height: none !important; overflow: visible !important; }
+  .history-item { border-bottom-color: #CCC !important; }
+  .history-item-amount { color: #333 !important; }
+  .journal-entry { cursor: default !important; }
+  .journal-entry:hover { background: none !important; }
+
+  /* Form labels for context */
+  .form-label { color: #333 !important; }
+  .form-input, .form-textarea { border: 1px solid #CCC !important; }
+
+  /* Countdown bar */
+  .countdown-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Page setup */
+  @page { margin: 0.75in; }
+}
 </style>
 </head>
 <body>
@@ -737,6 +886,11 @@ a { color: inherit; text-decoration: none; }
         <input type="date" id="savingsDate" class="form-input">
       </div>
 
+      <div class="form-group">
+        <label class="form-label" for="savingsNote">Note <span style="font-weight:400; color:var(--text-faint);">(optional)</span></label>
+        <textarea id="savingsNote" class="form-textarea" placeholder="e.g., Birthday money from Grandma" rows="2" maxlength="200"></textarea>
+      </div>
+
       <div id="savingsPreview" class="savings-preview" style="display:none;">
         <div class="savings-preview-pieces" id="savingsPreviewPieces"></div>
         <div class="savings-preview-progress" id="savingsPreviewProgress"></div>
@@ -762,12 +916,16 @@ a { color: inherit; text-decoration: none; }
 
 <!-- ===== CELEBRATION ===== -->
 <div class="celebration-overlay" id="celebrationOverlay">
+  <div class="celebration-stars" id="celebrationStars"></div>
   <div class="celebration-content">
-    <div class="celebration-emoji">🎉</div>
+    <div class="celebration-emojis">🎉🏆🎉</div>
     <h2 class="celebration-title">YOU DID IT!</h2>
     <p class="celebration-subtitle" id="celebrationText"></p>
+    <div class="celebration-amount" id="celebrationAmount"></div>
     <div class="celebration-image" id="celebrationImage"></div>
-    <button class="btn btn-gold" onclick="closeCelebration()" data-testid="btn-close-celebration">Amazing!</button>
+    <button class="btn btn-gold" onclick="closeCelebration()" data-testid="btn-close-celebration" style="font-size:1.05rem; padding:var(--space-3) var(--space-8);">
+      🌟 Amazing! 🌟
+    </button>
   </div>
 </div>
 <canvas id="confetti-canvas"></canvas>
@@ -1336,6 +1494,7 @@ function renderSavingsEntry() {
   document.getElementById('savingsEntryGoalName').textContent = `Saving for: ${goal.name}`;
   document.getElementById('savingsAmount').value = '';
   document.getElementById('savingsDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('savingsNote').value = '';
   document.getElementById('savingsPreview').style.display = 'none';
   window.scrollTo(0, 0);
 
@@ -1407,7 +1566,10 @@ async function submitSavingsEntry() {
   const piecesBefore = Math.min(totalPieces, Math.floor(savedBefore / goal.pieceAmount));
 
   // Add entry
-  goal.history.push({ amount, date: new Date(dateVal + 'T12:00:00').toISOString() });
+  const noteVal = document.getElementById('savingsNote').value.trim();
+  const entry = { amount, date: new Date(dateVal + 'T12:00:00').toISOString() };
+  if (noteVal) entry.note = noteVal;
+  goal.history.push(entry);
   await dbPut(goal);
 
   // Calculate pieces after
@@ -1431,6 +1593,7 @@ async function submitSavingsEntry() {
             setTimeout(() => {
               allPieces[idx].classList.remove('revealing');
               allPieces[idx].classList.add('revealed', 'just-revealed');
+              spawnPieceSparkles(allPieces[idx]);
               setTimeout(() => allPieces[idx].classList.remove('just-revealed'), 800);
             }, 600);
           }, i * 500);
@@ -1491,6 +1654,7 @@ function renderSavingsJournal(goal) {
     // If this entry is being edited, show inline form
     if (editingEntryIndex === realIdx) {
       const editDate = new Date(e.date).toISOString().split('T')[0];
+      const editNote = e.note ? esc(e.note) : '';
       return `
         <div class="journal-edit-form" data-testid="journal-edit-${realIdx}">
           <div class="form-group">
@@ -1502,6 +1666,10 @@ function renderSavingsJournal(goal) {
           <div class="form-group">
             <label class="form-label">Date</label>
             <input type="date" id="editEntryDate" class="form-input" value="${editDate}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Note</label>
+            <textarea id="editEntryNote" class="form-textarea" placeholder="Add a note..." rows="2" maxlength="200">${editNote}</textarea>
           </div>
           <div class="journal-edit-actions">
             <button class="btn btn-danger-outline" onclick="deleteJournalEntry(${realIdx})" data-testid="btn-delete-entry-${realIdx}">Delete</button>
@@ -1516,13 +1684,17 @@ function renderSavingsJournal(goal) {
     const pieceBadge = e.piecesRevealed > 0
       ? `<span class="history-item-pieces">🧩 +${e.piecesRevealed} piece${e.piecesRevealed !== 1 ? 's' : ''}</span>`
       : '';
+    const noteLine = e.note
+      ? `<div class="history-item-note">📝 ${esc(e.note)}</div>`
+      : '';
     return `
-      <div class="journal-entry history-item" onclick="startEditEntry(${realIdx})" data-testid="journal-item-${realIdx}">
+      <div class="journal-entry history-item" onclick="startEditEntry(${realIdx})" data-testid="journal-item-${realIdx}" style="flex-wrap:wrap;">
         <div class="history-item-left">
           <span style="font-size:1rem;">🪙</span>
           <div>
             <span class="history-item-date">${dateStr}</span>
             ${pieceBadge}
+            ${noteLine}
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:var(--space-2);">
@@ -1562,8 +1734,10 @@ async function saveEditEntry(idx) {
     return;
   }
 
+  const newNote = document.getElementById('editEntryNote').value.trim();
   goal.history[idx].amount = newAmount;
   goal.history[idx].date = new Date(newDate + 'T12:00:00').toISOString();
+  goal.history[idx].note = newNote || undefined;
   await dbPut(goal);
   editingEntryIndex = null;
   renderSavingsEntry();
@@ -1581,7 +1755,8 @@ async function deleteJournalEntry(idx) {
 
 // ---- Celebration ----
 function celebrate(goal) {
-  document.getElementById('celebrationText').textContent = `You saved $${fmtNum(goal.goalAmount)} for your ${goal.name}!`;
+  document.getElementById('celebrationText').textContent = `You saved every penny for your ${goal.name}!`;
+  document.getElementById('celebrationAmount').textContent = `💰 $${fmtNum(goal.goalAmount)} 💰`;
   const imgC = document.getElementById('celebrationImage');
   if (goal.imageData) {
     imgC.innerHTML = `<img src="${goal.imageData}" alt="${esc(goal.name)}">`;
@@ -1589,11 +1764,28 @@ function celebrate(goal) {
     imgC.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--purple-100);font-size:4rem;">🎉</div>`;
   }
   imgC.style.display = '';
+
+  // Spawn floating stars
+  const starsC = document.getElementById('celebrationStars');
+  starsC.innerHTML = '';
+  const starEmojis = ['⭐', '🌟', '✨', '💫', '🌟'];
+  for (let i = 0; i < 20; i++) {
+    const star = document.createElement('span');
+    star.className = 'celebration-star';
+    star.textContent = starEmojis[Math.floor(Math.random() * starEmojis.length)];
+    star.style.left = Math.random() * 100 + '%';
+    star.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
+    star.style.animationDuration = (3 + Math.random() * 4) + 's';
+    star.style.animationDelay = (Math.random() * 3) + 's';
+    starsC.appendChild(star);
+  }
+
   document.getElementById('celebrationOverlay').classList.add('active');
   launchConfetti();
 }
 function closeCelebration() {
   document.getElementById('celebrationOverlay').classList.remove('active');
+  document.getElementById('celebrationStars').innerHTML = '';
   stopConfetti();
 }
 
@@ -1644,6 +1836,53 @@ function spawnCoinFly() {
   else { el.style.left = '50%'; el.style.bottom = '100px'; }
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 800);
+}
+
+// ---- Piece Sparkles ----
+function spawnPieceSparkles(pieceEl) {
+  const container = document.createElement('div');
+  container.className = 'piece-sparkle-container';
+  pieceEl.appendChild(container);
+
+  const colors = ['#FBBF24', '#A855F7', '#EC4899', '#22C55E', '#38BDF8', '#F97316'];
+  const sparkleEmojis = ['✨', '⭐', '💛', '🌟'];
+
+  // Spawn small colored dots
+  for (let i = 0; i < 10; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'piece-sparkle';
+    const angle = (Math.random() * 360) * (Math.PI / 180);
+    const dist = 15 + Math.random() * 35;
+    dot.style.cssText = `
+      width: ${3 + Math.random() * 5}px;
+      height: ${3 + Math.random() * 5}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      left: 50%; top: 50%;
+      --sx: ${Math.cos(angle) * dist}px;
+      --sy: ${Math.sin(angle) * dist}px;
+      animation-delay: ${Math.random() * 0.15}s;
+    `;
+    container.appendChild(dot);
+  }
+
+  // Spawn emoji stars
+  for (let i = 0; i < 4; i++) {
+    const star = document.createElement('div');
+    star.className = 'piece-star';
+    star.textContent = sparkleEmojis[i % sparkleEmojis.length];
+    const angle = (i / 4) * 360 * (Math.PI / 180) + Math.random() * 0.5;
+    const dist = 10 + Math.random() * 25;
+    star.style.cssText = `
+      left: 50%; top: 50%;
+      --sx: ${Math.cos(angle) * dist}px;
+      --sy: ${Math.sin(angle) * dist}px;
+      animation-delay: ${0.05 + i * 0.08}s;
+    `;
+    container.appendChild(star);
+  }
+
+  // Clean up after animation
+  setTimeout(() => container.remove(), 1200);
 }
 
 // ---- Goal Menu ----
