@@ -1591,7 +1591,7 @@ async function saveNewUser() {
 
   const user = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name };
   await dbPutUser(user);
-  users.push(user);
+  users = await dbGetAllUsers();
   _savingUser = false;
   renderUserSelect();
 }
@@ -1608,7 +1608,7 @@ async function doRemoveUser(id) {
     await dbDelete(g.id);
   }
   await dbDeleteUser(id);
-  users = users.filter(u => u.id !== id);
+  users = await dbGetAllUsers();
   managingUsers = users.length > 0;
   renderUserSelect();
 }
