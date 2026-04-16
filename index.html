@@ -255,10 +255,9 @@ a { color: inherit; text-decoration: none; }
 
 /* Calc info box */
 .calc-info {
-  background: var(--gold-300); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
-  display: flex; align-items: center; gap: var(--space-3); font-size: 0.9rem; font-weight: 500; color: #78350F;
+  background: var(--purple-50); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+  font-size: 0.9rem; font-weight: 500; color: var(--text-secondary);
 }
-.calc-info-icon { font-size: 1.4rem; flex-shrink: 0; }
 
 /* Goal date section */
 .date-row { display: flex; gap: var(--space-3); align-items: flex-end; }
@@ -856,7 +855,6 @@ a { color: inherit; text-decoration: none; }
 
       <!-- Calc info -->
       <div id="calcInfo" class="calc-info" style="display:none;">
-        <span class="calc-info-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></span>
         <span id="calcInfoText"></span>
       </div>
     </div>
