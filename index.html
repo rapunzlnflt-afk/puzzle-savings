@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Puzzle Pig — Save, Reveal, Celebrate!</title>
 <meta name="description" content="A fun savings tracker for kids — reveal a puzzle picture piece by piece as you save toward your goal!">
-<meta name="theme-color" content="#6C3FC5">
+<meta name="theme-color" content="#5C4287">
 <link rel="manifest" href="data:application/json;base64,">
 <link href="https://api.fontshare.com/v2/css?f[]=pally@400,500,600,700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
@@ -16,21 +16,21 @@
    ============================================================ */
 
 :root {
-  --purple-50: #FAF5FF;
-  --purple-100: #F3E8FF;
-  --purple-200: #E9D5FF;
-  --purple-300: #D8B4FE;
-  --purple-400: #C084FC;
-  --purple-500: #A855F7;
-  --purple-600: #9333EA;
-  --purple-700: #7C3AED;
-  --purple-800: #6C3FC5;
-  --purple-900: #5B21B6;
+  --purple-50: #F9F7FC;
+  --purple-100: #F0ECF7;
+  --purple-200: #E2DAF0;
+  --purple-300: #CBBFE5;
+  --purple-400: #A98ED4;
+  --purple-500: #8E6BBF;
+  --purple-600: #7B5AA8;
+  --purple-700: #6A4C96;
+  --purple-800: #5C4287;
+  --purple-900: #4A3570;
 
-  --gold-300: #FDE68A;
-  --gold-400: #FBBF24;
-  --gold-500: #F59E0B;
-  --gold-600: #D97706;
+  --gold-300: #F5E6C8;
+  --gold-400: #E8B84A;
+  --gold-500: #D4A03C;
+  --gold-600: #B8862E;
 
   --green-400: #4ADE80;
   --green-500: #22C55E;
@@ -42,12 +42,12 @@
   --sky-400: #38BDF8;
 
   --surface: #FFFFFF;
-  --surface-alt: #FAFAFE;
-  --bg: #F5F0FF;
-  --text: #1E1033;
-  --text-muted: #6B5F80;
-  --text-faint: #A99BC0;
-  --border: #E8DFF5;
+  --surface-alt: #FAFAF8;
+  --bg: #F8F7F5;
+  --text: #2D2A26;
+  --text-muted: #6B6862;
+  --text-faint: #B0ADA8;
+  --border: #E5E2DD;
 
   --font-display: 'Pally', 'Trebuchet MS', sans-serif;
   --font-body: 'DM Sans', 'Helvetica Neue', sans-serif;
@@ -166,8 +166,6 @@ a { color: inherit; text-decoration: none; }
 
 /* ============ HOME VIEW ============ */
 .goals-empty { text-align: center; padding: var(--space-12) var(--space-4); }
-.goals-empty-icon { font-size: 4rem; margin-bottom: var(--space-4); animation: float 3s ease-in-out infinite; display: flex; justify-content: center; }
-.goals-empty-icon svg { width: 64px; height: 64px; color: var(--purple-400); }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 .goals-empty h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; margin-bottom: var(--space-2); }
 .goals-empty p { color: var(--text-muted); font-size: 0.9rem; max-width: 280px; margin: 0 auto var(--space-6); }
@@ -725,43 +723,7 @@ a { color: inherit; text-decoration: none; }
   <!-- ===== HEADER ===== -->
   <header class="app-header" id="mainHeader">
     <div class="app-logo">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <!-- Shadow for 3D depth -->
-        <ellipse cx="20" cy="37" rx="14" ry="2.5" fill="#C084FC" opacity="0.3"/>
-        <!-- Body -->
-        <ellipse cx="20" cy="22" rx="15" ry="12" fill="url(#pigBody)"/>
-        <!-- Belly highlight for 3D -->
-        <ellipse cx="18" cy="20" rx="10" ry="8" fill="url(#pigShine)" opacity="0.5"/>
-        <!-- Snout -->
-        <ellipse cx="20" cy="27" rx="6" ry="3.5" fill="url(#pigSnout)"/>
-        <circle cx="18" cy="27" r="1" fill="#A855F7" opacity="0.6"/>
-        <circle cx="22" cy="27" r="1" fill="#A855F7" opacity="0.6"/>
-        <!-- Eyes -->
-        <circle cx="14" cy="18" r="2.2" fill="#1E1033"/>
-        <circle cx="26" cy="18" r="2.2" fill="#1E1033"/>
-        <circle cx="14.7" cy="17.3" r="0.8" fill="#FFF"/>
-        <circle cx="26.7" cy="17.3" r="0.8" fill="#FFF"/>
-        <!-- Ears -->
-        <path d="M8 14c-2-5 1-10 5-8 1 .5 0 3-1 4L8 14z" fill="url(#pigEar)"/>
-        <path d="M32 14c2-5-1-10-5-8-1 .5 0 3 1 4l4-0z" fill="url(#pigEar2)"/>
-        <!-- Coin slot -->
-        <rect x="15" y="8" width="10" height="2.5" rx="1.25" fill="#5B21B6" opacity="0.7"/>
-        <rect x="15.5" y="8.5" width="9" height="1.5" rx="0.75" fill="#7C3AED" opacity="0.5"/>
-        <!-- Coin popping in -->
-        <circle cx="20" cy="6" r="4" fill="url(#coinGrad)" stroke="#D97706" stroke-width="0.8"/>
-        <text x="20" y="8" font-size="5" font-weight="bold" fill="#78350F" text-anchor="middle" font-family="sans-serif">$</text>
-        <!-- Feet -->
-        <ellipse cx="12" cy="33" rx="3" ry="1.8" fill="#D8B4FE"/>
-        <ellipse cx="28" cy="33" rx="3" ry="1.8" fill="#D8B4FE"/>
-        <defs>
-          <linearGradient id="pigBody" x1="5" y1="10" x2="35" y2="34"><stop stop-color="#E9D5FF"/><stop offset="0.5" stop-color="#D8B4FE"/><stop offset="1" stop-color="#C084FC"/></linearGradient>
-          <radialGradient id="pigShine" cx="0.35" cy="0.3"><stop stop-color="#FFF" stop-opacity="0.6"/><stop offset="1" stop-color="#FFF" stop-opacity="0"/></radialGradient>
-          <linearGradient id="pigSnout" x1="14" y1="24" x2="26" y2="31"><stop stop-color="#F3E8FF"/><stop offset="1" stop-color="#D8B4FE"/></linearGradient>
-          <linearGradient id="pigEar" x1="8" y1="6" x2="13" y2="14"><stop stop-color="#C084FC"/><stop offset="1" stop-color="#A855F7"/></linearGradient>
-          <linearGradient id="pigEar2" x1="32" y1="6" x2="27" y2="14"><stop stop-color="#C084FC"/><stop offset="1" stop-color="#A855F7"/></linearGradient>
-          <linearGradient id="coinGrad" x1="16" y1="2" x2="24" y2="10"><stop stop-color="#FDE68A"/><stop offset="1" stop-color="#FBBF24"/></linearGradient>
-        </defs>
-      </svg>
+      <img src="data:image/png;base64,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" width="40" height="40" alt="" style="border-radius:8px;" aria-hidden="true">
       Puzzle Pig
     </div>
     <p class="app-tagline">Save, Reveal, Celebrate!</p>
@@ -771,7 +733,6 @@ a { color: inherit; text-decoration: none; }
   <div id="homeView" class="view active">
     <div id="goalsList"></div>
     <div id="goalsEmpty" class="goals-empty" style="display:none;">
-      <div class="goals-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></div>
       <h2>Start Your First Puzzle!</h2>
       <p>Upload a picture of what you want, and watch it appear piece by piece as you save!</p>
       <button class="btn btn-primary" onclick="showView('createView')">
