@@ -1485,7 +1485,9 @@ function closePinOverlay() {
   pinCallback = null;
 }
 
+let _submittingPin = false;
 async function submitPin() {
+  if (_submittingPin) return;
   const digits = Array.from(document.querySelectorAll('.pin-digit')).map(d => d.value);
   const pin = digits.join('');
   if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
@@ -1493,12 +1495,14 @@ async function submitPin() {
     return;
   }
 
+  _submittingPin = true;
   const action = pinCallback ? pinCallback.action : null;
 
   if (action === 'setup') {
     // Store the first entry and ask to confirm
     pinCallback = { action: 'setup-confirm', extra: pin };
     closePinOverlay();
+    _submittingPin = false;
     setTimeout(() => requestPinFor('setup-confirm', pin), 200);
     return;
   }
@@ -1511,6 +1515,7 @@ async function submitPin() {
     }
     await dbPutSetting('parentPin', pin);
     closePinOverlay();
+    _submittingPin = false;
     // Now proceed to add user form
     showAddUserForm();
     return;
@@ -1528,6 +1533,7 @@ async function submitPin() {
   const savedExtra = pinCallback ? pinCallback.extra : null;
   closePinOverlay();
 
+  _submittingPin = false;
   if (action === 'add') {
     showAddUserForm();
   } else if (action === 'manage') {
@@ -1577,9 +1583,11 @@ let _savingUser = false;
 async function saveNewUser() {
   if (_savingUser) return;
   const nameInput = document.getElementById('newUserName');
+  if (!nameInput) return;
   const name = nameInput.value.trim();
   if (!name) { nameInput.focus(); return; }
   _savingUser = true;
+  nameInput.disabled = true; // prevent re-submit
 
   const user = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name };
   await dbPutUser(user);
