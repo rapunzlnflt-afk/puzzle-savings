@@ -7,7 +7,8 @@
 <meta name="description" content="A fun savings tracker for kids — reveal a puzzle picture piece by piece as you save toward your goal!">
 <meta name="theme-color" content="#6C3FC5">
 <link rel="manifest" href="data:application/json;base64,">
-<link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=pally@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    PUZZLE PIGGY — Kids Savings Puzzle Tracker
@@ -48,8 +49,8 @@
   --text-faint: #A99BC0;
   --border: #E8DFF5;
 
-  --font-display: 'Chillax', 'Trebuchet MS', sans-serif;
-  --font-body: 'General Sans', 'Helvetica Neue', sans-serif;
+  --font-display: 'Pally', 'Trebuchet MS', sans-serif;
+  --font-body: 'DM Sans', 'Helvetica Neue', sans-serif;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -648,11 +649,23 @@ a { color: inherit; text-decoration: none; }
   100% { transform: translateY(-20px) rotate(720deg); opacity: 0; }
 }
 
+/* ============ PRINT BUTTON ============ */
+.print-btn {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius-full);
+  font-family: var(--font-display); font-weight: 600; font-size: 0.8rem;
+  color: var(--text-muted); background: var(--surface); border: 1.5px solid var(--border);
+  transition: all var(--transition-fast); cursor: pointer;
+}
+.print-btn:hover { border-color: var(--purple-300); color: var(--purple-700); background: var(--purple-50); }
+.print-btn:active { transform: scale(0.96); }
+.print-btn svg { width: 16px; height: 16px; }
+
 /* ============ PRINT STYLES ============ */
 @media print {
   /* Hide non-printable UI */
   .bottom-nav, .bottom-sheet-backdrop, .bottom-sheet, .modal-backdrop,
-  .celebration-overlay, #confetti-canvas, .btn, button,
+  .celebration-overlay, #confetti-canvas, .btn, button, .print-btn,
   .save-money-area, .photo-upload-area, .photo-preview-change,
   .demo-banner, .nav-item, .puzzle-menu-btn, .puzzle-back,
   .journal-edit-form, .journal-entry-actions, .savings-preview,
@@ -727,7 +740,7 @@ a { color: inherit; text-decoration: none; }
   <div id="homeView" class="view active">
     <div id="goalsList"></div>
     <div id="goalsEmpty" class="goals-empty" style="display:none;">
-      <div class="goals-empty-icon">🧩</div>
+      <div class="goals-empty-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></div>
       <h2>Start Your First Puzzle!</h2>
       <p>Upload a picture of what you want, and watch it appear piece by piece as you save!</p>
       <button class="btn btn-primary" onclick="showView('createView')">
@@ -735,10 +748,16 @@ a { color: inherit; text-decoration: none; }
         New Savings Goal
       </button>
     </div>
-    <button id="addGoalBtn" class="btn btn-primary btn-block" style="margin-top:var(--space-4); display:none;" onclick="showView('createView')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      New Savings Goal
-    </button>
+    <div id="homeActions" style="display:none; margin-top:var(--space-4); gap:var(--space-3); align-items:center;">
+      <button id="addGoalBtn" class="btn btn-primary btn-block" onclick="showView('createView')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Savings Goal
+      </button>
+      <button class="print-btn" onclick="window.print()" title="Print this page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
+      </button>
+    </div>
   </div>
 
   <!-- ===== CREATE GOAL VIEW ===== -->
@@ -749,14 +768,14 @@ a { color: inherit; text-decoration: none; }
       <div class="form-group">
         <label class="form-label">Upload a picture of your goal item</label>
         <div id="photoUploadArea" class="photo-upload-area" onclick="document.getElementById('fileInput').click()">
-          <div class="photo-upload-icon">📸</div>
+          <div class="photo-upload-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
           <div class="photo-upload-title">Tap to add a photo</div>
           <div class="photo-upload-hint">Find a picture of the <strong>exact item</strong> you want.<br>It becomes your savings puzzle!</div>
         </div>
         <div id="photoPreview" class="photo-preview" style="display:none;">
           <img id="photoPreviewImg" alt="Your goal item">
           <button class="photo-preview-change" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
-            📷 Change Photo
+            <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Change Photo
           </button>
         </div>
         <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)">
@@ -795,14 +814,14 @@ a { color: inherit; text-decoration: none; }
         <label class="form-label" for="goalDate">Goal date <span style="font-weight:400; color:var(--text-faint);">(optional)</span></label>
         <input type="date" id="goalDate" class="form-input" min="">
         <div id="dateInfo" class="date-info" style="display:none;">
-          <span class="date-info-icon">💡</span>
+          <span class="date-info-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
           <span id="dateInfoText"></span>
         </div>
       </div>
 
       <!-- Calc info -->
       <div id="calcInfo" class="calc-info" style="display:none;">
-        <span class="calc-info-icon">🧩</span>
+        <span class="calc-info-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></span>
         <span id="calcInfoText"></span>
       </div>
     </div>
@@ -820,9 +839,15 @@ a { color: inherit; text-decoration: none; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
         Goals
       </button>
-      <button class="puzzle-menu-btn" onclick="openGoalMenu()" data-testid="btn-goal-menu" aria-label="Goal options">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
-      </button>
+      <div style="display:flex; align-items:center; gap:var(--space-2);">
+        <button class="print-btn" onclick="window.print()" title="Print this page" style="padding:6px 10px; font-size:0.8rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print
+        </button>
+        <button class="puzzle-menu-btn" onclick="openGoalMenu()" data-testid="btn-goal-menu" aria-label="Goal options">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+        </button>
+      </div>
     </div>
 
     <h2 class="puzzle-goal-name" id="puzzleGoalName"></h2>
@@ -868,6 +893,10 @@ a { color: inherit; text-decoration: none; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
         Back
       </button>
+      <button class="print-btn" onclick="window.print()" title="Print this page" style="padding:6px 10px; font-size:0.8rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
+      </button>
     </div>
 
     <h2 class="view-title" style="text-align:center; margin-bottom:var(--space-2);">Log Your Savings</h2>
@@ -899,14 +928,14 @@ a { color: inherit; text-decoration: none; }
 
     <div style="margin-top:var(--space-4);">
       <button class="btn btn-green btn-block" onclick="submitSavingsEntry()" id="submitSavingsBtn" data-testid="btn-submit-savings">
-        🪙 Add to My Savings
+        <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg> Add to My Savings
       </button>
     </div>
 
     <!-- Savings Journal -->
     <div class="card" style="margin-top:var(--space-5);">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-2);">
-        <span class="form-label" style="margin:0;">📒 Savings Journal</span>
+        <span class="form-label" style="margin:0;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Savings Journal</span>
         <span id="journalTotal" style="font-size:0.8rem; color:var(--text-muted);"></span>
       </div>
       <div id="savingsJournal" class="journal-list"></div>
@@ -918,13 +947,13 @@ a { color: inherit; text-decoration: none; }
 <div class="celebration-overlay" id="celebrationOverlay">
   <div class="celebration-stars" id="celebrationStars"></div>
   <div class="celebration-content">
-    <div class="celebration-emojis">🎉🏆🎉</div>
+    <div class="celebration-emojis"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg> <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="var(--gold-500)" stroke="var(--gold-600)" stroke-width="1.5" style="vertical-align:-0.15em;"><path d="M6 9H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3M18 9h3a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-3M6 4h12v6a6 6 0 0 1-12 0V4zM9 20h6M12 16v4"/></svg> <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg></div>
     <h2 class="celebration-title">YOU DID IT!</h2>
     <p class="celebration-subtitle" id="celebrationText"></p>
     <div class="celebration-amount" id="celebrationAmount"></div>
     <div class="celebration-image" id="celebrationImage"></div>
     <button class="btn btn-gold" onclick="closeCelebration()" data-testid="btn-close-celebration" style="font-size:1.05rem; padding:var(--space-3) var(--space-8);">
-      🌟 Amazing! 🌟
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="var(--gold-400)" stroke="var(--gold-500)" stroke-width="1.5" style="vertical-align:-0.125em;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Amazing! <svg width="1em" height="1em" viewBox="0 0 24 24" fill="var(--gold-400)" stroke="var(--gold-500)" stroke-width="1.5" style="vertical-align:-0.125em;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     </button>
   </div>
 </div>
@@ -983,16 +1012,16 @@ a { color: inherit; text-decoration: none; }
 
 // ---- Categories (just labels, no images) ----
 const CATEGORIES = [
-  { id: 'toys', label: '🧸 Toys' },
-  { id: 'electronics', label: '🎮 Electronics' },
-  { id: 'sports', label: '⚽ Sports' },
-  { id: 'fashion', label: '👟 Fashion' },
-  { id: 'music', label: '🎸 Music' },
-  { id: 'books', label: '📚 Books' },
-  { id: 'pets', label: '🐶 Pets' },
-  { id: 'travel', label: '✈️ Trip' },
-  { id: 'art', label: '🎨 Art' },
-  { id: 'other', label: '⭐ Other' },
+  { id: 'toys', label: 'Toys' },
+  { id: 'electronics', label: 'Electronics' },
+  { id: 'sports', label: 'Sports' },
+  { id: 'fashion', label: 'Fashion' },
+  { id: 'music', label: 'Music' },
+  { id: 'books', label: 'Books' },
+  { id: 'pets', label: 'Pets' },
+  { id: 'travel', label: 'Trip' },
+  { id: 'art', label: 'Art' },
+  { id: 'other', label: 'Other' },
 ];
 
 // ---- State ----
@@ -1095,17 +1124,17 @@ function showView(viewId) {
 function renderHome() {
   const list = document.getElementById('goalsList');
   const empty = document.getElementById('goalsEmpty');
-  const addBtn = document.getElementById('addGoalBtn');
+  const homeActions = document.getElementById('homeActions');
 
   if (goals.length === 0) {
     list.innerHTML = '';
     empty.style.display = '';
-    addBtn.style.display = 'none';
+    homeActions.style.display = 'none';
     return;
   }
 
   empty.style.display = 'none';
-  addBtn.style.display = '';
+  homeActions.style.display = 'flex';
 
   list.innerHTML = goals.map(g => {
     const saved = g.history.reduce((sum, h) => sum + h.amount, 0);
@@ -1117,16 +1146,16 @@ function renderHome() {
     if (g.imageData) {
       thumbHTML = `<img src="${g.imageData}" alt="${esc(g.name)}">`;
     } else {
-      thumbHTML = `<span class="placeholder-icon">🧩</span>`;
+      thumbHTML = `<span class="placeholder-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></span>`;
     }
 
     // Countdown text
     let countdownText = '';
     if (g.goalDate && pct < 100) {
       const daysLeft = daysUntil(g.goalDate);
-      if (daysLeft < 0) countdownText = '⏰ Past due';
-      else if (daysLeft === 0) countdownText = '⏰ Due today';
-      else countdownText = `📅 ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`;
+      if (daysLeft < 0) countdownText = 'Past due';
+      else if (daysLeft === 0) countdownText = 'Due today';
+      else countdownText = `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`;
     }
 
     return `
@@ -1140,8 +1169,8 @@ function renderHome() {
         </div>
         <div class="goal-card-progress"><div class="goal-card-progress-fill" style="width:${pct}%"></div></div>
         <div class="goal-card-footer">
-          <span>🧩 ${piecesRevealed}/${totalPieces} pieces</span>
-          <span>${pct >= 100 ? '✅ Complete!' : countdownText || Math.round(pct) + '% done'}</span>
+          <span>${piecesRevealed}/${totalPieces} pieces</span>
+          <span>${pct >= 100 ? 'Complete!' : countdownText || Math.round(pct) + '% done'}</span>
         </div>
       </div>
     `;
@@ -1375,9 +1404,9 @@ function renderPuzzle() {
     const days = daysUntil(goal.goalDate);
     cdBar.style.display = '';
     cdBar.className = 'countdown-bar' + (days < 0 ? ' overdue' : days <= 7 ? ' urgent' : '');
-    if (days < 0) cdBar.innerHTML = `<span class="cb-icon">⏰</span> ${Math.abs(days)} day${Math.abs(days)!==1?'s':''} past your goal date`;
-    else if (days === 0) cdBar.innerHTML = `<span class="cb-icon">⏰</span> Goal date is today!`;
-    else cdBar.innerHTML = `<span class="cb-icon">📅</span> ${days} day${days!==1?'s':''} left to reach your goal`;
+    if (days < 0) cdBar.innerHTML = `<span class="cb-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> ${Math.abs(days)} day${Math.abs(days)!==1?'s':''} past your goal date`;
+    else if (days === 0) cdBar.innerHTML = `<span class="cb-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> Goal date is today!`;
+    else cdBar.innerHTML = `<span class="cb-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span> ${days} day${days!==1?'s':''} left to reach your goal`;
   } else {
     cdBar.style.display = 'none';
   }
@@ -1392,13 +1421,13 @@ function renderPuzzle() {
   if (isComplete) {
     saveBtnArea.innerHTML = `
       <div style="text-align:center; padding:var(--space-3);">
-        <span style="font-size:1.5rem;">🎉</span>
+        <span style="font-size:1.5rem;"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg></span>
         <p style="font-family:var(--font-display); font-weight:600; color:var(--green-600); margin-top:var(--space-1);">Goal Complete!</p>
       </div>`;
   } else {
     saveBtnArea.innerHTML = `
       <button class="btn btn-gold save-money-btn" onclick="openSavingsEntry()" data-testid="btn-log-savings">
-        <span class="coin-icon">🪙</span> Log Savings
+        <span class="coin-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg></span> Log Savings
       </button>`;
   }
 
@@ -1442,13 +1471,13 @@ function renderPuzzle() {
           --grid-rows-pct: ${rows * 100}%;
           background-position: ${xPos}% ${yPos}%;
         "></div>
-        <div class="puzzle-piece-overlay"><span class="piece-icon">🧩</span></div>`;
+        <div class="puzzle-piece-overlay"><span class="piece-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></span></div>`;
     } else {
       // Fallback: no image (shouldn't happen in v2 but just in case)
       const hue = (260 + (i / totalPieces) * 120);
       piece.innerHTML = `
         <div class="puzzle-piece-fallback" style="background:linear-gradient(135deg, hsl(${hue},55%,75%), hsl(${hue+30},65%,65%));"></div>
-        <div class="puzzle-piece-overlay"><span class="piece-icon">🧩</span></div>`;
+        <div class="puzzle-piece-overlay"><span class="piece-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></span></div>`;
     }
 
     grid.appendChild(piece);
@@ -1469,7 +1498,7 @@ function renderHistory(goal) {
     return `
       <div class="history-item" data-testid="history-item-${i}">
         <div class="history-item-left">
-          <span style="font-size:1rem;">🪙</span>
+          <span style="font-size:1rem;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg></span>
           <span class="history-item-date">${dateStr}</span>
         </div>
         <span class="history-item-amount">+$${fmtNum(h.amount)}</span>
@@ -1524,20 +1553,20 @@ function updateSavingsPreview() {
   const progressEl = document.getElementById('savingsPreviewProgress');
 
   if (newPieces > 0) {
-    piecesEl.innerHTML = `🧩 This will reveal <strong>${newPieces} puzzle piece${newPieces !== 1 ? 's' : ''}</strong>!`;
+    piecesEl.innerHTML = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg> This will reveal <strong>${newPieces} puzzle piece${newPieces !== 1 ? 's' : ''}</strong>!`;
   } else {
     const nextPieceAt = (currentPieces + 1) * goal.pieceAmount;
     const needMore = nextPieceAt - afterSaved;
     if (needMore > 0 && currentPieces < totalPieces) {
-      piecesEl.innerHTML = `💰 Save <strong>$${fmtNum(needMore)} more</strong> to reveal the next piece`;
+      piecesEl.innerHTML = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg> Save <strong>$${fmtNum(needMore)} more</strong> to reveal the next piece`;
     } else {
-      piecesEl.innerHTML = `💰 No new pieces yet`;
+      piecesEl.innerHTML = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg> No new pieces yet`;
     }
   }
 
   const remaining = Math.max(0, goal.goalAmount - afterSaved);
   if (remaining <= 0) {
-    progressEl.innerHTML = `🎉 This completes your goal!`;
+    progressEl.innerHTML = `<svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg> This completes your goal!`;
   } else {
     progressEl.innerHTML = `After this: $${fmtNum(afterSaved)} saved, $${fmtNum(remaining)} to go (${afterPieces}/${totalPieces} pieces)`;
   }
@@ -1612,7 +1641,7 @@ async function submitSavingsEntry() {
           setTimeout(() => {
             document.getElementById('saveBtnArea').innerHTML = `
               <div style="text-align:center; padding:var(--space-3);">
-                <span style="font-size:1.5rem;">🎉</span>
+                <span style="font-size:1.5rem;"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg></span>
                 <p style="font-family:var(--font-display); font-weight:600; color:var(--green-600); margin-top:var(--space-1);">Goal Complete!</p>
               </div>`;
             document.getElementById('weeklySuggestion').style.display = 'none';
@@ -1682,15 +1711,15 @@ function renderSavingsJournal(goal) {
     const d = new Date(e.date);
     const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const pieceBadge = e.piecesRevealed > 0
-      ? `<span class="history-item-pieces">🧩 +${e.piecesRevealed} piece${e.piecesRevealed !== 1 ? 's' : ''}</span>`
+      ? `<span class="history-item-pieces"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg> +${e.piecesRevealed} piece${e.piecesRevealed !== 1 ? 's' : ''}</span>`
       : '';
     const noteLine = e.note
-      ? `<div class="history-item-note">📝 ${esc(e.note)}</div>`
+      ? `<div class="history-item-note"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> ${esc(e.note)}</div>`
       : '';
     return `
       <div class="journal-entry history-item" onclick="startEditEntry(${realIdx})" data-testid="journal-item-${realIdx}" style="flex-wrap:wrap;">
         <div class="history-item-left">
-          <span style="font-size:1rem;">🪙</span>
+          <span style="font-size:1rem;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg></span>
           <div>
             <span class="history-item-date">${dateStr}</span>
             ${pieceBadge}
@@ -1756,23 +1785,25 @@ async function deleteJournalEntry(idx) {
 // ---- Celebration ----
 function celebrate(goal) {
   document.getElementById('celebrationText').textContent = `You saved every penny for your ${goal.name}!`;
-  document.getElementById('celebrationAmount').textContent = `💰 $${fmtNum(goal.goalAmount)} 💰`;
+  document.getElementById('celebrationAmount').innerHTML = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="var(--gold-400)" stroke="var(--gold-500)" stroke-width="1.5" style="vertical-align:-0.125em;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> $${fmtNum(goal.goalAmount)} <svg width="1em" height="1em" viewBox="0 0 24 24" fill="var(--gold-400)" stroke="var(--gold-500)" stroke-width="1.5" style="vertical-align:-0.125em;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
   const imgC = document.getElementById('celebrationImage');
   if (goal.imageData) {
     imgC.innerHTML = `<img src="${goal.imageData}" alt="${esc(goal.name)}">`;
   } else {
-    imgC.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--purple-100);font-size:4rem;">🎉</div>`;
+    imgC.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--purple-100);font-size:3rem;color:var(--purple-600);"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="var(--gold-500)" stroke="var(--gold-600)" stroke-width="1.5" style="vertical-align:-0.15em;"><path d="M6 9H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3M18 9h3a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-3M6 4h12v6a6 6 0 0 1-12 0V4zM9 20h6M12 16v4"/></svg></div>`;
   }
   imgC.style.display = '';
 
   // Spawn floating stars
   const starsC = document.getElementById('celebrationStars');
   starsC.innerHTML = '';
-  const starEmojis = ['⭐', '🌟', '✨', '💫', '🌟'];
+  const starShapes = ['★', '✦', '✧', '◆', '●'];
   for (let i = 0; i < 20; i++) {
     const star = document.createElement('span');
     star.className = 'celebration-star';
-    star.textContent = starEmojis[Math.floor(Math.random() * starEmojis.length)];
+    const starColors = ['var(--gold-400)', 'var(--purple-400)', 'var(--pink-400)', 'var(--green-400)', 'var(--sky-400)'];
+    star.textContent = starShapes[Math.floor(Math.random() * starShapes.length)];
+    star.style.color = starColors[Math.floor(Math.random() * starColors.length)];
     star.style.left = Math.random() * 100 + '%';
     star.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
     star.style.animationDuration = (3 + Math.random() * 4) + 's';
@@ -1830,7 +1861,7 @@ function stopConfetti() {
 // ---- Coin Fly ----
 function spawnCoinFly() {
   const el = document.createElement('div');
-  el.className = 'coin-fly'; el.textContent = '🪙';
+  el.className = 'coin-fly'; el.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="var(--gold-400)" stroke="var(--gold-600)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8" stroke="var(--gold-600)" fill="none"/></svg>';
   const btn = document.querySelector('.save-money-btn');
   if (btn) { const r = btn.getBoundingClientRect(); el.style.left = (r.left+r.width/2-12)+'px'; el.style.top = r.top+'px'; }
   else { el.style.left = '50%'; el.style.bottom = '100px'; }
@@ -1845,7 +1876,7 @@ function spawnPieceSparkles(pieceEl) {
   pieceEl.appendChild(container);
 
   const colors = ['#FBBF24', '#A855F7', '#EC4899', '#22C55E', '#38BDF8', '#F97316'];
-  const sparkleEmojis = ['✨', '⭐', '💛', '🌟'];
+  const sparkleShapes = ['★', '✦', '●', '◆'];
 
   // Spawn small colored dots
   for (let i = 0; i < 10; i++) {
@@ -1869,7 +1900,9 @@ function spawnPieceSparkles(pieceEl) {
   for (let i = 0; i < 4; i++) {
     const star = document.createElement('div');
     star.className = 'piece-star';
-    star.textContent = sparkleEmojis[i % sparkleEmojis.length];
+    const sColors = ['var(--gold-400)', 'var(--purple-400)', 'var(--pink-400)', 'var(--green-400)'];
+    star.textContent = sparkleShapes[i % sparkleShapes.length];
+    star.style.color = sColors[i % sColors.length];
     const angle = (i / 4) * 360 * (Math.PI / 180) + Math.random() * 0.5;
     const dist = 10 + Math.random() * 25;
     star.style.cssText = `
