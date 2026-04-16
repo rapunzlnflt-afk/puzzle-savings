@@ -27,10 +27,10 @@
   --purple-800: #5C4287;
   --purple-900: #4A3570;
 
-  --gold-300: #F0D48A;
-  --gold-400: #DAA520;
-  --gold-500: #C8920A;
-  --gold-600: #A67608;
+  --gold-300: #F2C94C;
+  --gold-400: #D4A017;
+  --gold-500: #B8860B;
+  --gold-600: #9A7209;
 
   --green-400: #4ADE80;
   --green-500: #22C55E;
@@ -104,7 +104,7 @@ a { color: inherit; text-decoration: none; }
 .app-logo {
   display: inline-flex; align-items: center; gap: var(--space-2);
   font-family: var(--font-display); font-weight: 700; font-size: 1.5rem;
-  background: linear-gradient(135deg, var(--gold-300), var(--gold-400), var(--gold-500), var(--gold-400), var(--gold-300));
+  background: linear-gradient(135deg, #FDE68A, var(--gold-300), var(--gold-500), var(--gold-300), #FDE68A);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
@@ -137,7 +137,7 @@ a { color: inherit; text-decoration: none; }
 }
 .btn-primary:hover { box-shadow: var(--shadow-lg), 0 4px 16px rgba(108, 63, 197, 0.4); transform: translateY(-1px); }
 .btn-gold {
-  background: linear-gradient(135deg, var(--gold-300), var(--gold-400), var(--gold-500), var(--gold-400), var(--gold-300));
+  background: linear-gradient(135deg, #FDE68A, var(--gold-300), var(--gold-500), var(--gold-300), #FDE68A);
   background-size: 200% 200%; animation: btnShimmer 3s ease-in-out infinite;
   color: #5C3A0A; font-weight: 700;
   box-shadow: 0 4px 16px rgba(212, 160, 60, 0.35), inset 0 1px 0 rgba(255,255,255,0.3);
@@ -459,7 +459,7 @@ a { color: inherit; text-decoration: none; }
 /* ============ CELEBRATION ============ */
 .celebration-overlay {
   position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; background: rgba(30, 16, 51, 0.85);
+  align-items: center; justify-content: center; background: rgba(30, 16, 51, 1);
   backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease-smooth);
 }
 .celebration-overlay.active { opacity: 1; pointer-events: auto; }
@@ -468,7 +468,7 @@ a { color: inherit; text-decoration: none; }
 
 .celebration-title {
   font-family: var(--font-display); font-weight: 700; font-size: 1.75rem;
-  background: linear-gradient(135deg, var(--gold-300), var(--gold-400), var(--gold-500), var(--gold-400), var(--gold-300));
+  background: linear-gradient(135deg, #FDE68A, var(--gold-300), var(--gold-500), var(--gold-300), #FDE68A);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; margin-bottom: var(--space-2);
 }
@@ -603,13 +603,13 @@ a { color: inherit; text-decoration: none; }
 
 /* ============ IMPROVED CELEBRATION ============ */
 .celebration-overlay {
-  background: radial-gradient(ellipse at center, rgba(108, 63, 197, 0.92) 0%, rgba(30, 16, 51, 0.95) 100%);
+  background: radial-gradient(ellipse at center, rgba(108, 63, 197, 1) 0%, rgba(30, 16, 51, 1) 100%);
 }
 .celebration-content {
   max-width: 340px;
 }
 .celebration-title {
-  font-size: 2rem; background: linear-gradient(135deg, var(--gold-300), var(--gold-400), var(--gold-500), var(--gold-400), var(--gold-300));
+  font-size: 2rem; background: linear-gradient(135deg, #FDE68A, var(--gold-300), var(--gold-500), var(--gold-300), #FDE68A);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; text-shadow: none;
   animation: titleGlow 2s ease-in-out infinite alternate;
@@ -631,7 +631,7 @@ a { color: inherit; text-decoration: none; }
 .celebration-amount svg { flex-shrink: 0; }
 .celebration-btn {
   font-size: 1.1rem; padding: var(--space-3) var(--space-8);
-  background: linear-gradient(135deg, var(--gold-300), var(--gold-400), var(--gold-500), var(--gold-400), var(--gold-300));
+  background: linear-gradient(135deg, #FDE68A, var(--gold-300), var(--gold-500), var(--gold-300), #FDE68A);
   background-size: 200% 200%; animation: btnShimmer 3s ease-in-out infinite;
   color: #5C3A0A; font-weight: 700; letter-spacing: 0.02em;
   border: none; border-radius: var(--radius-full);
