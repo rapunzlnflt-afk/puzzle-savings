@@ -1418,8 +1418,9 @@ async function selectUser(id) {
   // Show the main app
   document.getElementById('userSelectScreen').style.display = 'none';
   document.getElementById('app').style.display = '';
+  document.getElementById('bottomNav').style.display = '';
   showCurrentUserBar();
-  renderHome();
+  showView('homeView');
 }
 
 function showCurrentUserBar() {
@@ -1439,6 +1440,7 @@ function switchUser() {
   goals = [];
   managingUsers = false;
   document.getElementById('app').style.display = 'none';
+  document.getElementById('bottomNav').style.display = 'none';
   document.getElementById('userSelectScreen').style.display = '';
   document.getElementById('currentUserBar').style.display = 'none';
   renderUserSelect();
@@ -1571,14 +1573,18 @@ function showAddUserForm() {
   setTimeout(() => document.getElementById('newUserName').focus(), 100);
 }
 
+let _savingUser = false;
 async function saveNewUser() {
+  if (_savingUser) return;
   const nameInput = document.getElementById('newUserName');
   const name = nameInput.value.trim();
   if (!name) { nameInput.focus(); return; }
+  _savingUser = true;
 
   const user = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name };
   await dbPutUser(user);
   users.push(user);
+  _savingUser = false;
   renderUserSelect();
 }
 
@@ -1622,6 +1628,7 @@ async function init() {
   setupCalcListeners();
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('goalDate').min = today;
+  document.getElementById('bottomNav').style.display = 'none';
 
   // If no PIN set yet and no users, start the setup flow
   if (!hasPin && users.length === 0) {
