@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Puzzle Piggy — Save, Reveal, Celebrate!</title>
+<title>Puzzle Pig — Save, Reveal, Celebrate!</title>
 <meta name="description" content="A fun savings tracker for kids — reveal a puzzle picture piece by piece as you save toward your goal!">
 <meta name="theme-color" content="#6C3FC5">
 <link rel="manifest" href="data:application/json;base64,">
@@ -166,7 +166,8 @@ a { color: inherit; text-decoration: none; }
 
 /* ============ HOME VIEW ============ */
 .goals-empty { text-align: center; padding: var(--space-12) var(--space-4); }
-.goals-empty-icon { font-size: 4rem; margin-bottom: var(--space-4); animation: float 3s ease-in-out infinite; }
+.goals-empty-icon { font-size: 4rem; margin-bottom: var(--space-4); animation: float 3s ease-in-out infinite; display: flex; justify-content: center; }
+.goals-empty-icon svg { width: 64px; height: 64px; color: var(--purple-400); }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 .goals-empty h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; margin-bottom: var(--space-2); }
 .goals-empty p { color: var(--text-muted); font-size: 0.9rem; max-width: 280px; margin: 0 auto var(--space-6); }
@@ -724,14 +725,44 @@ a { color: inherit; text-decoration: none; }
   <!-- ===== HEADER ===== -->
   <header class="app-header" id="mainHeader">
     <div class="app-logo">
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-        <rect width="36" height="36" rx="10" fill="url(#logoGrad)"/>
-        <path d="M10 13h7v7h-7zM19 13h7v7h-7zM10 22h7v5h-7zM19 22h7v5h-7z" fill="#FFF" fill-opacity="0.9" rx="1.5"/>
-        <circle cx="27" cy="11" r="4" fill="#FBBF24" stroke="#FFF" stroke-width="1.5"/>
-        <text x="25.5" y="13.5" font-size="5" font-weight="bold" fill="#78350F" text-anchor="middle">$</text>
-        <defs><linearGradient id="logoGrad" x1="0" y1="0" x2="36" y2="36"><stop stop-color="#A855F7"/><stop offset="1" stop-color="#6C3FC5"/></linearGradient></defs>
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <!-- Shadow for 3D depth -->
+        <ellipse cx="20" cy="37" rx="14" ry="2.5" fill="#C084FC" opacity="0.3"/>
+        <!-- Body -->
+        <ellipse cx="20" cy="22" rx="15" ry="12" fill="url(#pigBody)"/>
+        <!-- Belly highlight for 3D -->
+        <ellipse cx="18" cy="20" rx="10" ry="8" fill="url(#pigShine)" opacity="0.5"/>
+        <!-- Snout -->
+        <ellipse cx="20" cy="27" rx="6" ry="3.5" fill="url(#pigSnout)"/>
+        <circle cx="18" cy="27" r="1" fill="#A855F7" opacity="0.6"/>
+        <circle cx="22" cy="27" r="1" fill="#A855F7" opacity="0.6"/>
+        <!-- Eyes -->
+        <circle cx="14" cy="18" r="2.2" fill="#1E1033"/>
+        <circle cx="26" cy="18" r="2.2" fill="#1E1033"/>
+        <circle cx="14.7" cy="17.3" r="0.8" fill="#FFF"/>
+        <circle cx="26.7" cy="17.3" r="0.8" fill="#FFF"/>
+        <!-- Ears -->
+        <path d="M8 14c-2-5 1-10 5-8 1 .5 0 3-1 4L8 14z" fill="url(#pigEar)"/>
+        <path d="M32 14c2-5-1-10-5-8-1 .5 0 3 1 4l4-0z" fill="url(#pigEar2)"/>
+        <!-- Coin slot -->
+        <rect x="15" y="8" width="10" height="2.5" rx="1.25" fill="#5B21B6" opacity="0.7"/>
+        <rect x="15.5" y="8.5" width="9" height="1.5" rx="0.75" fill="#7C3AED" opacity="0.5"/>
+        <!-- Coin popping in -->
+        <circle cx="20" cy="6" r="4" fill="url(#coinGrad)" stroke="#D97706" stroke-width="0.8"/>
+        <text x="20" y="8" font-size="5" font-weight="bold" fill="#78350F" text-anchor="middle" font-family="sans-serif">$</text>
+        <!-- Feet -->
+        <ellipse cx="12" cy="33" rx="3" ry="1.8" fill="#D8B4FE"/>
+        <ellipse cx="28" cy="33" rx="3" ry="1.8" fill="#D8B4FE"/>
+        <defs>
+          <linearGradient id="pigBody" x1="5" y1="10" x2="35" y2="34"><stop stop-color="#E9D5FF"/><stop offset="0.5" stop-color="#D8B4FE"/><stop offset="1" stop-color="#C084FC"/></linearGradient>
+          <radialGradient id="pigShine" cx="0.35" cy="0.3"><stop stop-color="#FFF" stop-opacity="0.6"/><stop offset="1" stop-color="#FFF" stop-opacity="0"/></radialGradient>
+          <linearGradient id="pigSnout" x1="14" y1="24" x2="26" y2="31"><stop stop-color="#F3E8FF"/><stop offset="1" stop-color="#D8B4FE"/></linearGradient>
+          <linearGradient id="pigEar" x1="8" y1="6" x2="13" y2="14"><stop stop-color="#C084FC"/><stop offset="1" stop-color="#A855F7"/></linearGradient>
+          <linearGradient id="pigEar2" x1="32" y1="6" x2="27" y2="14"><stop stop-color="#C084FC"/><stop offset="1" stop-color="#A855F7"/></linearGradient>
+          <linearGradient id="coinGrad" x1="16" y1="2" x2="24" y2="10"><stop stop-color="#FDE68A"/><stop offset="1" stop-color="#FBBF24"/></linearGradient>
+        </defs>
       </svg>
-      Puzzle Piggy
+      Puzzle Pig
     </div>
     <p class="app-tagline">Save, Reveal, Celebrate!</p>
   </header>
@@ -740,7 +771,7 @@ a { color: inherit; text-decoration: none; }
   <div id="homeView" class="view active">
     <div id="goalsList"></div>
     <div id="goalsEmpty" class="goals-empty" style="display:none;">
-      <div class="goals-empty-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></div>
+      <div class="goals-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></div>
       <h2>Start Your First Puzzle!</h2>
       <p>Upload a picture of what you want, and watch it appear piece by piece as you save!</p>
       <button class="btn btn-primary" onclick="showView('createView')">
@@ -1032,7 +1063,7 @@ let selectedCategory = null;
 let uploadedImageData = null;
 
 // ---- IndexedDB ----
-const DB_NAME = 'PuzzlePiggyDB';
+const DB_NAME = 'PuzzlePigDB';
 const DB_VERSION = 2;
 const STORE_NAME = 'goals';
 let db = null;
@@ -1383,6 +1414,8 @@ function cancelCreate() { editingGoalId = null; showView('homeView'); }
 function openGoal(id) { currentGoalId = id; showView('puzzleView'); }
 
 // ---- Render Puzzle ----
+let pendingRevealCount = 0; // pieces waiting for animated reveal
+
 function renderPuzzle() {
   const goal = goals.find(g => g.id === currentGoalId);
   if (!goal) return;
@@ -1421,7 +1454,7 @@ function renderPuzzle() {
   if (isComplete) {
     saveBtnArea.innerHTML = `
       <div style="text-align:center; padding:var(--space-3);">
-        <span style="font-size:1.5rem;"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg></span>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="var(--green-500)" stroke="#FFF" stroke-width="2" style="display:block; margin:0 auto;"><circle cx="12" cy="12" r="10" fill="var(--green-500)"/><path d="M9 12l2 2 4-4" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <p style="font-family:var(--font-display); font-weight:600; color:var(--green-600); margin-top:var(--space-1);">Goal Complete!</p>
       </div>`;
   } else {
@@ -1454,7 +1487,7 @@ function renderPuzzle() {
   for (let i = 0; i < totalPieces; i++) {
     const row = Math.floor(i / cols);
     const col = i % cols;
-    const isRevealed = i < piecesRevealed;
+    const isRevealed = i < piecesRevealed - pendingRevealCount;
 
     const piece = document.createElement('div');
     piece.className = 'puzzle-piece' + (isRevealed ? ' revealed' : '');
@@ -1606,8 +1639,14 @@ async function submitSavingsEntry() {
   const piecesAfter = Math.min(totalPieces, Math.floor(savedAfter / goal.pieceAmount));
   const newPieces = piecesAfter - piecesBefore;
 
+  // Set pending reveal count so renderPuzzle leaves those pieces hidden
+  pendingRevealCount = newPieces;
+
   // Navigate back to puzzle view to show the reveal
   showView('puzzleView');
+
+  // Reset pending count (already rendered)
+  pendingRevealCount = 0;
 
   // Animate new pieces revealing with staggered delay
   if (newPieces > 0) {
@@ -1641,7 +1680,7 @@ async function submitSavingsEntry() {
           setTimeout(() => {
             document.getElementById('saveBtnArea').innerHTML = `
               <div style="text-align:center; padding:var(--space-3);">
-                <span style="font-size:1.5rem;"><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg></span>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="var(--green-500)" stroke="#FFF" stroke-width="2" style="display:block; margin:0 auto;"><circle cx="12" cy="12" r="10" fill="var(--green-500)"/><path d="M9 12l2 2 4-4" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <p style="font-family:var(--font-display); font-weight:600; color:var(--green-600); margin-top:var(--space-1);">Goal Complete!</p>
               </div>`;
             document.getElementById('weeklySuggestion').style.display = 'none';
@@ -1994,7 +2033,7 @@ function daysUntil(dateStr) {
 // ---- PWA ----
 if ('serviceWorker' in navigator) {
   const swCode = `
-    const CACHE='puzzle-piggy-v2';
+    const CACHE='puzzle-pig-v3';
     self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/'])));self.skipWaiting();});
     self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});
     self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});
@@ -2003,7 +2042,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
 }
 const manifest = {
-  name: 'Puzzle Piggy', short_name: 'Puzzle Piggy',
+  name: 'Puzzle Pig', short_name: 'Puzzle Pig',
   description: 'Save, Reveal, Celebrate!', start_url: '.', display: 'standalone',
   background_color: '#F5F0FF', theme_color: '#6C3FC5', icons: []
 };
