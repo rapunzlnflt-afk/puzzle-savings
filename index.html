@@ -2129,20 +2129,20 @@ function updateSavingsPreview() {
   const progressEl = document.getElementById('savingsPreviewProgress');
 
   if (newPieces > 0) {
-    piecesEl.innerHTML = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg> This will reveal <strong>${newPieces} puzzle piece${newPieces !== 1 ? 's' : ''}</strong>!`;
+    piecesEl.innerHTML = `This will reveal <strong>${newPieces} puzzle piece${newPieces !== 1 ? 's' : ''}</strong>!`;
   } else {
     const nextPieceAt = (currentPieces + 1) * goal.pieceAmount;
     const needMore = nextPieceAt - afterSaved;
     if (needMore > 0 && currentPieces < totalPieces) {
-      piecesEl.innerHTML = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg> Save <strong>$${fmtNum(needMore)} more</strong> to reveal the next piece`;
+      piecesEl.innerHTML = `Save <strong>$${fmtNum(needMore)} more</strong> to reveal the next piece`;
     } else {
-      piecesEl.innerHTML = `<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg> No new pieces yet`;
+      piecesEl.innerHTML = `No new pieces yet`;
     }
   }
 
   const remaining = Math.max(0, goal.goalAmount - afterSaved);
   if (remaining <= 0) {
-    progressEl.innerHTML = `<svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2" style="vertical-align:-0.15em;"><path d="M5.8 11.3L2 22l10.7-3.8"/><path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M22 2l-2.24.75a1 1 0 0 0-.64.64L18.38 5.6a1 1 0 0 1-.64.64L15.49 7a1 1 0 0 0-.64.64l-.75 2.25"/><path d="M9 9s2-1 4 0 4 0 4 0"/><path d="M4.5 12.5s2.5-1 5 0 5 0 5 0"/></svg> This completes your goal!`;
+    progressEl.innerHTML = `This completes your goal!`;
   } else {
     progressEl.innerHTML = `After this: $${fmtNum(afterSaved)} saved, $${fmtNum(remaining)} to go (${afterPieces}/${totalPieces} pieces)`;
   }
@@ -2298,7 +2298,7 @@ function renderSavingsJournal(goal) {
     const d = new Date(e.date);
     const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
     const pieceBadge = e.piecesRevealed > 0
-      ? `<span class="history-item-pieces"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg> +${e.piecesRevealed} piece${e.piecesRevealed !== 1 ? 's' : ''}</span>`
+      ? `<span class="history-item-pieces">+${e.piecesRevealed} piece${e.piecesRevealed !== 1 ? 's' : ''}</span>`
       : '';
     const noteLine = e.note
       ? `<div class="history-item-note"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> ${esc(e.note)}</div>`
@@ -2306,7 +2306,6 @@ function renderSavingsJournal(goal) {
     return `
       <div class="journal-entry history-item" onclick="startEditEntry(${realIdx})" data-testid="journal-item-${realIdx}" style="flex-wrap:wrap;">
         <div class="history-item-left">
-          <span style="font-size:1rem;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10h8M8 14h8"/></svg></span>
           <div>
             <span class="history-item-date">${dateStr}</span>
             ${pieceBadge}
