@@ -2492,7 +2492,7 @@ function renderHome() {
     const saved = g.history.reduce((sum, h) => sum + h.amount, 0);
     const pct = Math.min(100, (saved / g.goalAmount) * 100);
     const totalPieces = Math.ceil(g.goalAmount / g.pieceAmount);
-    const piecesRevealed = Math.min(totalPieces, Math.floor(saved / g.pieceAmount));
+    const piecesRevealed = saved >= g.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(saved / g.pieceAmount));
 
     let thumbHTML = '';
     if (g.imageData) {
@@ -2744,11 +2744,11 @@ function renderPuzzle() {
 
   const totalPieces = Math.ceil(goal.goalAmount / goal.pieceAmount);
   const saved = goal.history.reduce((sum, h) => sum + h.amount, 0);
-  const piecesRevealed = Math.min(totalPieces, Math.floor(saved / goal.pieceAmount));
+  const isComplete = saved >= goal.goalAmount;
+  const piecesRevealed = isComplete ? totalPieces : Math.min(totalPieces, Math.floor(saved / goal.pieceAmount));
   const remaining = Math.max(0, goal.goalAmount - saved);
   const cols = gridCols(totalPieces);
   const rows = Math.ceil(totalPieces / cols);
-  const isComplete = saved >= goal.goalAmount;
 
   // Header
   document.getElementById('puzzleGoalName').textContent = goal.name;
@@ -2899,9 +2899,9 @@ function updateSavingsPreview() {
   preview.style.display = '';
   const currentSaved = goal.history.reduce((sum, h) => sum + h.amount, 0);
   const totalPieces = Math.ceil(goal.goalAmount / goal.pieceAmount);
-  const currentPieces = Math.min(totalPieces, Math.floor(currentSaved / goal.pieceAmount));
+  const currentPieces = currentSaved >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(currentSaved / goal.pieceAmount));
   const afterSaved = currentSaved + amount;
-  const afterPieces = Math.min(totalPieces, Math.floor(afterSaved / goal.pieceAmount));
+  const afterPieces = afterSaved >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(afterSaved / goal.pieceAmount));
   const newPieces = afterPieces - currentPieces;
 
   const piecesEl = document.getElementById('savingsPreviewPieces');
@@ -2947,7 +2947,7 @@ async function submitSavingsEntry() {
   // Calculate pieces before
   const savedBefore = goal.history.reduce((sum, h) => sum + h.amount, 0);
   const totalPieces = Math.ceil(goal.goalAmount / goal.pieceAmount);
-  const piecesBefore = Math.min(totalPieces, Math.floor(savedBefore / goal.pieceAmount));
+  const piecesBefore = savedBefore >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(savedBefore / goal.pieceAmount));
 
   // Add entry
   const noteVal = document.getElementById('savingsNote').value.trim();
@@ -2973,7 +2973,7 @@ async function submitSavingsEntry() {
 
   // Calculate pieces after
   const savedAfter = goal.history.reduce((sum, h) => sum + h.amount, 0);
-  const piecesAfter = Math.min(totalPieces, Math.floor(savedAfter / goal.pieceAmount));
+  const piecesAfter = savedAfter >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(savedAfter / goal.pieceAmount));
   const newPieces = piecesAfter - piecesBefore;
 
   // Show encouragement (unless goal will complete — that gets its own celebration)
@@ -3051,9 +3051,9 @@ function renderSavingsJournal(goal) {
   const totalPieces = Math.ceil(goal.goalAmount / goal.pieceAmount);
   let cumulative = 0;
   const entries = goal.history.map((h, i) => {
-    const prevPieces = Math.min(totalPieces, Math.floor(cumulative / goal.pieceAmount));
+    const prevPieces = cumulative >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(cumulative / goal.pieceAmount));
     cumulative += h.amount;
-    const newPieces = Math.min(totalPieces, Math.floor(cumulative / goal.pieceAmount));
+    const newPieces = cumulative >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(cumulative / goal.pieceAmount));
     const piecesRevealed = newPieces - prevPieces;
     return { ...h, index: i, piecesRevealed, totalAfter: cumulative, piecesAfter: newPieces };
   });
