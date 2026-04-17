@@ -1643,6 +1643,15 @@ a { color: inherit; text-decoration: none; }
   </div>
 </div>
 
+<!-- ===== GOAL PICKER MODAL (chore earnings → Save jar) ===== -->
+<div class="modal-backdrop" id="goalPickerBackdrop" style="display:none;">
+  <div class="modal-card" style="max-width:360px;">
+    <h3 style="margin-bottom:var(--space-1);">Which goal?</h3>
+    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:var(--space-4);">Choose which savings goal gets this money.</p>
+    <div id="goalPickerList" style="display:flex;flex-direction:column;gap:var(--space-2);max-height:50vh;overflow-y:auto;"></div>
+  </div>
+</div>
+
 <!-- ===== GETTING STARTED WALKTHROUGH ===== -->
 <div class="guide-overlay" id="guideOverlay">
   <div class="guide-container">
@@ -4067,7 +4076,7 @@ async function confirmJarAlloc() {
   await dbPutJarTx(txEntry);
   jarTxs.push(txEntry);
 
-  // If allocated to Save jar, also credit the active goal(s) so puzzle progress stays in sync
+  // If allocated to Save jar, also credit an active goal so puzzle progress stays in sync
   if (jar.type === 'save') {
     const activeGoals = goals.filter(g => {
       const saved = g.history.reduce((s, h) => s + h.amount, 0);
@@ -4078,14 +4087,59 @@ async function confirmJarAlloc() {
       activeGoals[0].history.push({ amount: pendingAllocAmount, date: now, note });
       await dbPut(activeGoals[0]);
     } else if (activeGoals.length > 1) {
-      // Multiple active goals — split evenly (or user can manually adjust later)
-      // For simplicity, credit the first (oldest) active goal
-      activeGoals[0].history.push({ amount: pendingAllocAmount, date: now, note });
-      await dbPut(activeGoals[0]);
+      // Multiple active goals — let the kid choose
+      pendingGoalCreditAmount = pendingAllocAmount;
+      pendingGoalCreditNote = note;
+      pendingGoalCreditDate = now;
+      showGoalPicker(activeGoals);
+      // Don't finalize yet — goal picker callback will handle the rest
+      return;
     }
     // If no active goals, jar balance still increases for future goals
   }
 
+  finishChoreAlloc();
+}
+
+// ---- Goal picker for chore → Save jar allocation ----
+let pendingGoalCreditAmount = 0;
+let pendingGoalCreditNote = '';
+let pendingGoalCreditDate = '';
+
+function showGoalPicker(activeGoals) {
+  document.getElementById('jarAllocModal').classList.remove('active');
+  const list = document.getElementById('goalPickerList');
+  list.innerHTML = activeGoals.map(g => {
+    const saved = g.history.reduce((s, h) => s + h.amount, 0);
+    const pct = Math.min(100, (saved / g.goalAmount) * 100);
+    const thumb = g.imageData
+      ? `<img src="${g.imageData}" style="width:40px;height:40px;border-radius:var(--radius-md);object-fit:cover;flex-shrink:0;">`
+      : `<div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--purple-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple-400)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>`;
+    return `<button onclick="pickGoalForCredit('${g.id}')" style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border-radius:var(--radius-lg);border:1.5px solid var(--border);background:var(--surface-alt);cursor:pointer;text-align:left;transition:all var(--transition-fast);" onmouseover="this.style.borderColor='var(--purple-400)'" onmouseout="this.style.borderColor='var(--border)'">
+      ${thumb}
+      <div style="flex:1;min-width:0;">
+        <div style="font-family:var(--font-display);font-weight:600;font-size:0.9rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(g.name)}</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);">$${fmtNum(saved)} / $${fmtNum(g.goalAmount)}</div>
+      </div>
+    </button>`;
+  }).join('');
+  document.getElementById('goalPickerBackdrop').style.display = '';
+}
+
+async function pickGoalForCredit(goalId) {
+  const goal = goals.find(g => g.id === goalId);
+  if (goal) {
+    goal.history.push({ amount: pendingGoalCreditAmount, date: pendingGoalCreditDate, note: pendingGoalCreditNote });
+    await dbPut(goal);
+  }
+  document.getElementById('goalPickerBackdrop').style.display = 'none';
+  pendingGoalCreditAmount = 0;
+  pendingGoalCreditNote = '';
+  pendingGoalCreditDate = '';
+  finishChoreAlloc();
+}
+
+function finishChoreAlloc() {
   document.getElementById('jarAllocModal').classList.remove('active');
   pendingAllocChoreLogId = null;
   selectedAllocJarId = null;
