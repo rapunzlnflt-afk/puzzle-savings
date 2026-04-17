@@ -2129,8 +2129,8 @@ let managingUsers = false;
 let pinCallback = null;
 
 const AVATAR_COLORS = [
-  '#8E6BBF', '#E67E22', '#27AE60', '#2980B9', '#E74C3C',
-  '#1ABC9C', '#9B59B6', '#F39C12', '#3498DB', '#E91E63'
+  '#8E6BBF', '#7B5AA8', '#6A4C96', '#5C4287', '#4A3570',
+  '#8E6BBF', '#7B5AA8', '#6A4C96', '#5C4287', '#4A3570'
 ];
 
 function getAvatarColor(idx) { return AVATAR_COLORS[idx % AVATAR_COLORS.length]; }
@@ -3066,6 +3066,11 @@ async function submitSavingsEntry() {
 
     // Check completion
     if (savedAfter >= goal.goalAmount) {
+      // Roll surplus into next active goal
+      const surplus = savedAfter - goal.goalAmount;
+      if (surplus > 0) {
+        rollSurplusToNextGoal(goal.id, surplus, dateVal);
+      }
       setTimeout(() => {
         const container = document.getElementById('revealContainer');
         if (container) container.classList.add('complete');
@@ -3079,6 +3084,39 @@ async function submitSavingsEntry() {
       }, 800);
     }
   }, 400);
+}
+
+// Roll surplus from a completed goal into the next active goal
+async function rollSurplusToNextGoal(completedGoalId, surplus, dateVal) {
+  // Find next active (incomplete) goal that isn't the one just completed
+  const nextGoal = goals.find(g => {
+    if (g.id === completedGoalId) return false;
+    const saved = g.history.reduce((s, h) => s + h.amount, 0);
+    return saved < g.goalAmount;
+  });
+  if (!nextGoal || surplus <= 0) return;
+
+  // Cap surplus at remaining amount needed
+  const nextSaved = nextGoal.history.reduce((s, h) => s + h.amount, 0);
+  const nextRemaining = nextGoal.goalAmount - nextSaved;
+  const rollAmount = Math.min(surplus, nextRemaining);
+  if (rollAmount <= 0) return;
+
+  // Trim the completed goal's last entry so it doesn't exceed goalAmount
+  const completedGoal = goals.find(g => g.id === completedGoalId);
+  if (completedGoal && completedGoal.history.length > 0) {
+    const lastEntry = completedGoal.history[completedGoal.history.length - 1];
+    lastEntry.amount = Math.round((lastEntry.amount - surplus) * 100) / 100;
+    await dbPut(completedGoal);
+  }
+
+  // Add surplus to next goal
+  nextGoal.history.push({
+    amount: Math.round(rollAmount * 100) / 100,
+    date: new Date((dateVal || new Date().toISOString().split('T')[0]) + 'T12:00:00').toISOString(),
+    note: `Rolled over from ${completedGoal ? completedGoal.name : 'completed goal'}`
+  });
+  await dbPut(nextGoal);
 }
 
 let editingEntryIndex = null; // track which journal entry is being edited
@@ -3317,8 +3355,7 @@ function renderParentSettings() {
   
   // --- Users Section ---
   const userItems = users.map((u, idx) => {
-    const colors = ['#8E6BBF','#22C55E','#EC4899','#F59E0B','#3B82F6'];
-    const c = colors[idx % colors.length];
+    const c = getAvatarColor(idx);
     return `
       <div class="parent-user-item">
         <div class="parent-user-avatar" style="background:${c};">${esc(u.name.charAt(0).toUpperCase())}</div>
@@ -3372,7 +3409,7 @@ function renderParentSettings() {
       </div>
     </div>
     
-    <div class="parent-section">
+    <div class="parent-section" data-section="users">
       <div class="parent-section-header">
         <div class="parent-section-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
@@ -3476,8 +3513,37 @@ function parentEditJars() {
 }
 
 function addUserFromParent() {
-  // Show the add user form inline
-  showAddUserForm();
+  // Show add user form inline within parent settings
+  const usersCard = document.querySelector('#parentSettingsView .parent-section[data-section="users"] .parent-card');
+  if (!usersCard) return;
+  const existing = usersCard.querySelector('.parent-add-user-form');
+  if (existing) return; // already open
+  const formDiv = document.createElement('div');
+  formDiv.className = 'parent-add-user-form';
+  formDiv.style.cssText = 'margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--silver-300);';
+  formDiv.innerHTML = `
+    <label class="form-label">New User Name</label>
+    <input type="text" id="parentNewUserName" class="form-input" placeholder="Enter name" maxlength="20"
+      onkeydown="if(event.key==='Enter')saveUserFromParent()">
+    <div style="display:flex;gap:var(--space-3);margin-top:var(--space-2);">
+      <button class="btn btn-secondary btn-sm" onclick="renderParentSettings()" style="flex:1;">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveUserFromParent()" style="flex:1;">Add</button>
+    </div>
+  `;
+  usersCard.appendChild(formDiv);
+  setTimeout(() => document.getElementById('parentNewUserName').focus(), 100);
+}
+
+async function saveUserFromParent() {
+  const nameInput = document.getElementById('parentNewUserName');
+  if (!nameInput) return;
+  const name = nameInput.value.trim();
+  if (!name) { nameInput.focus(); return; }
+  nameInput.disabled = true;
+  const user = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name };
+  await dbPutUser(user);
+  users = await dbGetAllUsers();
+  renderParentSettings();
 }
 
 function removeUserFromParent(userId) {
@@ -4076,7 +4142,8 @@ function renderChoresView() {
     </div>
   ` : '';
 
-  const mgmtSection = choreMgmtOpen ? buildManageChoresSection() : '';
+  // Manage Chores is handled on the Parent Settings page only
+  const mgmtSection = '';
 
   // Count completed chores for history button
   const completedLogs = choreLogs.filter(cl => cl.status === 'approved' || cl.status === 'rejected');
