@@ -2196,6 +2196,7 @@ function toggleManageUsers() {
 
 async function selectUser(id) {
   currentUserId = id;
+  parentUnlocked = false; // Always require PIN when entering as a kid
   const user = users.find(u => u.id === id);
   if (!user) return;
 
