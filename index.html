@@ -111,6 +111,7 @@ a { color: inherit; text-decoration: none; }
   background-clip: text;
 }
 .app-logo svg, .app-logo img { flex-shrink: 0; }
+.app-logo img { clip-path: inset(0 0 3px 0); margin-bottom: -3px; }
 .app-tagline { font-size: 0.85rem; color: var(--text-muted); margin-top: var(--space-1); }
 
 /* ============ VIEWS ============ */
@@ -3412,8 +3413,24 @@ async function approveChoreFromParent(logId) {
     const saveJar = jars.find(j => j.type === 'save') || jars[0];
     saveJar.balance = (saveJar.balance || 0) + chore.amount;
     await dbPutJar(saveJar);
-    await dbPutJarTx({ id: 'jartx_' + Date.now() + '_chore', jarId: saveJar.id, userId: currentUserId, amount: chore.amount, type: 'chore', note: 'Chore: ' + chore.name, createdAt: new Date().toISOString() });
-    jarTxs.push({ id: 'jartx_' + Date.now() + '_chore', jarId: saveJar.id, userId: currentUserId, amount: chore.amount, type: 'chore', note: 'Chore: ' + chore.name, createdAt: new Date().toISOString() });
+    const now = new Date().toISOString();
+    const note = 'Chore: ' + chore.name;
+    const txEntry = { id: 'jartx_' + Date.now() + '_chore', jarId: saveJar.id, userId: currentUserId, amount: chore.amount, type: 'chore', note, createdAt: now };
+    await dbPutJarTx(txEntry);
+    jarTxs.push(txEntry);
+
+    // Also credit an active goal so puzzle progress stays in sync
+    if (saveJar.type === 'save') {
+      const activeGoals = goals.filter(g => {
+        const saved = g.history.reduce((s, h) => s + h.amount, 0);
+        return saved < g.goalAmount;
+      });
+      if (activeGoals.length >= 1) {
+        // Credit first active goal (parent can adjust later)
+        activeGoals[0].history.push({ amount: chore.amount, date: now, note });
+        await dbPut(activeGoals[0]);
+      }
+    }
   }
   renderParentSettings();
 }
