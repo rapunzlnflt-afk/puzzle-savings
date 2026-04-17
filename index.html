@@ -325,51 +325,34 @@ a { color: inherit; text-decoration: none; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ===== THE PUZZLE GRID ===== */
-.puzzle-container {
+/* ===== IMAGE REVEAL PROGRESS ===== */
+.reveal-container {
   position: relative; width: 100%; aspect-ratio: 1; border-radius: var(--radius-xl);
-  overflow: hidden; box-shadow: var(--shadow-lg); margin-bottom: var(--space-4); background: var(--purple-100);
+  overflow: hidden; box-shadow: var(--shadow-lg); margin-bottom: var(--space-4);
+  background: var(--purple-100);
 }
-.puzzle-svg { width: 100%; height: 100%; display: block; }
-
-/* Jigsaw piece groups */
-.jig-piece { cursor: default; }
-.jig-piece .jig-hidden {
-  transition: opacity 0.6s var(--ease-smooth);
+.reveal-img-faded {
+  width: 100%; height: 100%; object-fit: cover; position: absolute;
+  top: 0; left: 0; filter: grayscale(100%) brightness(0.3);
 }
-.jig-piece .jig-img {
-  transition: opacity 0.6s var(--ease-smooth);
+.reveal-img-clear {
+  width: 100%; height: 100%; object-fit: cover; position: absolute;
+  top: 0; left: 0; transition: clip-path 0.8s var(--ease-smooth);
 }
-.jig-piece.revealed .jig-hidden { opacity: 0; }
-.jig-piece.revealed .jig-img { opacity: 1; }
-.jig-piece:not(.revealed) .jig-img { opacity: 0; }
-.jig-piece:not(.revealed) .jig-hidden { opacity: 1; }
-
-/* Reveal animation */
-.jig-piece.revealing .jig-hidden {
-  animation: jigReveal 0.8s var(--ease-bounce) forwards;
+.reveal-container.complete {
+  border: 2px solid rgba(123,94,167,0.5);
+  box-shadow: 0 0 24px rgba(123,94,167,0.25), var(--shadow-lg);
 }
-@keyframes jigReveal {
-  0% { opacity: 1; transform: scale(1); }
-  40% { opacity: 0.6; transform: scale(1.08); }
-  100% { opacity: 0; transform: scale(0.9); }
+.reveal-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: var(--purple-100); color: var(--purple-400); font-size: 3rem;
+  position: absolute; top: 0; left: 0;
 }
-.jig-piece.revealing .jig-img {
-  animation: jigShow 0.8s var(--ease-bounce) forwards;
-}
-@keyframes jigShow {
-  0% { opacity: 0; }
-  40% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-/* Shimmer flash on just-revealed pieces */
-.jig-piece.just-revealed .jig-shimmer {
-  animation: jigShimmer 0.9s ease-out forwards;
-}
-@keyframes jigShimmer {
-  0% { opacity: 0.7; }
-  100% { opacity: 0; }
+.reveal-pct-overlay {
+  position: absolute; bottom: var(--space-3); right: var(--space-3);
+  background: rgba(0,0,0,0.55); color: #fff; font-family: var(--font-display);
+  font-weight: 700; font-size: 1.1rem; padding: 4px 12px;
+  border-radius: var(--radius-full); backdrop-filter: blur(4px);
 }
 
 /* Save money area */
@@ -1407,13 +1390,15 @@ a { color: inherit; text-decoration: none; }
         <div class="puzzle-stat-label">To Go</div>
       </div>
       <div class="puzzle-stat">
-        <div class="puzzle-stat-value" id="statPieces">0/0</div>
-        <div class="puzzle-stat-label">Pieces</div>
+        <div class="puzzle-stat-value" id="statPieces">0%</div>
+        <div class="puzzle-stat-label">Progress</div>
       </div>
     </div>
 
-    <div class="puzzle-container" id="puzzleContainer">
-      <svg class="puzzle-svg" id="puzzleSvg" viewBox="0 0 400 400"></svg>
+    <div class="reveal-container" id="revealContainer">
+      <div class="reveal-placeholder" id="revealPlaceholder">
+        <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
     </div>
 
     <div class="save-money-area" id="saveBtnArea"></div>
@@ -1667,7 +1652,7 @@ a { color: inherit; text-decoration: none; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         </div>
         <h3>Goals and Puzzles</h3>
-        <p>Upload a picture of something you want to save for. It gets cut into jigsaw pieces that reveal one by one as you save.</p>
+        <p>Upload a picture of something you want to save for. It starts faded and reveals from top to bottom as you save.</p>
         <ul class="guide-detail">
           <li>
             <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -2492,8 +2477,7 @@ function renderHome() {
   list.innerHTML = goals.map(g => {
     const saved = g.history.reduce((sum, h) => sum + h.amount, 0);
     const pct = Math.min(100, (saved / g.goalAmount) * 100);
-    const totalPieces = jigsawPieceCount(g.goalAmount, g.pieceAmount);
-    const piecesRevealed = saved >= g.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(saved / g.pieceAmount));
+    // Progress percentage for home card display
 
     let thumbHTML = '';
     if (g.imageData) {
@@ -2522,7 +2506,7 @@ function renderHome() {
         </div>
         <div class="goal-card-progress"><div class="goal-card-progress-fill" style="width:${pct}%"></div></div>
         <div class="goal-card-footer">
-          <span>${piecesRevealed}/${totalPieces} pieces</span>
+          <span>${Math.round(pct)}% revealed</span>
           <span>${pct >= 100 ? 'Complete!' : countdownText || Math.round(pct) + '% done'}</span>
         </div>
       </div>
@@ -2600,8 +2584,8 @@ function updateCalcInfo() {
   const txt = document.getElementById('calcInfoText');
 
   if (goalAmt > 0 && pieceAmt > 0 && pieceAmt <= goalAmt) {
-    const pieces = jigsawPieceCount(goalAmt, pieceAmt);
-    txt.textContent = `Your picture will be cut into ${pieces} jigsaw piece${pieces !== 1 ? 's' : ''}!`;
+    const steps = Math.max(1, Math.ceil(goalAmt / pieceAmt));
+    txt.textContent = `Your picture will reveal in ${steps} step${steps !== 1 ? 's' : ''} as you save!`;
     el.style.display = '';
   } else {
     el.style.display = 'none';
@@ -2631,194 +2615,6 @@ function updateDateInfo() {
   }
 }
 
-// Compute jigsaw piece count — exact, no grid rounding needed
-function jigsawPieceCount(goalAmount, pieceAmount) {
-  return Math.max(1, Math.ceil(goalAmount / pieceAmount));
-}
-
-/* ========== FREE-FORM JIGSAW PIECE GENERATOR ========== */
-// Uses Voronoi tessellation + Lloyd relaxation for organic, evenly-spaced pieces.
-// Shared edges get jigsaw tabs. Piece count is EXACT — no grid rounding.
-
-function seededRand(seed) {
-  let t = seed | 0;
-  return function() {
-    t = (t + 0x6D2B79F5) | 0;
-    let x = Math.imul(t ^ (t >>> 15), 1 | t);
-    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
-    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function hashStr(s) {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-  return h;
-}
-
-function getRevealOrder(goalId, totalPieces) {
-  const rng = seededRand(hashStr(goalId + '_reveal'));
-  const arr = Array.from({length: totalPieces}, (_, i) => i);
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-/* ── Classic Jigsaw Generator (grid-based with rounded tabs/blanks) ── */
-function _jigsawBestGrid(n) {
-  var bestC = n, bestR = 1, bestW = n - 1;
-  for (var r = 1; r <= n; r++) {
-    var c = Math.ceil(n / r);
-    var w = c * r - n;
-    var ratio = Math.max(c / r, r / c);
-    var prev = Math.max(bestC / bestR, bestR / bestC);
-    if (w < bestW || (w === bestW && ratio < prev)) {
-      bestC = c; bestR = r; bestW = w;
-    }
-  }
-  return { cols: bestC, rows: bestR, excess: bestW };
-}
-
-function _jigsawEdgeDirs(cols, rows, rng) {
-  var hE = [], vE = [];
-  for (var r = 1; r < rows; r++) {
-    hE[r] = [];
-    for (var c = 0; c < cols; c++) hE[r][c] = rng() > 0.5;
-  }
-  for (var r2 = 0; r2 < rows; r2++) {
-    vE[r2] = [];
-    for (var c2 = 1; c2 < cols; c2++) vE[r2][c2] = rng() > 0.5;
-  }
-  return { hE: hE, vE: vE };
-}
-
-function _jigsawSide(x0, y0, x1, y1, tabDir, flat) {
-  if (flat) return 'L ' + x1.toFixed(2) + ' ' + y1.toFixed(2);
-  var dx = x1 - x0, dy = y1 - y0;
-  var len = Math.sqrt(dx * dx + dy * dy);
-  if (len < 2) return 'L ' + x1.toFixed(2) + ' ' + y1.toFixed(2);
-  var ux = dx / len, uy = dy / len;
-  var px = -uy, py = ux;
-  var d = tabDir;
-  /* Bold classic jigsaw tab: narrow neck, big round head */
-  var neckAt = 0.38;          /* neck starts at 38% along edge */
-  var neckEnd = 0.62;         /* neck ends at 62% */
-  var neckW = len * 0.015;    /* neck half-width (narrow) */
-  var headR = len * 0.13;     /* head radius (big circle) */
-  var headDist = len * 0.30;  /* how far head center is from edge */
-  /* Key points */
-  var ns_x = x0 + dx * neckAt, ns_y = y0 + dy * neckAt;
-  var ne_x = x0 + dx * neckEnd, ne_y = y0 + dy * neckEnd;
-  var mid_x = x0 + dx * 0.5, mid_y = y0 + dy * 0.5;
-  /* Neck corners (slightly off the edge line) */
-  var n1x = ns_x + px * d * neckW, n1y = ns_y + py * d * neckW;
-  var n2x = ne_x + px * d * neckW, n2y = ne_y + py * d * neckW;
-  /* Head center */
-  var hcx = mid_x + px * d * headDist, hcy = mid_y + py * d * headDist;
-  /* Build path: straight to neck, curve into neck, big arc for head, curve out of neck, straight to end */
-  var p = ' L ' + ns_x.toFixed(2) + ' ' + ns_y.toFixed(2);
-  /* Curve into neck */
-  p += ' C ' + (ns_x + px*d*neckW*0.3).toFixed(2) + ' ' + (ns_y + py*d*neckW*0.3).toFixed(2) + ',';
-  p += (n1x - ux*len*0.01).toFixed(2) + ' ' + (n1y - uy*len*0.01).toFixed(2) + ',';
-  p += n1x.toFixed(2) + ' ' + n1y.toFixed(2);
-  /* Neck up to head — left side of circle */
-  var h_left_x = hcx - ux * headR, h_left_y = hcy - uy * headR;
-  var h_top_x = hcx + px * d * headR, h_top_y = hcy + py * d * headR;
-  var h_right_x = hcx + ux * headR, h_right_y = hcy + uy * headR;
-  /* Cubic bezier magic number for quarter circle: 0.5523 */
-  var k = 0.5523 * headR;
-  /* Neck to left of head */
-  p += ' C ' + (n1x + px*d*headDist*0.4).toFixed(2) + ' ' + (n1y + py*d*headDist*0.4).toFixed(2) + ',';
-  p += (h_left_x - px*d*k*0.5).toFixed(2) + ' ' + (h_left_y - py*d*k*0.5).toFixed(2) + ',';
-  p += h_left_x.toFixed(2) + ' ' + h_left_y.toFixed(2);
-  /* Left of head around to top */
-  p += ' C ' + (h_left_x + px*d*k).toFixed(2) + ' ' + (h_left_y + py*d*k).toFixed(2) + ',';
-  p += (h_top_x - ux*k).toFixed(2) + ' ' + (h_top_y - uy*k).toFixed(2) + ',';
-  p += h_top_x.toFixed(2) + ' ' + h_top_y.toFixed(2);
-  /* Top around to right */
-  p += ' C ' + (h_top_x + ux*k).toFixed(2) + ' ' + (h_top_y + uy*k).toFixed(2) + ',';
-  p += (h_right_x + px*d*k).toFixed(2) + ' ' + (h_right_y + py*d*k).toFixed(2) + ',';
-  p += h_right_x.toFixed(2) + ' ' + h_right_y.toFixed(2);
-  /* Right of head back to neck */
-  p += ' C ' + (h_right_x - px*d*k*0.5).toFixed(2) + ' ' + (h_right_y - py*d*k*0.5).toFixed(2) + ',';
-  p += (n2x + px*d*headDist*0.4).toFixed(2) + ' ' + (n2y + py*d*headDist*0.4).toFixed(2) + ',';
-  p += n2x.toFixed(2) + ' ' + n2y.toFixed(2);
-  /* Neck back to edge */
-  p += ' C ' + (n2x + ux*len*0.01).toFixed(2) + ' ' + (n2y + uy*len*0.01).toFixed(2) + ',';
-  p += (ne_x + px*d*neckW*0.3).toFixed(2) + ' ' + (ne_y + py*d*neckW*0.3).toFixed(2) + ',';
-  p += ne_x.toFixed(2) + ' ' + ne_y.toFixed(2);
-  p += ' L ' + x1.toFixed(2) + ' ' + y1.toFixed(2);
-  return p;
-}
-
-function generateClassicJigsawPaths(goalId, totalPieces, svgSize) {
-  var grid = _jigsawBestGrid(totalPieces);
-  var cols = grid.cols, rows = grid.rows, excess = grid.excess;
-  var rng = seededRand(hashStr(goalId + '_jigsaw'));
-  var dirs = _jigsawEdgeDirs(cols, rows, rng);
-  var hE = dirs.hE, vE = dirs.vE;
-  var cellW = svgSize / cols, cellH = svgSize / rows;
-  var totalCells = cols * rows;
-  var mergeTargets = {};
-  if (excess > 0) {
-    for (var e = 0; e < excess; e++) {
-      var removeIdx = totalCells - 1 - e;
-      var mergeInto = removeIdx - 1;
-      if (mergeTargets[mergeInto] !== undefined) mergeTargets[removeIdx] = mergeTargets[mergeInto];
-      else mergeTargets[removeIdx] = mergeInto;
-    }
-  }
-  var pieceMap = {}, pieces = [], pi = 0;
-  for (var idx = 0; idx < totalCells; idx++) {
-    if (mergeTargets[idx] !== undefined) {
-      pieceMap[idx] = pieceMap[mergeTargets[idx]];
-      pieces[pieceMap[idx]].cells.push(idx);
-    } else {
-      pieceMap[idx] = pi;
-      pieces.push({ cells: [idx] });
-      pi++;
-    }
-  }
-  var paths = [];
-  for (var p = 0; p < pieces.length; p++) {
-    var cellIndices = pieces[p].cells;
-    if (cellIndices.length === 1) {
-      var ci = cellIndices[0];
-      var r = Math.floor(ci / cols), c = ci % cols;
-      var x = c * cellW, y = r * cellH;
-      var d = 'M ' + x.toFixed(2) + ' ' + y.toFixed(2);
-      d += _jigsawSide(x, y, x + cellW, y, (r === 0) ? 0 : (hE[r][c] ? -1 : 1), r === 0);
-      d += _jigsawSide(x + cellW, y, x + cellW, y + cellH, (c === cols-1) ? 0 : (vE[r][c+1] ? -1 : 1), c === cols-1);
-      d += _jigsawSide(x + cellW, y + cellH, x, y + cellH, (r === rows-1) ? 0 : (hE[r+1][c] ? 1 : -1), r === rows-1);
-      d += _jigsawSide(x, y + cellH, x, y, (c === 0) ? 0 : (vE[r][c] ? 1 : -1), c === 0);
-      d += ' Z';
-      paths.push({ d: d });
-    } else {
-      var sorted = cellIndices.map(function(idx2) { return { idx: idx2, r: Math.floor(idx2/cols), c: idx2%cols }; });
-      sorted.sort(function(a,b) { return a.c - b.c; });
-      var mr = sorted[0].r, cMin = sorted[0].c, cMax = sorted[sorted.length-1].c;
-      var x0 = cMin * cellW, xEnd = (cMax+1) * cellW, yy = mr * cellH;
-      var dd = 'M ' + x0.toFixed(2) + ' ' + yy.toFixed(2);
-      for (var si = 0; si < sorted.length; si++) {
-        var sc = sorted[si].c, sx = sc * cellW;
-        dd += _jigsawSide(sx, yy, sx + cellW, yy, (mr === 0) ? 0 : (hE[mr][sc] ? -1 : 1), mr === 0);
-      }
-      dd += _jigsawSide(xEnd, yy, xEnd, yy + cellH, (cMax === cols-1) ? 0 : (vE[mr][cMax+1] ? -1 : 1), cMax === cols-1);
-      for (var si2 = sorted.length-1; si2 >= 0; si2--) {
-        var sc2 = sorted[si2].c, sx2 = sc2 * cellW;
-        var bFlat = (mr === rows-1);
-        var bTab = bFlat ? 0 : (hE[mr+1] && hE[mr+1][sc2] !== undefined ? (hE[mr+1][sc2] ? 1 : -1) : 0);
-        dd += _jigsawSide(sx2 + cellW, yy + cellH, sx2, yy + cellH, bTab, bFlat);
-      }
-      dd += _jigsawSide(x0, yy + cellH, x0, yy, (cMin === 0) ? 0 : (vE[mr][cMin] ? 1 : -1), cMin === 0);
-      dd += ' Z';
-      paths.push({ d: dd });
-    }
-  }
-  return paths;
-}
 
 // ---- Save Goal ----
 async function saveGoal() {
@@ -2902,24 +2698,15 @@ function cancelCreate() { editingGoalId = null; showView('homeView'); }
 function openGoal(id) { currentGoalId = id; showView('puzzleView'); }
 
 // ---- Render Puzzle ----
-let pendingRevealCount = 0; // pieces waiting for animated reveal
-let pendingRevealIndices = []; // which reveal-order indices are pending animation
-
 function renderPuzzle() {
   const goal = goals.find(g => g.id === currentGoalId);
   if (!goal) return;
 
-  const totalPieces = jigsawPieceCount(goal.goalAmount, goal.pieceAmount);
   const saved = goal.history.reduce((sum, h) => sum + h.amount, 0);
   const isComplete = saved >= goal.goalAmount;
-  const piecesRevealed = isComplete ? totalPieces : Math.min(totalPieces, Math.floor(saved / goal.pieceAmount));
+  const pct = Math.min(100, (saved / goal.goalAmount) * 100);
   const remaining = Math.max(0, goal.goalAmount - saved);
-  const revealOrder = getRevealOrder(goal.id, totalPieces);
-
-  // Build set of revealed grid indices (using random reveal order)
-  const revealedSet = new Set();
-  const alreadyRevealed = piecesRevealed - pendingRevealCount;
-  for (let i = 0; i < alreadyRevealed; i++) revealedSet.add(revealOrder[i]);
+  const clipTop = 100 - pct; // clip-path: inset(clipTop% 0 0 0) reveals from bottom
 
   // Header
   document.getElementById('puzzleGoalName').textContent = goal.name;
@@ -2940,7 +2727,7 @@ function renderPuzzle() {
   // Stats
   document.getElementById('statSaved').textContent = '$' + fmtNum(saved);
   document.getElementById('statRemaining').textContent = '$' + fmtNum(remaining);
-  document.getElementById('statPieces').textContent = piecesRevealed + '/' + totalPieces;
+  document.getElementById('statPieces').textContent = Math.round(pct) + '%';
 
   // Save button
   const saveBtnArea = document.getElementById('saveBtnArea');
@@ -2969,68 +2756,27 @@ function renderPuzzle() {
     } else { wkEl.style.display = 'none'; }
   } else { wkEl.style.display = 'none'; }
 
-  // ===== BUILD THE JIGSAW SVG =====
-  const SVG_SIZE = 400;
-  const svg = document.getElementById('puzzleSvg');
+  // ===== BUILD THE IMAGE REVEAL =====
+  const container = document.getElementById('revealContainer');
   const hasImage = !!goal.imageData;
-  const piecePaths = generateClassicJigsawPaths(goal.id, totalPieces, SVG_SIZE);
 
-  let defs = '<defs>';
-  // If we have an image, define it as a pattern
   if (hasImage) {
-    defs += `<pattern id="goalImg" patternUnits="userSpaceOnUse" width="${SVG_SIZE}" height="${SVG_SIZE}">`;
-    defs += `<image href="${goal.imageData}" x="0" y="0" width="${SVG_SIZE}" height="${SVG_SIZE}" preserveAspectRatio="xMidYMid slice"/>`;
-    defs += '</pattern>';
-  }
-  // Clip paths for each piece
-  for (let i = 0; i < piecePaths.length; i++) {
-    defs += `<clipPath id="jcp${i}"><path d="${piecePaths[i].d}"/></clipPath>`;
-  }
-  defs += '</defs>';
-
-  let pieces = '';
-  for (let i = 0; i < piecePaths.length; i++) {
-    const isRev = revealedSet.has(i);
-    const cls = isRev ? 'jig-piece revealed' : 'jig-piece';
-    pieces += `<g class="${cls}" data-index="${i}">`;
-
-    // Image layer (clipped to jigsaw shape)
-    if (hasImage) {
-      pieces += `<rect class="jig-img" clip-path="url(#jcp${i})" x="0" y="0" width="${SVG_SIZE}" height="${SVG_SIZE}" fill="url(#goalImg)"/>`;
+    container.innerHTML = `
+      <img class="reveal-img-faded" src="${goal.imageData}" alt="${esc(goal.name)}">
+      <img class="reveal-img-clear" src="${goal.imageData}" alt="${esc(goal.name)}"
+           style="clip-path: inset(${clipTop}% 0 0 0);">
+      <div class="reveal-pct-overlay">${Math.round(pct)}%</div>`;
+    if (isComplete) {
+      container.classList.add('complete');
     } else {
-      const hue = (260 + (i / totalPieces) * 120);
-      pieces += `<path class="jig-img" d="${piecePaths[i].d}" fill="hsl(${hue},55%,75%)"/>`;
+      container.classList.remove('complete');
     }
-
-    // Hidden overlay (silver piece shape)
-    pieces += `<path class="jig-hidden" d="${piecePaths[i].d}" fill="url(#hiddenGrad${i % 4})"/>`;
-
-    // Shimmer layer (for animation)
-    pieces += `<path class="jig-shimmer" d="${piecePaths[i].d}" fill="rgba(255,255,255,0.5)" opacity="0"/>`;
-
-    // Piece outline
-    pieces += `<path d="${piecePaths[i].d}" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>`;
-
-    pieces += '</g>';
+  } else {
+    container.innerHTML = `
+      <div class="reveal-placeholder">
+        <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>`;
   }
-
-  // Hidden piece gradient variations
-  let hiddenGrads = '';
-  const gradColors = [
-    ['#CBBFE5', '#A98ED4', '#8E6BBF'],
-    ['#C5BFE5', '#A088D4', '#8866BF'],
-    ['#D0C5EA', '#B098D8', '#9570C5'],
-    ['#C8C0E8', '#A890D6', '#9068C2']
-  ];
-  for (let g = 0; g < 4; g++) {
-    hiddenGrads += `<linearGradient id="hiddenGrad${g}" x1="0" y1="0" x2="1" y2="1">`;
-    hiddenGrads += `<stop offset="0%" stop-color="${gradColors[g][0]}"/>`;
-    hiddenGrads += `<stop offset="50%" stop-color="${gradColors[g][1]}"/>`;
-    hiddenGrads += `<stop offset="100%" stop-color="${gradColors[g][2]}"/>`;
-    hiddenGrads += '</linearGradient>';
-  }
-
-  svg.innerHTML = '<defs>' + hiddenGrads + defs.slice(6) + pieces;
 
   renderHistory(goal);
 }
@@ -3092,32 +2838,25 @@ function updateSavingsPreview() {
 
   preview.style.display = '';
   const currentSaved = goal.history.reduce((sum, h) => sum + h.amount, 0);
-  const totalPieces = jigsawPieceCount(goal.goalAmount, goal.pieceAmount);
-  const currentPieces = currentSaved >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(currentSaved / goal.pieceAmount));
   const afterSaved = currentSaved + amount;
-  const afterPieces = afterSaved >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(afterSaved / goal.pieceAmount));
-  const newPieces = afterPieces - currentPieces;
+  const currentPct = Math.min(100, Math.round((currentSaved / goal.goalAmount) * 100));
+  const afterPct = Math.min(100, Math.round((afterSaved / goal.goalAmount) * 100));
+  const pctGain = afterPct - currentPct;
 
   const piecesEl = document.getElementById('savingsPreviewPieces');
   const progressEl = document.getElementById('savingsPreviewProgress');
 
-  if (newPieces > 0) {
-    piecesEl.innerHTML = `This will reveal <strong>${newPieces} puzzle piece${newPieces !== 1 ? 's' : ''}</strong>!`;
+  if (pctGain > 0) {
+    piecesEl.innerHTML = `This will reveal <strong>${pctGain}% more</strong> of your picture!`;
   } else {
-    const nextPieceAt = (currentPieces + 1) * goal.pieceAmount;
-    const needMore = nextPieceAt - afterSaved;
-    if (needMore > 0 && currentPieces < totalPieces) {
-      piecesEl.innerHTML = `Save <strong>$${fmtNum(needMore)} more</strong> to reveal the next piece`;
-    } else {
-      piecesEl.innerHTML = `No new pieces yet`;
-    }
+    piecesEl.innerHTML = `Keep saving to reveal more!`;
   }
 
   const remaining = Math.max(0, goal.goalAmount - afterSaved);
   if (remaining <= 0) {
     progressEl.innerHTML = `This completes your goal!`;
   } else {
-    progressEl.innerHTML = `After this: $${fmtNum(afterSaved)} saved, $${fmtNum(remaining)} to go (${afterPieces}/${totalPieces} pieces)`;
+    progressEl.innerHTML = `After this: $${fmtNum(afterSaved)} saved, $${fmtNum(remaining)} to go (${afterPct}% revealed)`;
   }
 }
 
@@ -3138,10 +2877,9 @@ async function submitSavingsEntry() {
     return;
   }
 
-  // Calculate pieces before
+  // Calculate progress before
   const savedBefore = goal.history.reduce((sum, h) => sum + h.amount, 0);
-  const totalPieces = jigsawPieceCount(goal.goalAmount, goal.pieceAmount);
-  const piecesBefore = savedBefore >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(savedBefore / goal.pieceAmount));
+  const pctBefore = Math.min(100, Math.round((savedBefore / goal.goalAmount) * 100));
 
   // Add entry
   const noteVal = document.getElementById('savingsNote').value.trim();
@@ -3165,76 +2903,49 @@ async function submitSavingsEntry() {
     });
   }
 
-  // Calculate pieces after
+  // Calculate progress after
   const savedAfter = goal.history.reduce((sum, h) => sum + h.amount, 0);
-  const piecesAfter = savedAfter >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(savedAfter / goal.pieceAmount));
-  const newPieces = piecesAfter - piecesBefore;
+  const pctAfter = Math.min(100, Math.round((savedAfter / goal.goalAmount) * 100));
 
   // Show encouragement (unless goal will complete — that gets its own celebration)
   if (savedAfter < goal.goalAmount) {
     showEncouragement(amount);
   }
 
-  // Determine which random-order grid indices to reveal
-  const revealOrder = getRevealOrder(goal.id, totalPieces);
-  // The pieces at revealOrder positions [piecesBefore .. piecesAfter-1] are the new ones
-  const newRevealGridIndices = [];
-  for (let i = piecesBefore; i < piecesAfter; i++) {
-    newRevealGridIndices.push(revealOrder[i]);
-  }
-
-  // Set pending reveal count so renderPuzzle leaves those pieces hidden
-  pendingRevealCount = newPieces;
-
   // Navigate back to puzzle view to show the reveal
   showView('puzzleView');
 
-  // Reset pending count (already rendered)
-  pendingRevealCount = 0;
+  // Animate the image reveal with a smooth transition
+  setTimeout(() => {
+    const clearImg = document.querySelector('.reveal-img-clear');
+    const pctOverlay = document.querySelector('.reveal-pct-overlay');
+    if (clearImg) {
+      const clipTop = 100 - pctAfter;
+      clearImg.style.clipPath = `inset(${clipTop}% 0 0 0)`;
+    }
+    if (pctOverlay) pctOverlay.textContent = pctAfter + '%';
 
-  // Animate new pieces revealing with staggered delay
-  if (newPieces > 0) {
-    setTimeout(() => {
-      const svg = document.getElementById('puzzleSvg');
-      for (let i = 0; i < newRevealGridIndices.length; i++) {
-        const gridIdx = newRevealGridIndices[i];
-        const pieceEl = svg.querySelector(`[data-index="${gridIdx}"]`);
-        if (pieceEl && !pieceEl.classList.contains('revealed')) {
-          setTimeout(() => {
-            spawnCoinFly();
-            pieceEl.classList.add('revealing');
-            setTimeout(() => {
-              pieceEl.classList.remove('revealing');
-              pieceEl.classList.add('revealed', 'just-revealed');
-              spawnPieceSparkles(pieceEl);
-              setTimeout(() => pieceEl.classList.remove('just-revealed'), 900);
-            }, 600);
-          }, i * 500);
-        }
-      }
+    // Update stats
+    document.getElementById('statSaved').textContent = '$' + fmtNum(savedAfter);
+    document.getElementById('statRemaining').textContent = '$' + fmtNum(Math.max(0, goal.goalAmount - savedAfter));
+    document.getElementById('statPieces').textContent = pctAfter + '%';
+    renderHistory(goal);
 
-      // Update stats after all animations
+    // Check completion
+    if (savedAfter >= goal.goalAmount) {
       setTimeout(() => {
-        document.getElementById('statSaved').textContent = '$' + fmtNum(savedAfter);
-        document.getElementById('statRemaining').textContent = '$' + fmtNum(Math.max(0, goal.goalAmount - savedAfter));
-        document.getElementById('statPieces').textContent = piecesAfter + '/' + totalPieces;
-        renderHistory(goal);
-
-        // Check completion
-        if (savedAfter >= goal.goalAmount) {
-          setTimeout(() => {
-            document.getElementById('saveBtnArea').innerHTML = `
-              <div style="text-align:center; padding:var(--space-3);">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="var(--green-500)" stroke="#FFF" stroke-width="2" style="display:block; margin:0 auto;"><circle cx="12" cy="12" r="10" fill="var(--green-500)"/><path d="M9 12l2 2 4-4" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <p style="font-family:var(--font-display); font-weight:600; color:var(--green-600); margin-top:var(--space-1);">Goal Complete!</p>
-              </div>`;
-            document.getElementById('weeklySuggestion').style.display = 'none';
-            celebrate(goal);
-          }, 500);
-        }
-      }, newRevealGridIndices.length * 500 + 700);
-    }, 400);
-  }
+        const container = document.getElementById('revealContainer');
+        if (container) container.classList.add('complete');
+        document.getElementById('saveBtnArea').innerHTML = `
+          <div style="text-align:center; padding:var(--space-3);">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="var(--green-500)" stroke="#FFF" stroke-width="2" style="display:block; margin:0 auto;"><circle cx="12" cy="12" r="10" fill="var(--green-500)"/><path d="M9 12l2 2 4-4" fill="none" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p style="font-family:var(--font-display); font-weight:600; color:var(--green-600); margin-top:var(--space-1);">Goal Complete!</p>
+          </div>`;
+        document.getElementById('weeklySuggestion').style.display = 'none';
+        celebrate(goal);
+      }, 800);
+    }
+  }, 400);
 }
 
 let editingEntryIndex = null; // track which journal entry is being edited
@@ -3251,14 +2962,13 @@ function renderSavingsJournal(goal) {
   const totalSaved = goal.history.reduce((s, h) => s + h.amount, 0);
   if (totalEl) totalEl.textContent = `Total: $${fmtNum(totalSaved)}`;
 
-  const totalPieces = jigsawPieceCount(goal.goalAmount, goal.pieceAmount);
   let cumulative = 0;
   const entries = goal.history.map((h, i) => {
-    const prevPieces = cumulative >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(cumulative / goal.pieceAmount));
+    const prevPct = Math.min(100, Math.round((cumulative / goal.goalAmount) * 100));
     cumulative += h.amount;
-    const newPieces = cumulative >= goal.goalAmount ? totalPieces : Math.min(totalPieces, Math.floor(cumulative / goal.pieceAmount));
-    const piecesRevealed = newPieces - prevPieces;
-    return { ...h, index: i, piecesRevealed, totalAfter: cumulative, piecesAfter: newPieces };
+    const newPct = Math.min(100, Math.round((cumulative / goal.goalAmount) * 100));
+    const pctGain = newPct - prevPct;
+    return { ...h, index: i, pctGain, totalAfter: cumulative, pctAfter: newPct };
   });
 
   list.innerHTML = entries.slice().reverse().map((e) => {
@@ -3294,8 +3004,8 @@ function renderSavingsJournal(goal) {
 
     const d = new Date(e.date);
     const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    const pieceBadge = e.piecesRevealed > 0
-      ? `<span class="history-item-pieces">+${e.piecesRevealed} piece${e.piecesRevealed !== 1 ? 's' : ''}</span>`
+    const pieceBadge = e.pctGain > 0
+      ? `<span class="history-item-pieces">+${e.pctGain}% revealed</span>`
       : '';
     const noteLine = e.note
       ? `<div class="history-item-note"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> ${esc(e.note)}</div>`
@@ -3381,7 +3091,7 @@ const encouragements = [
   "Future you says thanks!",
   "Look at you saving!",
   "Piggy bank approved!",
-  "Your puzzle grows!"
+  "Your picture is revealing!"
 ];
 let lastEncouragementIdx = -1;
 function showEncouragement(amount) {
@@ -3483,60 +3193,7 @@ function spawnCoinFly() {
 }
 
 // ---- Piece Sparkles ----
-function spawnPieceSparkles(pieceEl) {
-  const container = document.createElement('div');
-  container.className = 'piece-sparkle-container';
-  // For SVG elements, position absolutely on body instead of appending to element
-  const rect = pieceEl.getBoundingClientRect();
-  container.style.position = 'fixed';
-  container.style.left = (rect.left + rect.width / 2) + 'px';
-  container.style.top = (rect.top + rect.height / 2) + 'px';
-  container.style.zIndex = '9999';
-  container.style.pointerEvents = 'none';
-  document.body.appendChild(container);
 
-  const colors = ['#FBBF24', '#A855F7', '#EC4899', '#22C55E', '#38BDF8', '#F97316'];
-  const sparkleShapes = ['★', '✦', '●', '◆'];
-
-  // Spawn small colored dots
-  for (let i = 0; i < 10; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'piece-sparkle';
-    const angle = (Math.random() * 360) * (Math.PI / 180);
-    const dist = 15 + Math.random() * 35;
-    dot.style.cssText = `
-      width: ${3 + Math.random() * 5}px;
-      height: ${3 + Math.random() * 5}px;
-      background: ${colors[Math.floor(Math.random() * colors.length)]};
-      left: 50%; top: 50%;
-      --sx: ${Math.cos(angle) * dist}px;
-      --sy: ${Math.sin(angle) * dist}px;
-      animation-delay: ${Math.random() * 0.15}s;
-    `;
-    container.appendChild(dot);
-  }
-
-  // Spawn emoji stars
-  for (let i = 0; i < 4; i++) {
-    const star = document.createElement('div');
-    star.className = 'piece-star';
-    const sColors = ['var(--silver-400)', 'var(--purple-400)', 'var(--pink-400)', 'var(--green-400)'];
-    star.textContent = sparkleShapes[i % sparkleShapes.length];
-    star.style.color = sColors[i % sColors.length];
-    const angle = (i / 4) * 360 * (Math.PI / 180) + Math.random() * 0.5;
-    const dist = 10 + Math.random() * 25;
-    star.style.cssText = `
-      left: 50%; top: 50%;
-      --sx: ${Math.cos(angle) * dist}px;
-      --sy: ${Math.sin(angle) * dist}px;
-      animation-delay: ${0.05 + i * 0.08}s;
-    `;
-    container.appendChild(star);
-  }
-
-  // Clean up after animation
-  setTimeout(() => container.remove(), 1200);
-}
 
 // ---- Goal Menu ----
 function openGoalMenu() {
@@ -4540,7 +4197,7 @@ const HELP_CONTENT = {
         steps: [
           'From the puzzle view, tap "Log Your Savings" to add money.',
           'Enter the amount and an optional note about where it came from.',
-          'Random jigsaw pieces will appear based on how much you saved.'
+          'Your picture reveals more as you save toward your goal.'
         ]
       }
     ]
@@ -4619,7 +4276,7 @@ const HELP_CONTENT = {
           'Upload or take a picture of what you want to save for.',
           'Give your goal a name (like "New Bike" or "Art Supplies").',
           'Set how much you need to save.',
-          'Pick the number of puzzle pieces (more pieces = smaller steps).',
+          'Set the savings step amount (each step reveals more of the picture).',
           'Optionally set a target date to track your progress.'
         ]
       }
@@ -4632,9 +4289,9 @@ const HELP_CONTENT = {
         heading: 'How the Puzzle Works',
         icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
         steps: [
-          'Each puzzle piece represents part of your savings goal.',
-          'As your Save jar balance grows, pieces are revealed.',
-          'When all pieces are revealed, you have reached your goal!'
+          'Each savings step reveals more of your goal picture.',
+          'As your Save jar balance grows, more of the picture is revealed.',
+          'When the picture is fully revealed, you have reached your goal!'
         ]
       }
     ]
