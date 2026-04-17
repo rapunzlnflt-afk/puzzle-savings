@@ -4052,6 +4052,26 @@ async function confirmJarAlloc() {
   };
   await dbPutJarTx(txEntry);
   jarTxs.push(txEntry);
+
+  // If allocated to Save jar, also credit the active goal(s) so puzzle progress stays in sync
+  if (jar.type === 'save') {
+    const activeGoals = goals.filter(g => {
+      const saved = g.history.reduce((s, h) => s + h.amount, 0);
+      return saved < g.goalAmount;
+    });
+    if (activeGoals.length === 1) {
+      // Single active goal — credit it automatically
+      activeGoals[0].history.push({ amount: pendingAllocAmount, date: now, note });
+      await dbPut(activeGoals[0]);
+    } else if (activeGoals.length > 1) {
+      // Multiple active goals — split evenly (or user can manually adjust later)
+      // For simplicity, credit the first (oldest) active goal
+      activeGoals[0].history.push({ amount: pendingAllocAmount, date: now, note });
+      await dbPut(activeGoals[0]);
+    }
+    // If no active goals, jar balance still increases for future goals
+  }
+
   document.getElementById('jarAllocModal').classList.remove('active');
   pendingAllocChoreLogId = null;
   selectedAllocJarId = null;
