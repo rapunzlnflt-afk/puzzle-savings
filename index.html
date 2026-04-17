@@ -2946,6 +2946,21 @@ async function submitSavingsEntry() {
   goal.history.push(entry);
   await dbPut(goal);
 
+  // Also deposit into Save jar so jar balance stays in sync
+  const saveJar = jars.find(j => j.type === 'save');
+  if (saveJar) {
+    saveJar.balance = (saveJar.balance || 0) + amount;
+    await dbPutJar(saveJar);
+    await dbPutJarTx({
+      jarId: saveJar.id,
+      userId: currentUserId,
+      amount,
+      type: 'deposit',
+      note: noteVal ? `Goal: ${goal.name} — ${noteVal}` : `Goal: ${goal.name}`,
+      date: new Date(dateVal + 'T12:00:00').toISOString()
+    });
+  }
+
   // Calculate pieces after
   const savedAfter = goal.history.reduce((sum, h) => sum + h.amount, 0);
   const piecesAfter = Math.min(totalPieces, Math.floor(savedAfter / goal.pieceAmount));
