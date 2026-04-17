@@ -3723,11 +3723,25 @@ function renderChoresView() {
     const todayApproved = choreLogs.filter(cl => cl.choreId === c.id && cl.status === 'approved' && cl.date === today);
     const isDoneToday = c.recurring === 'daily' && todayApproved.length > 0;
     const isOnceCompleted = c.recurring === 'once' && choreLogs.some(cl => cl.choreId === c.id && cl.status === 'approved');
+    // Weekly: check if approved any day this week (Mon–Sun)
+    let isDoneThisWeek = false;
+    if (c.recurring === 'weekly') {
+      const now = new Date();
+      const day = now.getDay(); // 0=Sun
+      const mon = new Date(now); mon.setDate(now.getDate() - ((day + 6) % 7));
+      mon.setHours(0,0,0,0);
+      const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+      isDoneThisWeek = choreLogs.some(cl => {
+        if (cl.choreId !== c.id || cl.status !== 'approved') return false;
+        const d = new Date(cl.date);
+        return d >= mon && d <= sun;
+      });
+    }
 
     let actionHTML;
     if (hasPending) {
       actionHTML = `<div class="chore-pending-note">Waiting for parent approval...</div>`;
-    } else if (isDoneToday || isOnceCompleted) {
+    } else if (isDoneToday || isDoneThisWeek || isOnceCompleted) {
       actionHTML = `<div class="chore-pending-note" style="background:#D1FAE5;color:#065F46;">Completed!</div>`;
     } else {
       actionHTML = `<button class="chore-did-it-btn" onclick="choreDidIt('${c.id}')">
