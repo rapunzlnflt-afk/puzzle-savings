@@ -832,19 +832,25 @@ a { color: inherit; text-decoration: none; }
 .home-jars-bar {
   background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-3) var(--space-4);
   border: 1px solid var(--border); margin-bottom: var(--space-4);
-  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
   cursor: pointer; transition: all var(--transition-fast);
   box-shadow: var(--shadow-sm);
 }
 .home-jars-bar:hover { box-shadow: var(--shadow-md); }
-.home-jars-bar-left { display: flex; align-items: center; gap: var(--space-3); }
-.home-jars-total { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--purple-700); }
-.home-jars-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
-.home-jars-mini { display: flex; gap: var(--space-2); flex-wrap: wrap; }
-.home-jar-chip {
-  font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full);
-  color: #fff;
+.home-jars-total-row {
+  display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2);
 }
+.home-jars-total {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--text);
+}
+.home-jars-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+.home-jars-row { display: flex; gap: var(--space-2); }
+.home-jar-pill {
+  flex: 1; text-align: center; padding: var(--space-2) var(--space-2);
+  border-radius: var(--radius-lg); border: 1px solid var(--border);
+  background: var(--bg); font-size: 0.78rem;
+}
+.home-jar-pill-name { font-weight: 600; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+.home-jar-pill-amount { font-family: var(--font-display); font-weight: 700; color: var(--text); font-size: 0.9rem; }
 
 
 /* ============ USER SELECT SCREEN ============ */
@@ -2159,7 +2165,28 @@ function switchUser() {
 }
 
 // ---- PIN System ----
+let parentUnlocked = false; // Session-level unlock — no repeated PIN entry
+
 async function requestPinFor(action, extra) {
+  // If already unlocked this session, skip PIN prompt (except for initial setup)
+  if (parentUnlocked && action !== 'setup' && action !== 'setup-confirm') {
+    pinCallback = { action, extra };
+    // Simulate successful PIN entry
+    const savedExtra = extra;
+    pinCallback = null;
+    if (action === 'add') { showAddUserForm(); }
+    else if (action === 'manage') { managingUsers = true; renderUserSelect(); }
+    else if (action === 'remove') { await doRemoveUser(savedExtra); }
+    else if (action === 'jar-setup') { showJarSetup(); }
+    else if (action === 'jar-setup-save') { await saveJarSetup(); }
+    else if (action === 'jar-transfer') { openTransferModal(); }
+    else if (action === 'manage-chores') { showManageChores(); }
+    else if (action === 'review-chores') { openReviewChoresModal(); }
+    else if (action === 'delete-chore') { await doDeleteChore(savedExtra); }
+    else if (action === 'save-chore') { await doSaveChore(); }
+    return;
+  }
+
   // If no PIN set yet, start setup flow first
   const storedPin = await dbGetSetting('parentPin');
   if (!storedPin && action !== 'setup' && action !== 'setup-confirm') {
@@ -2227,6 +2254,7 @@ async function submitPin() {
     }
     await dbPutSetting('parentPin', pin);
     closePinOverlay();
+    parentUnlocked = true;
     _submittingPin = false;
     // Now proceed to add user form
     showAddUserForm();
@@ -2244,6 +2272,7 @@ async function submitPin() {
 
   const savedExtra = pinCallback ? pinCallback.extra : null;
   closePinOverlay();
+  parentUnlocked = true; // Unlock for this session
 
   _submittingPin = false;
   if (action === 'add') {
@@ -2448,16 +2477,17 @@ function renderHome() {
   const jarsBar = document.getElementById('homeJarsBar');
   if (jars.length > 0) {
     const totalBalance = jars.reduce((s, j) => s + (j.balance || 0), 0);
-    const chips = jars.map(j => `<span class="home-jar-chip" style="background:${j.color}">${esc(j.name)}: $${fmtNum(j.balance || 0)}</span>`).join('');
+    const pills = jars.map(j => `
+      <div class="home-jar-pill">
+        <div class="home-jar-pill-name">${esc(j.name)}</div>
+        <div class="home-jar-pill-amount">$${fmtNum(j.balance || 0)}</div>
+      </div>`).join('');
     jarsBar.innerHTML = `
-      <div class="home-jars-bar-left" onclick="showView('jarsView')" style="cursor:pointer;flex:1;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
-        <div>
-          <div class="home-jars-total">$${fmtNum(totalBalance)}</div>
-          <div class="home-jars-label">Total in Jars</div>
-        </div>
+      <div class="home-jars-total-row" onclick="showView('jarsView')">
+        <div class="home-jars-total">$${fmtNum(totalBalance)}</div>
+        <div class="home-jars-label">saved across all jars</div>
       </div>
-      <div class="home-jars-mini">${chips}</div>
+      <div class="home-jars-row" onclick="showView('jarsView')">${pills}</div>
     `;
     jarsBar.style.display = '';
   } else {
@@ -2894,12 +2924,14 @@ async function submitSavingsEntry() {
     saveJar.balance = (saveJar.balance || 0) + amount;
     await dbPutJar(saveJar);
     await dbPutJarTx({
+      id: 'jartx_' + Date.now() + '_goal',
       jarId: saveJar.id,
       userId: currentUserId,
       amount,
       type: 'deposit',
       note: noteVal ? `Goal: ${goal.name} — ${noteVal}` : `Goal: ${goal.name}`,
-      date: new Date(dateVal + 'T12:00:00').toISOString()
+      date: new Date(dateVal + 'T12:00:00').toISOString(),
+      createdAt: new Date().toISOString()
     });
   }
 
@@ -3061,6 +3093,7 @@ async function saveEditEntry(idx) {
   goal.history[idx].date = new Date(newDate + 'T12:00:00').toISOString();
   goal.history[idx].note = newNote || undefined;
   await dbPut(goal);
+  await syncSaveJarBalance();
   editingEntryIndex = null;
   renderSavingsEntry();
 }
@@ -3071,8 +3104,18 @@ async function deleteJournalEntry(idx) {
 
   goal.history.splice(idx, 1);
   await dbPut(goal);
+  await syncSaveJarBalance();
   editingEntryIndex = null;
   renderSavingsEntry();
+}
+
+// ---- Sync Save Jar Balance ----
+async function syncSaveJarBalance() {
+  const saveJar = jars.find(j => j.type === 'save');
+  if (!saveJar) return;
+  const totalSaved = goals.reduce((total, g) => total + g.history.reduce((s, h) => s + h.amount, 0), 0);
+  saveJar.balance = totalSaved;
+  await dbPutJar(saveJar);
 }
 
 // ---- Encouragement Messages ----
@@ -3103,6 +3146,11 @@ function showEncouragement(amount) {
   msg.textContent = encouragements[idx];
   toast.classList.add('visible');
   setTimeout(() => toast.classList.remove('visible'), 2800);
+}
+
+// ---- Parent Lock/Unlock ----
+function lockParent() {
+  parentUnlocked = false;
 }
 
 // ---- Celebration ----
@@ -3472,6 +3520,11 @@ function cancelJarSetup() {
   }
 }
 
+// Calculate total saved across all goals for this user
+function calcTotalGoalSaved() {
+  return goals.reduce((total, g) => total + g.history.reduce((s, h) => s + h.amount, 0), 0);
+}
+
 async function saveJarSetup() {
   if (!jarSetupSelections) return;
   const selections = jarSetupSelections.filter(s => s.checked);
@@ -3486,7 +3539,7 @@ async function saveJarSetup() {
       userId: currentUserId,
       name: s.name || s.type,
       type: s.type,
-      balance: existing ? (existing.balance || 0) : 0,
+      balance: existing ? (existing.balance || 0) : (s.type === 'save' ? calcTotalGoalSaved() : 0),
       color: s.color,
       order: i,
       createdAt: existing ? existing.createdAt : now,
