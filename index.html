@@ -3067,9 +3067,13 @@ async function submitSavingsEntry() {
     // Check completion
     if (savedAfter >= goal.goalAmount) {
       // Roll surplus into next active goal
-      const surplus = savedAfter - goal.goalAmount;
+      const surplus = Math.round((savedAfter - goal.goalAmount) * 100) / 100;
       if (surplus > 0) {
-        rollSurplusToNextGoal(goal.id, surplus, dateVal);
+        // Trim this goal's last entry to exact goal amount, push surplus to next goal
+        const lastEntry = goal.history[goal.history.length - 1];
+        lastEntry.amount = Math.round((lastEntry.amount - surplus) * 100) / 100;
+        await dbPut(goal);
+        await creditGoalsWithOverflow(surplus, new Date(dateVal + 'T12:00:00').toISOString(), 'Rolled over from ' + goal.name);
       }
       setTimeout(() => {
         const container = document.getElementById('revealContainer');
@@ -3086,37 +3090,34 @@ async function submitSavingsEntry() {
   }, 400);
 }
 
-// Roll surplus from a completed goal into the next active goal
-async function rollSurplusToNextGoal(completedGoalId, surplus, dateVal) {
-  // Find next active (incomplete) goal that isn't the one just completed
-  const nextGoal = goals.find(g => {
-    if (g.id === completedGoalId) return false;
+// Credit goals with overflow: fills the target goal up to its cap, rolls surplus to the next active goal
+async function creditGoalsWithOverflow(amount, date, note, preferredGoalId) {
+  let remaining = Math.round(amount * 100) / 100;
+  if (remaining <= 0) return;
+
+  // Build ordered list: preferred goal first (if given), then other active goals
+  const activeGoals = goals.filter(g => {
     const saved = g.history.reduce((s, h) => s + h.amount, 0);
     return saved < g.goalAmount;
   });
-  if (!nextGoal || surplus <= 0) return;
+  if (activeGoals.length === 0) return;
 
-  // Cap surplus at remaining amount needed
-  const nextSaved = nextGoal.history.reduce((s, h) => s + h.amount, 0);
-  const nextRemaining = nextGoal.goalAmount - nextSaved;
-  const rollAmount = Math.min(surplus, nextRemaining);
-  if (rollAmount <= 0) return;
-
-  // Trim the completed goal's last entry so it doesn't exceed goalAmount
-  const completedGoal = goals.find(g => g.id === completedGoalId);
-  if (completedGoal && completedGoal.history.length > 0) {
-    const lastEntry = completedGoal.history[completedGoal.history.length - 1];
-    lastEntry.amount = Math.round((lastEntry.amount - surplus) * 100) / 100;
-    await dbPut(completedGoal);
+  // Put preferred goal first if specified
+  if (preferredGoalId) {
+    const idx = activeGoals.findIndex(g => g.id === preferredGoalId);
+    if (idx > 0) { const [g] = activeGoals.splice(idx, 1); activeGoals.unshift(g); }
   }
 
-  // Add surplus to next goal
-  nextGoal.history.push({
-    amount: Math.round(rollAmount * 100) / 100,
-    date: new Date((dateVal || new Date().toISOString().split('T')[0]) + 'T12:00:00').toISOString(),
-    note: `Rolled over from ${completedGoal ? completedGoal.name : 'completed goal'}`
-  });
-  await dbPut(nextGoal);
+  for (const goal of activeGoals) {
+    if (remaining <= 0) break;
+    const saved = goal.history.reduce((s, h) => s + h.amount, 0);
+    const needed = Math.round((goal.goalAmount - saved) * 100) / 100;
+    if (needed <= 0) continue;
+    const credit = Math.min(remaining, needed);
+    goal.history.push({ amount: credit, date, note });
+    await dbPut(goal);
+    remaining = Math.round((remaining - credit) * 100) / 100;
+  }
 }
 
 let editingEntryIndex = null; // track which journal entry is being edited
@@ -3456,17 +3457,9 @@ async function approveChoreFromParent(logId) {
     await dbPutJarTx(txEntry);
     jarTxs.push(txEntry);
 
-    // Also credit an active goal so puzzle progress stays in sync
+    // Credit active goals, rolling surplus to the next goal
     if (saveJar.type === 'save') {
-      const activeGoals = goals.filter(g => {
-        const saved = g.history.reduce((s, h) => s + h.amount, 0);
-        return saved < g.goalAmount;
-      });
-      if (activeGoals.length >= 1) {
-        // Credit first active goal (parent can adjust later)
-        activeGoals[0].history.push({ amount: chore.amount, date: now, note });
-        await dbPut(activeGoals[0]);
-      }
+      await creditGoalsWithOverflow(chore.amount, now, note);
     }
   }
   renderParentSettings();
@@ -4539,26 +4532,22 @@ async function confirmJarAlloc() {
   await dbPutJarTx(txEntry);
   jarTxs.push(txEntry);
 
-  // If allocated to Save jar, also credit an active goal so puzzle progress stays in sync
+  // If allocated to Save jar, also credit active goals with overflow handling
   if (jar.type === 'save') {
     const activeGoals = goals.filter(g => {
       const saved = g.history.reduce((s, h) => s + h.amount, 0);
       return saved < g.goalAmount;
     });
     if (activeGoals.length === 1) {
-      // Single active goal — credit it automatically
-      activeGoals[0].history.push({ amount: pendingAllocAmount, date: now, note });
-      await dbPut(activeGoals[0]);
+      await creditGoalsWithOverflow(pendingAllocAmount, now, note);
     } else if (activeGoals.length > 1) {
       // Multiple active goals — let the kid choose
       pendingGoalCreditAmount = pendingAllocAmount;
       pendingGoalCreditNote = note;
       pendingGoalCreditDate = now;
       showGoalPicker(activeGoals);
-      // Don't finalize yet — goal picker callback will handle the rest
       return;
     }
-    // If no active goals, jar balance still increases for future goals
   }
 
   finishChoreAlloc();
@@ -4590,10 +4579,8 @@ function showGoalPicker(activeGoals) {
 }
 
 async function pickGoalForCredit(goalId) {
-  const goal = goals.find(g => g.id === goalId);
-  if (goal) {
-    goal.history.push({ amount: pendingGoalCreditAmount, date: pendingGoalCreditDate, note: pendingGoalCreditNote });
-    await dbPut(goal);
+  if (pendingGoalCreditAmount > 0) {
+    await creditGoalsWithOverflow(pendingGoalCreditAmount, pendingGoalCreditDate, pendingGoalCreditNote, goalId);
   }
   document.getElementById('goalPickerBackdrop').style.display = 'none';
   pendingGoalCreditAmount = 0;
