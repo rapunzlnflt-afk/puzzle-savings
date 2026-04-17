@@ -2498,7 +2498,7 @@ function renderHome() {
     if (g.imageData) {
       thumbHTML = `<img src="${g.imageData}" alt="${esc(g.name)}">`;
     } else {
-      thumbHTML = `<span class="placeholder-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></span>`;
+      thumbHTML = `<span class="placeholder-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.125em;"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg></span>`;
     }
 
     // Countdown text
@@ -2826,13 +2826,13 @@ function renderPuzzle() {
           --grid-rows-pct: ${rows * 100}%;
           background-position: ${xPos}% ${yPos}%;
         "></div>
-        <div class="puzzle-piece-overlay"><span class="piece-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></span></div>`;
+        <div class="puzzle-piece-overlay"><span class="piece-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.125em;"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg></span></div>`;
     } else {
       // Fallback: no image (shouldn't happen in v2 but just in case)
       const hue = (260 + (i / totalPieces) * 120);
       piece.innerHTML = `
         <div class="puzzle-piece-fallback" style="background:linear-gradient(135deg, hsl(${hue},55%,75%), hsl(${hue+30},65%,65%));"></div>
-        <div class="puzzle-piece-overlay"><span class="piece-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-0.125em;"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2v3H4V7z"/></svg></span></div>`;
+        <div class="puzzle-piece-overlay"><span class="piece-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.125em;"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg></span></div>`;
     }
 
     grid.appendChild(piece);
