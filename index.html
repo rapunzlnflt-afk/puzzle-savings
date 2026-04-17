@@ -3049,7 +3049,7 @@ async function submitSavingsEntry() {
   showView('puzzleView');
 
   // Animate the image reveal with a smooth transition
-  setTimeout(() => {
+  setTimeout(async () => {
     const clearImg = document.querySelector('.reveal-img-clear');
     const pctOverlay = document.querySelector('.reveal-pct-overlay');
     if (clearImg) {
@@ -3069,7 +3069,6 @@ async function submitSavingsEntry() {
       // Roll surplus into next active goal
       const surplus = Math.round((savedAfter - goal.goalAmount) * 100) / 100;
       if (surplus > 0) {
-        // Trim this goal's last entry to exact goal amount, push surplus to next goal
         const lastEntry = goal.history[goal.history.length - 1];
         lastEntry.amount = Math.round((lastEntry.amount - surplus) * 100) / 100;
         await dbPut(goal);
