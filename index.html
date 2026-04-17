@@ -3790,12 +3790,115 @@ function renderChoresView() {
     </div>
   `;
 
+  // Count completed chores for history button
+  const completedLogs = choreLogs.filter(cl => cl.status === 'approved' || cl.status === 'rejected');
+  const historyBtn = completedLogs.length > 0 ? `
+    <button class="btn btn-outline btn-block" onclick="showChoreHistory()" style="margin-top:var(--space-3);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Chore History
+    </button>
+  ` : '';
+
   view.innerHTML = `
     <h2 class="view-title">Chores</h2>
     ${reviewBtn}
     ${choreCards}
     ${mgmtSection}
+    ${historyBtn}
   `;
+}
+
+function showChoreHistory() {
+  const view = document.getElementById('choresView');
+  const completed = choreLogs
+    .filter(cl => cl.status === 'approved' || cl.status === 'rejected')
+    .sort((a, b) => (b.approvedAt || b.date || '').localeCompare(a.approvedAt || a.date || ''));
+
+  if (completed.length === 0) {
+    view.innerHTML = `
+      <h2 class="view-title">Chore History</h2>
+      <button class="btn btn-sm btn-outline" onclick="renderChoresView()" style="margin-bottom:var(--space-4);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Back
+      </button>
+      <div class="card" style="text-align:center;padding:var(--space-8) var(--space-5);">
+        <p style="color:var(--text-muted);">No completed chores yet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Group by date
+  const grouped = {};
+  completed.forEach(cl => {
+    const dateKey = cl.date || 'Unknown';
+    if (!grouped[dateKey]) grouped[dateKey] = [];
+    grouped[dateKey].push(cl);
+  });
+
+  let totalEarned = 0;
+  completed.filter(cl => cl.status === 'approved').forEach(cl => {
+    const chore = chores.find(c => c.id === cl.choreId);
+    if (chore) totalEarned += chore.amount;
+  });
+
+  let html = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);">
+      <h2 class="view-title" style="margin-bottom:0;">Chore History</h2>
+      <button class="btn btn-sm btn-outline" onclick="renderChoresView()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Back
+      </button>
+    </div>
+    <div class="card" style="padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:0.85rem;color:var(--text-muted);">Total Earned</div>
+      <div style="font-family:var(--font-display);font-weight:700;font-size:1.1rem;color:var(--green-600);">$${fmtNum(totalEarned)}</div>
+    </div>
+  `;
+
+  const dateKeys = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+  dateKeys.forEach(dateKey => {
+    const entries = grouped[dateKey];
+    const dateLabel = formatHistoryDate(dateKey);
+    html += `<div style="font-family:var(--font-display);font-weight:600;font-size:0.82rem;color:var(--text-muted);margin-bottom:var(--space-2);margin-top:var(--space-3);">${esc(dateLabel)}</div>`;
+
+    entries.forEach(cl => {
+      const chore = chores.find(c => c.id === cl.choreId);
+      const name = chore ? esc(chore.name) : 'Unknown chore';
+      const amount = chore ? `$${fmtNum(chore.amount)}` : '';
+      const isApproved = cl.status === 'approved';
+      const statusColor = isApproved ? '#065F46' : '#991B1B';
+      const statusBg = isApproved ? '#D1FAE5' : '#FEE2E2';
+      const statusText = isApproved ? 'Approved' : 'Denied';
+      const statusIcon = isApproved
+        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>'
+        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+      html += `
+        <div class="card" style="padding:var(--space-3) var(--space-4);margin-bottom:var(--space-2);display:flex;align-items:center;gap:var(--space-3);">
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:var(--font-display);font-weight:600;font-size:0.9rem;">${name}</div>
+            ${amount ? `<div style="font-size:0.8rem;color:var(--text-muted);">${amount}</div>` : ''}
+          </div>
+          <div style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--radius-full);background:${statusBg};color:${statusColor};font-size:0.75rem;font-weight:600;white-space:nowrap;">
+            ${statusIcon} ${statusText}
+          </div>
+        </div>
+      `;
+    });
+  });
+
+  view.innerHTML = html;
+}
+
+function formatHistoryDate(dateStr) {
+  try {
+    const d = new Date(dateStr + 'T12:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+    const dDate = new Date(d); dDate.setHours(0,0,0,0);
+    if (dDate.getTime() === today.getTime()) return 'Today';
+    if (dDate.getTime() === yesterday.getTime()) return 'Yesterday';
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  } catch { return dateStr; }
 }
 
 function showManageChores() {
