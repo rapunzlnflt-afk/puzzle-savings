@@ -2060,6 +2060,23 @@ function renderUserSelect() {
   const grid = document.getElementById('userGrid');
   const manageBtn = document.getElementById('manageUsersBtn');
 
+  // Zero-user welcome state: show a prominent Get Started button
+  if (users.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-4) 0;">
+        <p style="font-family:var(--font-body); color:var(--text-muted); font-size:0.95rem; margin-bottom:var(--space-6); line-height:1.5;">
+          Parents: tap below to set a PIN<br>and add your first saver.
+        </p>
+        <button class="btn btn-primary" onclick="requestPinFor('add')" data-testid="add-user-btn"
+          style="font-size:1.05rem; padding:var(--space-3) var(--space-8); min-width: 200px;">
+          <svg width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-0.15em; margin-right:6px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Get Started
+        </button>
+      </div>`;
+    manageBtn.style.display = 'none';
+    return;
+  }
+
   let cards = users.map((u, i) => {
     const color = getAvatarColor(i);
     const initial = getInitial(u.name);
