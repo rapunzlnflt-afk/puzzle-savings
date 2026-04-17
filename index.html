@@ -2702,29 +2702,53 @@ function _jigsawSide(x0, y0, x1, y1, tabDir, flat) {
   var ux = dx / len, uy = dy / len;
   var px = -uy, py = ux;
   var d = tabDir;
-  var nS = 0.34, nE = 0.66, nW = len * 0.04;
-  var hExt = len * 0.22, hW = len * 0.15;
-  var ns_x = x0 + dx * nS, ns_y = y0 + dy * nS;
-  var ne_x = x0 + dx * nE, ne_y = y0 + dy * nE;
+  /* Bold classic jigsaw tab: narrow neck, big round head */
+  var neckAt = 0.38;          /* neck starts at 38% along edge */
+  var neckEnd = 0.62;         /* neck ends at 62% */
+  var neckW = len * 0.015;    /* neck half-width (narrow) */
+  var headR = len * 0.13;     /* head radius (big circle) */
+  var headDist = len * 0.30;  /* how far head center is from edge */
+  /* Key points */
+  var ns_x = x0 + dx * neckAt, ns_y = y0 + dy * neckAt;
+  var ne_x = x0 + dx * neckEnd, ne_y = y0 + dy * neckEnd;
   var mid_x = x0 + dx * 0.5, mid_y = y0 + dy * 0.5;
-  var n1x = ns_x + px * d * nW, n1y = ns_y + py * d * nW;
-  var n2x = ne_x + px * d * nW, n2y = ne_y + py * d * nW;
-  var h1x = mid_x - ux * hW + px * d * hExt, h1y = mid_y - uy * hW + py * d * hExt;
-  var h2x = mid_x + ux * hW + px * d * hExt, h2y = mid_y + uy * hW + py * d * hExt;
-  var tipx = mid_x + px * d * (hExt + len * 0.03), tipy = mid_y + py * d * (hExt + len * 0.03);
+  /* Neck corners (slightly off the edge line) */
+  var n1x = ns_x + px * d * neckW, n1y = ns_y + py * d * neckW;
+  var n2x = ne_x + px * d * neckW, n2y = ne_y + py * d * neckW;
+  /* Head center */
+  var hcx = mid_x + px * d * headDist, hcy = mid_y + py * d * headDist;
+  /* Build path: straight to neck, curve into neck, big arc for head, curve out of neck, straight to end */
   var p = ' L ' + ns_x.toFixed(2) + ' ' + ns_y.toFixed(2);
-  p += ' C ' + (ns_x + px*d*nW*0.5).toFixed(2) + ' ' + (ns_y + py*d*nW*0.5).toFixed(2) + ',';
-  p += (n1x - ux*len*0.04).toFixed(2) + ' ' + (n1y - uy*len*0.04).toFixed(2) + ',' + n1x.toFixed(2) + ' ' + n1y.toFixed(2);
-  p += ' C ' + (n1x + ux*len*0.06).toFixed(2) + ' ' + (n1y + uy*len*0.06).toFixed(2) + ',';
-  p += (h1x - ux*hW*0.6).toFixed(2) + ' ' + (h1y - uy*hW*0.6).toFixed(2) + ',' + h1x.toFixed(2) + ' ' + h1y.toFixed(2);
-  p += ' C ' + (h1x + ux*hW*0.2 + px*d*len*0.04).toFixed(2) + ' ' + (h1y + uy*hW*0.2 + py*d*len*0.04).toFixed(2) + ',';
-  p += (tipx - ux*hW*0.3).toFixed(2) + ' ' + (tipy - uy*hW*0.3).toFixed(2) + ',' + tipx.toFixed(2) + ' ' + tipy.toFixed(2);
-  p += ' C ' + (tipx + ux*hW*0.3).toFixed(2) + ' ' + (tipy + uy*hW*0.3).toFixed(2) + ',';
-  p += (h2x - ux*hW*0.2 + px*d*len*0.04).toFixed(2) + ' ' + (h2y - uy*hW*0.2 + py*d*len*0.04).toFixed(2) + ',' + h2x.toFixed(2) + ' ' + h2y.toFixed(2);
-  p += ' C ' + (h2x + ux*hW*0.6).toFixed(2) + ' ' + (h2y + uy*hW*0.6).toFixed(2) + ',';
-  p += (n2x - ux*len*0.06).toFixed(2) + ' ' + (n2y - uy*len*0.06).toFixed(2) + ',' + n2x.toFixed(2) + ' ' + n2y.toFixed(2);
-  p += ' C ' + (n2x + ux*len*0.04).toFixed(2) + ' ' + (n2y + uy*len*0.04).toFixed(2) + ',';
-  p += (ne_x + px*d*nW*0.5).toFixed(2) + ' ' + (ne_y + py*d*nW*0.5).toFixed(2) + ',' + ne_x.toFixed(2) + ' ' + ne_y.toFixed(2);
+  /* Curve into neck */
+  p += ' C ' + (ns_x + px*d*neckW*0.3).toFixed(2) + ' ' + (ns_y + py*d*neckW*0.3).toFixed(2) + ',';
+  p += (n1x - ux*len*0.01).toFixed(2) + ' ' + (n1y - uy*len*0.01).toFixed(2) + ',';
+  p += n1x.toFixed(2) + ' ' + n1y.toFixed(2);
+  /* Neck up to head — left side of circle */
+  var h_left_x = hcx - ux * headR, h_left_y = hcy - uy * headR;
+  var h_top_x = hcx + px * d * headR, h_top_y = hcy + py * d * headR;
+  var h_right_x = hcx + ux * headR, h_right_y = hcy + uy * headR;
+  /* Cubic bezier magic number for quarter circle: 0.5523 */
+  var k = 0.5523 * headR;
+  /* Neck to left of head */
+  p += ' C ' + (n1x + px*d*headDist*0.4).toFixed(2) + ' ' + (n1y + py*d*headDist*0.4).toFixed(2) + ',';
+  p += (h_left_x - px*d*k*0.5).toFixed(2) + ' ' + (h_left_y - py*d*k*0.5).toFixed(2) + ',';
+  p += h_left_x.toFixed(2) + ' ' + h_left_y.toFixed(2);
+  /* Left of head around to top */
+  p += ' C ' + (h_left_x + px*d*k).toFixed(2) + ' ' + (h_left_y + py*d*k).toFixed(2) + ',';
+  p += (h_top_x - ux*k).toFixed(2) + ' ' + (h_top_y - uy*k).toFixed(2) + ',';
+  p += h_top_x.toFixed(2) + ' ' + h_top_y.toFixed(2);
+  /* Top around to right */
+  p += ' C ' + (h_top_x + ux*k).toFixed(2) + ' ' + (h_top_y + uy*k).toFixed(2) + ',';
+  p += (h_right_x + px*d*k).toFixed(2) + ' ' + (h_right_y + py*d*k).toFixed(2) + ',';
+  p += h_right_x.toFixed(2) + ' ' + h_right_y.toFixed(2);
+  /* Right of head back to neck */
+  p += ' C ' + (h_right_x - px*d*k*0.5).toFixed(2) + ' ' + (h_right_y - py*d*k*0.5).toFixed(2) + ',';
+  p += (n2x + px*d*headDist*0.4).toFixed(2) + ' ' + (n2y + py*d*headDist*0.4).toFixed(2) + ',';
+  p += n2x.toFixed(2) + ' ' + n2y.toFixed(2);
+  /* Neck back to edge */
+  p += ' C ' + (n2x + ux*len*0.01).toFixed(2) + ' ' + (n2y + uy*len*0.01).toFixed(2) + ',';
+  p += (ne_x + px*d*neckW*0.3).toFixed(2) + ' ' + (ne_y + py*d*neckW*0.3).toFixed(2) + ',';
+  p += ne_x.toFixed(2) + ' ' + ne_y.toFixed(2);
   p += ' L ' + x1.toFixed(2) + ' ' + y1.toFixed(2);
   return p;
 }
