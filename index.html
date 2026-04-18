@@ -2500,6 +2500,7 @@ async function saveNewUser() {
 
   const user = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name };
   await dbPutUser(user);
+  await autoCreateJarsForUser(user.id);
   users = await dbGetAllUsers();
   _savingUser = false;
   renderUserSelect();
@@ -2953,9 +2954,13 @@ function renderPuzzle() {
 
   if (hasImage) {
     if (pct <= 0 && !isComplete) {
-      // No savings yet — show goal image fully greyscale
+      // No savings yet — show pig icon covering the goal image
+      const pigSrc = document.querySelector('.app-logo img')?.src || '';
       container.innerHTML = `
-        <img class="reveal-img-faded" src="${goal.imageData}" alt="${esc(goal.name)}" style="filter:grayscale(100%) brightness(0.85);">
+        <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--purple-100);">
+          ${pigSrc ? `<img src="${pigSrc}" alt="Puzzle Pig" style="width:72px;height:72px;margin-bottom:var(--space-2);">` : ''}
+          <span style="font-family:var(--font-display);font-weight:700;font-size:0.95rem;color:var(--purple-600);">Start saving!</span>
+        </div>
         <div class="reveal-pct-overlay">0%</div>`;
       container.classList.remove('complete');
     } else {
@@ -3364,7 +3369,11 @@ function selectUserFromParent(userId) {
 async function renderParentSettings() {
   const view = document.getElementById('parentSettingsView');
 
-  // Load ALL chores globally for parent view
+  // Ensure currentUserId is set for jar display — default to first user
+  if (!currentUserId && users.length > 0) currentUserId = users[0].id;
+  // Load ALL chores and jars globally for parent view
+  const allJarsGlobal = await dbGetAllJars();
+  jars = allJarsGlobal; // make global jars hold ALL jars so per-user filtering works below
   const allChoresGlobal = await dbGetAllChores();
   allChoresGlobal.forEach(c => { if (!c.assignedTo) c.assignedTo = c.userId ? [c.userId] : []; });
   const allChoreLogsGlobal = await dbGetAllChoreLogs();
@@ -3694,6 +3703,7 @@ async function saveUserFromParent() {
   nameInput.disabled = true;
   const user = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name };
   await dbPutUser(user);
+  await autoCreateJarsForUser(user.id);
   users = await dbGetAllUsers();
   renderParentSettings();
 }
@@ -4027,6 +4037,28 @@ function renderJarDetail() {
 function backFromJarDetail() {
   currentJarId = null;
   renderJarsView();
+}
+
+// ---- Auto-create default jars for new users ----
+async function autoCreateJarsForUser(userId) {
+  // Check if user already has jars
+  const allJars = await dbGetAllJars();
+  const userJars = allJars.filter(j => j.userId === userId);
+  if (userJars.length > 0) return; // already has jars
+  const now = new Date().toISOString();
+  for (let i = 0; i < DEFAULT_JARS.length; i++) {
+    const d = DEFAULT_JARS[i];
+    await dbPutJar({
+      id: 'jar_' + Date.now() + '_' + i + '_' + userId.slice(0, 4),
+      userId,
+      name: d.name,
+      type: d.type,
+      balance: 0,
+      color: d.color,
+      order: i,
+      createdAt: now,
+    });
+  }
 }
 
 // ---- Jar Setup ----
