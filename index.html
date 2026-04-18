@@ -3575,7 +3575,7 @@ async function renderParentSettings() {
             <div class="parent-pending-detail">${user ? esc(user.name) : ''} &middot; $${c ? fmtNum(c.amount) : '0'}</div>
           </div>
           <div class="parent-pending-actions">
-            <select id="jarPick_${cl.id}" style="font-size:0.75rem;padding:2px 4px;border-radius:var(--radius-md);border:1px solid var(--border);">${jarOpts}</select>
+            ${uJars.length > 0 ? `<select id="jarPick_${cl.id}" style="font-size:0.75rem;padding:4px 6px;border-radius:var(--radius-md);border:1px solid var(--border);" title="Choose jar">${jarOpts}</select>` : `<input type="hidden" id="jarPick_${cl.id}" value="">`}
             <button class="parent-btn-approve" onclick="approveChoreFromParent('${cl.id}', document.getElementById('jarPick_${cl.id}').value)">Approve</button>
             <button class="parent-btn-reject" onclick="rejectChoreFromParent('${cl.id}')">Reject</button>
           </div>
