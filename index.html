@@ -1411,10 +1411,11 @@ a { color: inherit; text-decoration: none; }
   /* Home print: show name/date header */
   #homeView .print-home-header { display: block !important; }
 
-  /* Journal print: hide form, show only journal with goal thumbnail */
+  /* Journal print: hide form, show name/date + goal thumbnail + journal entries */
   #savingsEntryView .card:first-of-type { display: none !important; }
   #savingsEntryView .view-title { display: none !important; }
   #savingsEntryView #savingsEntryGoalName { display: none !important; }
+  #savingsEntryView .print-journal-namedate { display: block !important; }
   #savingsEntryView .print-journal-header { display: flex !important; }
 
   /* Page setup */
@@ -1647,7 +1648,13 @@ a { color: inherit; text-decoration: none; }
     <h2 class="view-title" style="text-align:center; margin-bottom:var(--space-2);">Log Your Savings</h2>
     <p id="savingsEntryGoalName" style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:var(--space-4);"></p>
 
-    <!-- Print-only header with goal thumbnail -->
+    <!-- Print-only name/date + goal thumbnail -->
+    <div class="print-journal-namedate" style="display:none; margin-bottom:16pt; border-bottom:1px solid #CCC; padding-bottom:12pt;">
+      <div style="display:flex; gap:24pt;">
+        <div style="flex:1;"><span style="font-weight:600; font-size:11pt;">Name:</span> <span style="border-bottom:1px solid #999; display:inline-block; width:calc(100% - 50pt);">&nbsp;</span></div>
+        <div style="flex:1;"><span style="font-weight:600; font-size:11pt;">Date:</span> <span style="border-bottom:1px solid #999; display:inline-block; width:calc(100% - 40pt);">&nbsp;</span></div>
+      </div>
+    </div>
     <div class="print-journal-header" id="printJournalHeader" style="display:none; align-items:center; gap:var(--space-3); margin-bottom:var(--space-4); padding:var(--space-3); border:1px solid #CCC; border-radius:var(--radius-lg);">
       <div id="printJournalThumb" style="width:56px; height:56px; border-radius:var(--radius-md); overflow:hidden; flex-shrink:0; background:var(--purple-100);"></div>
       <div>
