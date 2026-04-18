@@ -204,6 +204,12 @@ a { color: inherit; text-decoration: none; }
   height: 100%; background: linear-gradient(90deg, var(--purple-400), var(--purple-600));
   border-radius: var(--radius-full); transition: width 0.6s var(--ease-smooth);
 }
+.goal-card-edit-btn {
+  width: 32px; height: 32px; border-radius: var(--radius-full); display: flex; align-items: center;
+  justify-content: center; color: var(--text-muted); background: var(--purple-50); flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+.goal-card-edit-btn:hover { background: var(--purple-100); color: var(--purple-700); }
 .goal-card-footer {
   display: flex; justify-content: space-between; align-items: center;
   margin-top: var(--space-2); font-size: 0.8rem; color: var(--text-muted);
@@ -794,22 +800,27 @@ a { color: inherit; text-decoration: none; }
 .jars-summary-label { font-size: 0.8rem; font-weight: 600; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.05em; }
 .jars-summary-amount { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; }
 
+.jar-cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
 .jar-card {
-  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-4);
-  box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: var(--space-3);
+  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-3) var(--space-2) var(--space-3);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
   cursor: pointer; transition: all var(--transition-fast);
-  display: flex; align-items: center; gap: var(--space-3);
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-1);
 }
 .jar-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .jar-card:active { transform: scale(0.98); }
+.jar-card-visual { display: flex; justify-content: center; }
 .jar-icon {
   width: 48px; height: 48px; border-radius: var(--radius-md); flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
 }
 .jar-icon svg { width: 28px; height: 28px; }
-.jar-info { flex: 1; min-width: 0; }
-.jar-name { font-family: var(--font-display); font-weight: 600; font-size: 1rem; }
-.jar-balance { font-size: 1.25rem; font-family: var(--font-display); font-weight: 700; color: var(--purple-700); }
+.jar-info { min-width: 0; }
+.jar-name { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; margin-top: var(--space-1); }
+.jar-balance { font-size: 1.1rem; font-family: var(--font-display); font-weight: 700; color: var(--purple-700); }
 .jar-type-badge {
   font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full);
   background: var(--purple-100); color: var(--purple-700); text-transform: uppercase; letter-spacing: 0.04em;
@@ -967,13 +978,37 @@ a { color: inherit; text-decoration: none; }
 .home-jars-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
 .home-jars-row { display: flex; gap: var(--space-2); }
 .home-jar-pill {
-  flex: 1; text-align: center; padding: var(--space-2) var(--space-2);
+  flex: 1; text-align: center; padding: var(--space-2) var(--space-1);
   border-radius: var(--radius-lg); border: 1px solid var(--border);
   background: var(--bg); font-size: 0.78rem;
+  display: flex; flex-direction: column; align-items: center;
 }
 .home-jar-pill-name { font-weight: 600; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
 .home-jar-pill-amount { font-family: var(--font-display); font-weight: 700; color: var(--text); font-size: 0.9rem; }
 
+/* ============ HOME CHORES SECTION ============ */
+.home-chores {
+  background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-4);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin-bottom: var(--space-4);
+}
+.home-chores-title {
+  font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; margin-bottom: var(--space-3);
+  display: flex; align-items: center; gap: var(--space-2);
+}
+.home-chore-item {
+  display: flex; align-items: center; justify-content: space-between; padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+.home-chore-item:last-child { border-bottom: none; }
+.home-chore-info { flex: 1; min-width: 0; }
+.home-chore-name { font-weight: 600; font-size: 0.9rem; }
+.home-chore-amount { font-size: 0.78rem; color: var(--text-muted); }
+.home-chore-done {
+  padding: var(--space-1) var(--space-3); border-radius: var(--radius-full);
+  font-size: 0.78rem; font-weight: 600;
+}
+.home-chore-done.pending { background: #FEF3C7; color: #92400E; }
+.home-chore-done.completed { background: #D1FAE5; color: #065F46; }
 
 /* ============ USER SELECT SCREEN ============ */
 #userSelectScreen {
@@ -1398,6 +1433,7 @@ a { color: inherit; text-decoration: none; }
   <!-- ===== HOME VIEW ===== -->
   <div id="homeView" class="view active">
     <div id="homeJarsBar" style="display:none;"></div>
+    <div id="homeChoresSection" style="display:none;"></div>
     <div id="goalsList"></div>
     <div id="goalsEmpty" class="goals-empty" style="display:none;">
       <h2>Start Your First Puzzle!</h2>
@@ -2659,11 +2695,15 @@ function renderHome() {
   const jarsBar = document.getElementById('homeJarsBar');
   if (jars.length > 0) {
     const totalBalance = jars.reduce((s, j) => s + (j.balance || 0), 0);
-    const pills = jars.map(j => `
+    const homeMaxBal = Math.max(50, ...jars.map(j => j.balance || 0));
+    const pills = jars.map((j, idx) => {
+      const fp = homeMaxBal > 0 ? Math.round(((j.balance||0) / homeMaxBal) * 100) : 0;
+      return `
       <div class="home-jar-pill">
+        ${jarVisualSVG(fp, j.color, j.color, 48, 64).replace(/jarClip/g, 'homeJClip' + idx)}
         <div class="home-jar-pill-name">${esc(j.name)}</div>
         <div class="home-jar-pill-amount">$${fmtNum(j.balance || 0)}</div>
-      </div>`).join('');
+      </div>`;}).join('');
     jarsBar.innerHTML = `
       <div class="home-jars-total-row" onclick="showView('jarsView')">
         <div class="home-jars-total">$${fmtNum(totalBalance)}</div>
@@ -2674,6 +2714,55 @@ function renderHome() {
     jarsBar.style.display = '';
   } else {
     jarsBar.style.display = 'none';
+  }
+
+  // Today's Chores section
+  const homeChoresEl = document.getElementById('homeChoresSection');
+  if (chores.length > 0) {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const dayOfWeek = today.getDay(); // 0=Sun
+    const todayChores = chores.filter(c => {
+      if (c.recurring === 'daily') return true;
+      if (c.recurring === 'specific') return (c.choreDays || []).includes(dayOfWeek);
+      if (c.recurring === 'weekly') return true; // show weekly chores; done-check below
+      if (c.recurring === 'once') return true;
+      return false;
+    });
+    if (todayChores.length > 0) {
+      const choreItems = todayChores.map(c => {
+        // Check if already done today or this period
+        const isPending = choreLogs.some(cl => cl.choreId === c.id && cl.status === 'pending');
+        const isDoneToday = choreLogs.some(cl => cl.choreId === c.id && (cl.status === 'approved' || cl.status === 'pending') && cl.date === todayStr);
+        let isDoneThisWeek = false;
+        if (c.recurring === 'weekly') {
+          const day = today.getDay();
+          const mon = new Date(today); mon.setDate(today.getDate() - ((day + 6) % 7)); mon.setHours(0,0,0,0);
+          const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+          isDoneThisWeek = choreLogs.some(cl => {
+            if (cl.choreId !== c.id || (cl.status !== 'approved' && cl.status !== 'pending')) return false;
+            const d = new Date(cl.date); return d >= mon && d <= sun;
+          });
+        }
+        const isOnceCompleted = c.recurring === 'once' && choreLogs.some(cl => cl.choreId === c.id && cl.status === 'approved');
+        const done = isDoneToday || isDoneThisWeek || isOnceCompleted;
+        let actionHTML;
+        if (isPending && !isDoneToday && !isDoneThisWeek) {
+          actionHTML = '<span class="home-chore-done pending">Waiting</span>';
+        } else if (done) {
+          actionHTML = '<span class="home-chore-done completed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="vertical-align:-1px;"><path d="M20 6L9 17l-5-5"/></svg> Done</span>';
+        } else {
+          actionHTML = `<button class="chore-did-it-btn" onclick="choreDidIt('${c.id}')" style="width:auto;font-size:0.8rem;padding:6px 14px;flex-shrink:0;box-shadow:var(--shadow-sm);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg> I Did It!</button>`;
+        }
+        return `<div class="home-chore-item"><div class="home-chore-info"><div class="home-chore-name">${esc(c.name)}</div><div class="home-chore-amount">$${fmtNum(c.amount)}</div></div>${actionHTML}</div>`;
+      }).join('');
+      homeChoresEl.innerHTML = `<div class="home-chores"><div class="home-chores-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg> Today's Chores</div>${choreItems}</div>`;
+      homeChoresEl.style.display = '';
+    } else {
+      homeChoresEl.style.display = 'none';
+    }
+  } else {
+    homeChoresEl.style.display = 'none';
   }
 
   if (goals.length === 0) {
@@ -2715,6 +2804,9 @@ function renderHome() {
             <div class="goal-card-name">${esc(g.name)}</div>
             <div class="goal-card-amount"><strong>$${fmtNum(saved)}</strong> of $${fmtNum(g.goalAmount)}</div>
           </div>
+          <button class="goal-card-edit-btn" onclick="event.stopPropagation();editGoalById('${g.id}')" title="Edit goal" data-testid="edit-goal-${g.id}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+          </button>
         </div>
         <div class="goal-card-progress"><div class="goal-card-progress-fill" style="width:${pct}%"></div></div>
         <div class="goal-card-footer">
@@ -3182,6 +3274,27 @@ async function submitSavingsEntry() {
   }, 400);
 }
 
+// Credit a specific user's goals (used by parent approve where global goals may belong to another user)
+async function creditGoalsForUser(amount, date, note, userGoals) {
+  let remaining = Math.round(amount * 100) / 100;
+  if (remaining <= 0) return;
+  const activeGoals = userGoals.filter(g => {
+    const saved = g.history.reduce((s, h) => s + h.amount, 0);
+    return saved < g.goalAmount;
+  });
+  if (activeGoals.length === 0) return;
+  for (const goal of activeGoals) {
+    if (remaining <= 0) break;
+    const saved = goal.history.reduce((s, h) => s + h.amount, 0);
+    const needed = Math.round((goal.goalAmount - saved) * 100) / 100;
+    if (needed <= 0) continue;
+    const credit = Math.min(remaining, needed);
+    goal.history.push({ amount: credit, date, note });
+    await dbPut(goal);
+    remaining = Math.round((remaining - credit) * 100) / 100;
+  }
+}
+
 // Credit goals with overflow: fills the target goal up to its cap, rolls surplus to the next active goal
 async function creditGoalsWithOverflow(amount, date, note, preferredGoalId) {
   let remaining = Math.round(amount * 100) / 100;
@@ -3616,20 +3729,24 @@ async function approveChoreFromParent(logId) {
   updateChoresBadge();
   const allC = await dbGetAllChores();
   const chore = allC.find(c => c.id === cl.choreId);
-  if (chore && jars.length > 0) {
-    // Allocate to Save jar by default from parent page
-    const saveJar = jars.find(j => j.type === 'save') || jars[0];
+  const choreUserId = cl.userId; // credit the user who did the chore
+  const allJarsNow = await dbGetAllJars();
+  const userJars = allJarsNow.filter(j => j.userId === choreUserId);
+  if (chore && userJars.length > 0) {
+    // Allocate to this user's Save jar by default
+    const saveJar = userJars.find(j => j.type === 'save') || userJars[0];
     saveJar.balance = (saveJar.balance || 0) + chore.amount;
     await dbPutJar(saveJar);
     const now = new Date().toISOString();
     const note = 'Chore: ' + chore.name;
-    const txEntry = { id: 'jartx_' + Date.now() + '_chore', jarId: saveJar.id, userId: currentUserId, amount: chore.amount, type: 'chore', note, createdAt: now };
+    const txEntry = { id: 'jartx_' + Date.now() + '_chore', jarId: saveJar.id, userId: choreUserId, amount: chore.amount, type: 'chore', note, createdAt: now };
     await dbPutJarTx(txEntry);
-    jarTxs.push(txEntry);
 
-    // Credit active goals, rolling surplus to the next goal
+    // Credit this user's active goals
     if (saveJar.type === 'save') {
-      await creditGoalsWithOverflow(chore.amount, now, note);
+      const allGoalsNow = await dbGetAll();
+      const userGoals = allGoalsNow.filter(g => g.userId === choreUserId);
+      await creditGoalsForUser(chore.amount, now, note, userGoals);
     }
   }
   renderParentSettings();
@@ -3903,6 +4020,13 @@ function editCurrentGoal() {
   showView('createView');
 }
 
+function editGoalById(id) {
+  const goal = goals.find(g => g.id === id);
+  if (!goal) return;
+  currentGoalId = id;
+  editCurrentGoal();
+}
+
 async function resetCurrentGoal() {
   closeGoalMenu();
   const goal = goals.find(g => g.id === currentGoalId);
@@ -3945,6 +4069,45 @@ function jarSVG(color, size) {
   return `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>`;
 }
 
+/* Glass jar SVG with fill level. fillPct 0-100, color = fill color, lidColor = lid tint */
+function jarVisualSVG(fillPct, color, lidColor, w, h) {
+  w = w || 90; h = h || 120;
+  const pct = Math.max(0, Math.min(100, fillPct || 0));
+  // Jar body bounds (inside the SVG viewBox 0 0 90 120)
+  // Lid: y 4-18, Neck: y 18-28, Body: y 28-110, bottom curve at 110
+  // Fill area: body interior from y=106 up to y=30 based on pct
+  const bodyTop = 32;
+  const bodyBot = 106;
+  const fillH = ((bodyBot - bodyTop) * pct) / 100;
+  const fillY = bodyBot - fillH;
+  const lid = lidColor || color || '#7C3AED';
+  const fill = color || '#7C3AED';
+  // lighter tint for glass highlight
+  return `<svg width="${w}" height="${h}" viewBox="0 0 90 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Jar body (glass) -->
+    <path d="M22 28 C22 28 18 32 18 38 L18 102 C18 108 24 112 32 112 L58 112 C66 112 72 108 72 102 L72 38 C72 32 68 28 68 28 Z" fill="rgba(220,235,245,0.45)" stroke="rgba(160,195,215,0.6)" stroke-width="1.5"/>
+    <!-- Fill level -->
+    ${pct > 0 ? `<clipPath id="jarClip"><path d="M19 32 C19 32 18 34 18 38 L18 102 C18 108 24 112 32 112 L58 112 C66 112 72 108 72 102 L72 38 C72 34 71 32 71 32 Z"/></clipPath>
+    <rect x="18" y="${fillY}" width="54" height="${fillH + 8}" fill="${fill}" opacity="0.25" clip-path="url(#jarClip)"/>
+    <rect x="18" y="${fillY}" width="54" height="${Math.min(fillH, 6)}" fill="${fill}" opacity="0.10" clip-path="url(#jarClip)" rx="2"/>` : ''}
+    <!-- Glass shine -->
+    <path d="M26 36 C26 36 24 42 24 54 L24 78" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M29 36 C29 36 28 40 28 48" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Lid -->
+    <rect x="28" y="8" width="34" height="12" rx="3" fill="${lid}" opacity="0.85"/>
+    <rect x="30" y="10" width="12" height="3" rx="1.5" fill="rgba(255,255,255,0.35)"/>
+    <!-- Neck -->
+    <path d="M30 20 L30 28 L22 28" stroke="rgba(160,195,215,0.6)" stroke-width="1.5" fill="none"/>
+    <path d="M60 20 L60 28 L68 28" stroke="rgba(160,195,215,0.6)" stroke-width="1.5" fill="none"/>
+    <line x1="28" y1="20" x2="62" y2="20" stroke="rgba(160,195,215,0.5)" stroke-width="1"/>
+    ${pct > 0 ? `<!-- Coins at bottom -->
+    <ellipse cx="38" cy="${Math.max(fillY + 4, bodyBot - 8)}" rx="6" ry="3" fill="${fill}" opacity="0.45"/>
+    <ellipse cx="52" cy="${Math.max(fillY + 6, bodyBot - 5)}" rx="5" ry="2.5" fill="${fill}" opacity="0.35"/>` : ''}
+    ${pct >= 100 ? `<!-- Sparkles for full jar -->
+    <circle cx="30" cy="42" r="2" fill="#FCD34D" opacity="0.8"/><circle cx="60" cy="38" r="1.5" fill="#FCD34D" opacity="0.7"/><circle cx="50" cy="50" r="1.8" fill="#FCD34D" opacity="0.6"/>` : ''}
+  </svg>`;
+}
+
 // ---- Render Jars View ----
 function renderJarsView() {
   const view = document.getElementById('jarsView');
@@ -3973,18 +4136,22 @@ function renderJarsView() {
 
   const totalBalance = jars.reduce((s, j) => s + (j.balance || 0), 0);
 
-  const jarCards = jars.map(j => `
+  // Compute fill percentage: use visual cap so jars always look meaningful
+  const maxBal = Math.max(50, ...jars.map(j => j.balance || 0));
+  const jarCards = jars.map((j, idx) => {
+    const bal = j.balance || 0;
+    const fillPct = maxBal > 0 ? Math.round((bal / maxBal) * 100) : 0;
+    // Use unique clipPath ids per jar to avoid SVG conflicts
+    const jarSvg = jarVisualSVG(fillPct, j.color, j.color, 80, 106).replace(/jarClip/g, 'jarClip' + idx);
+    return `
     <div class="jar-card" onclick="openJarDetail('${j.id}')" data-testid="jar-card-${j.id}">
-      <div class="jar-icon" style="background:${j.color}">
-        ${jarSVG(j.color)}
-      </div>
+      <div class="jar-card-visual">${jarSvg}</div>
       <div class="jar-info">
         <div class="jar-name">${esc(j.name)}</div>
-        <div class="jar-balance">$${fmtNum(j.balance || 0)}</div>
+        <div class="jar-balance">$${fmtNum(bal)}</div>
       </div>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   view.innerHTML = `
     <h2 class="view-title">Jars</h2>
@@ -3995,7 +4162,7 @@ function renderJarsView() {
       </div>
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
     </div>
-    ${jarCards}
+    <div class="jar-cards-grid">${jarCards}</div>
   `;
 }
 
@@ -4040,14 +4207,10 @@ function renderJarDetail() {
         Jars
       </button>
     </div>
-    <div class="jar-detail-header">
-      <div class="jar-detail-icon" style="background:${jar.color}">
-        ${jarSVG(jar.color, 32)}
-      </div>
-      <div class="jar-detail-info">
-        <div class="jar-detail-name">${esc(jar.name)}</div>
-        <div class="jar-detail-balance">$${fmtNum(jar.balance || 0)}</div>
-      </div>
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:var(--space-3);">
+      ${jarVisualSVG(Math.min(100, Math.round(((jar.balance||0) / Math.max(50, jar.balance||0)) * 100)), jar.color, jar.color, 130, 172).replace(/jarClip/g, 'jarClipDetail')}
+      <div class="jar-detail-name">${esc(jar.name)}</div>
+      <div class="jar-detail-balance">$${fmtNum(jar.balance || 0)}</div>
     </div>
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3);">
@@ -4127,6 +4290,24 @@ async function preloadTestData() {
         createdAt: now,
       });
     }
+  }
+  // Seed goals if none exist
+  const existingGoals = await dbGetAll();
+  if (existingGoals.length === 0) {
+    const emmaGoal = {
+      id: 'goal_emma_test1', userId: 'testuser1', name: 'Art Supplies',
+      goalAmount: 30, pieceAmount: 3, goalDate: '', category: 'Art',
+      imageData: '', history: [{amount: 5, date: new Date().toISOString().split('T')[0], note: 'Birthday money'}],
+      createdAt: new Date().toISOString(),
+    };
+    const liamGoal = {
+      id: 'goal_liam_test1', userId: 'testuser2', name: 'New Skateboard',
+      goalAmount: 50, pieceAmount: 5, goalDate: '', category: 'Sports',
+      imageData: '', history: [],
+      createdAt: new Date().toISOString(),
+    };
+    await dbPut(emmaGoal);
+    await dbPut(liamGoal);
   }
   // Set a default PIN if not set
   const pin = await dbGetSetting('parentPin');
@@ -4745,6 +4926,8 @@ async function choreDidIt(choreId) {
   await dbPutChoreLog(entry);
   updateChoresBadge();
   renderChoresView();
+  // Also refresh home view if it's active (Today's Chores section)
+  if (document.getElementById('homeView').classList.contains('active')) renderHome();
 }
 
 function openReviewChoresModal() {
