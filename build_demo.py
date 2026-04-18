@@ -69,6 +69,24 @@ init_seed = 'await openDB();\n\n  // Demo: auto-seed test data\n  await preloadT
 html = html.replace('await openDB();', init_seed, 1)
 print("Demo auto-seed inserted into init().")
 
+# f. Patch demo goals with sample images and more savings history
+with open('/home/user/workspace/demo-shots/art-goal.b64') as f:
+    art_img = f.read()
+with open('/home/user/workspace/demo-shots/skate-goal.b64') as f:
+    skate_img = f.read()
+
+# Replace Emma's goal - add image and more history
+html = html.replace(
+    "imageData: '', history: [{amount: 5, date: new Date().toISOString().split('T')[0], note: 'Birthday money'}],",
+    f"imageData: '{art_img}', history: [{{amount: 5, date: '2026-04-01', note: 'Birthday money'}},{{amount: 3, date: '2026-04-05', note: 'Chore earnings'}},{{amount: 2, date: '2026-04-08', note: 'Found coins'}},{{amount: 5, date: '2026-04-12', note: 'Weekly allowance'}}],"
+)
+# Replace Liam's goal - add image and history
+html = html.replace(
+    "imageData: '', history: [],\n      createdAt: new Date().toISOString(),\n    };\n    await dbPut(emmaGoal);",
+    f"imageData: '{skate_img}', history: [{{amount: 5, date: '2026-04-03', note: 'Chore money'}},{{amount: 5, date: '2026-04-10', note: 'Allowance'}}],\n      createdAt: new Date().toISOString(),\n    }};\n    await dbPut(emmaGoal);"
+)
+print("Demo goals patched with sample images and savings history.")
+
 # Ensure output directory exists
 os.makedirs('/home/user/workspace/puzzle-savings-demo', exist_ok=True)
 
