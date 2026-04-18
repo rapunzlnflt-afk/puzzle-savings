@@ -1942,24 +1942,16 @@ a { color: inherit; text-decoration: none; }
 <nav class="bottom-nav" id="bottomNav" style="display:none">
   <button class="nav-item active" onclick="showView('homeView')" data-testid="nav-home" id="navHome">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-    Goals
-  </button>
-  <button class="nav-item" onclick="showView('jarsView')" data-testid="nav-jars" id="navJars">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
-    Jars
-  </button>
-  <button class="nav-item" onclick="showView('choresView')" data-testid="nav-chores" id="navChores">
-    <div style="position:relative;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
-      <span class="nav-badge" id="choresBadge" style="display:none;"></span>
-    </div>
-    Chores
+    Home
   </button>
   <button class="nav-item" onclick="showView('createView')" data-testid="nav-add" id="navAdd">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-    New
+    New Goal
   </button>
 </nav>
+<!-- Hidden nav stubs for backward compatibility -->
+<span id="navJars" style="display:none"></span>
+<span id="navChores" style="display:none"></span>
 
 <script>
 // ============================================================
@@ -2377,6 +2369,9 @@ async function requestPinFor(action, extra) {
     else if (action === 'review-chores') { openReviewChoresModal(); }
     else if (action === 'delete-chore') { await doDeleteChore(savedExtra); }
     else if (action === 'save-chore') { await doSaveChore(); }
+    else if (action === 'jar-edit-name') { jarEditName(savedExtra); }
+    else if (action === 'jar-add-money') { jarAddMoney(savedExtra); }
+    else if (action === 'jar-withdraw') { jarWithdraw(savedExtra); }
     return;
   }
 
@@ -2497,6 +2492,12 @@ async function submitPin() {
     await doDeleteChore(savedExtra);
   } else if (action === 'save-chore') {
     await doSaveChore();
+  } else if (action === 'jar-edit-name') {
+    jarEditName(savedExtra);
+  } else if (action === 'jar-add-money') {
+    jarAddMoney(savedExtra);
+  } else if (action === 'jar-withdraw') {
+    jarWithdraw(savedExtra);
   }
 }
 
@@ -2661,16 +2662,16 @@ function showView(viewId) {
     renderSavingsEntry();
     return; // skip the scroll-to-top below so we don't lose position
   } else if (viewId === 'jarsView') {
-    document.getElementById('navJars').classList.add('active');
-    document.getElementById('mainHeader').style.display = '';
-    document.getElementById('bottomNav').style.display = '';
-    showCurrentUserBar();
+    document.getElementById('mainHeader').style.display = 'none';
+    document.getElementById('bottomNav').style.display = 'none';
+    document.getElementById('currentUserBar').style.display = 'none';
+    document.getElementById('app').classList.add('no-nav');
     renderJarsView();
   } else if (viewId === 'choresView') {
-    document.getElementById('navChores').classList.add('active');
-    document.getElementById('mainHeader').style.display = '';
-    document.getElementById('bottomNav').style.display = '';
-    showCurrentUserBar();
+    document.getElementById('mainHeader').style.display = 'none';
+    document.getElementById('bottomNav').style.display = 'none';
+    document.getElementById('currentUserBar').style.display = 'none';
+    document.getElementById('app').classList.add('no-nav');
     renderChoresView();
     } else if (viewId === 'parentSettingsView') {
     document.getElementById('mainHeader').style.display = 'none';
@@ -2699,17 +2700,17 @@ function renderHome() {
     const pills = jars.map((j, idx) => {
       const fp = homeMaxBal > 0 ? Math.round(((j.balance||0) / homeMaxBal) * 100) : 0;
       return `
-      <div class="home-jar-pill">
+      <div class="home-jar-pill" onclick="openJarDetail('${j.id}');showView('jarsView')" style="cursor:pointer;">
         ${jarVisualSVG(fp, j.color, j.color, 48, 64).replace(/jarClip/g, 'homeJClip' + idx)}
         <div class="home-jar-pill-name">${esc(j.name)}</div>
         <div class="home-jar-pill-amount">$${fmtNum(j.balance || 0)}</div>
       </div>`;}).join('');
     jarsBar.innerHTML = `
-      <div class="home-jars-total-row" onclick="showView('jarsView')">
+      <div class="home-jars-total-row">
         <div class="home-jars-total">$${fmtNum(totalBalance)}</div>
         <div class="home-jars-label">saved across all jars</div>
       </div>
-      <div class="home-jars-row" onclick="showView('jarsView')">${pills}</div>
+      <div class="home-jars-row">${pills}</div>
     `;
     jarsBar.style.display = '';
   } else {
@@ -4110,71 +4111,19 @@ function jarVisualSVG(fillPct, color, lidColor, w, h) {
 
 // ---- Render Jars View ----
 function renderJarsView() {
-  const view = document.getElementById('jarsView');
-  if (!currentUserId) { view.innerHTML = ''; return; }
-
-  if (jars.length === 0) {
-    view.innerHTML = `
-      <h2 class="view-title">Jars</h2>
-      <div class="card" style="text-align:center; padding:var(--space-8) var(--space-5);">
-        <div style="margin-bottom:var(--space-4);">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--purple-400)" stroke-width="1.5" style="display:block;margin:0 auto;"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
-        </div>
-        <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:var(--space-2);">Set Up Your Jars</h3>
-        <p style="color:var(--text-muted);font-size:0.9rem;max-width:260px;margin:0 auto var(--space-5);">Jars help you split your money into Save, Spend, and Give buckets.</p>
-        <p style="font-size:0.85rem;color:var(--text-faint);">Ask a parent to set up jars from the settings page.</p>
-      </div>
-    `;
-    return;
-  }
-
-  // Show jar detail if one is selected
-  if (currentJarId) {
-    renderJarDetail();
-    return;
-  }
-
-  const totalBalance = jars.reduce((s, j) => s + (j.balance || 0), 0);
-
-  // Compute fill percentage: use visual cap so jars always look meaningful
-  const maxBal = Math.max(50, ...jars.map(j => j.balance || 0));
-  const jarCards = jars.map((j, idx) => {
-    const bal = j.balance || 0;
-    const fillPct = maxBal > 0 ? Math.round((bal / maxBal) * 100) : 0;
-    // Use unique clipPath ids per jar to avoid SVG conflicts
-    const jarSvg = jarVisualSVG(fillPct, j.color, j.color, 80, 106).replace(/jarClip/g, 'jarClip' + idx);
-    return `
-    <div class="jar-card" onclick="openJarDetail('${j.id}')" data-testid="jar-card-${j.id}">
-      <div class="jar-card-visual">${jarSvg}</div>
-      <div class="jar-info">
-        <div class="jar-name">${esc(j.name)}</div>
-        <div class="jar-balance">$${fmtNum(bal)}</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  view.innerHTML = `
-    <h2 class="view-title">Jars</h2>
-    <div class="jars-summary-bar">
-      <div>
-        <div class="jars-summary-label">Total Balance</div>
-        <div class="jars-summary-amount">$${fmtNum(totalBalance)}</div>
-      </div>
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
-    </div>
-    <div class="jar-cards-grid">${jarCards}</div>
-  `;
+  // If no jar selected, go to home
+  if (!currentJarId) { showView('homeView'); return; }
+  renderJarDetail();
 }
 
 function openJarDetail(id) {
   currentJarId = id;
-  renderJarDetail();
 }
 
 function renderJarDetail() {
   const view = document.getElementById('jarsView');
   const jar = jars.find(j => j.id === currentJarId);
-  if (!jar) { currentJarId = null; renderJarsView(); return; }
+  if (!jar) { currentJarId = null; showView('homeView'); return; }
 
   const txList = jarTxs
     .filter(t => t.jarId === currentJarId)
@@ -4200,18 +4149,40 @@ function renderJarDetail() {
         `;
       }).join('');
 
+  const fillPct = Math.min(100, Math.round(((jar.balance||0) / Math.max(50, jar.balance||0)) * 100));
+
   view.innerHTML = `
     <div class="puzzle-header">
       <button class="puzzle-back" onclick="backFromJarDetail()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-        Jars
+        Home
       </button>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:var(--space-3);">
-      ${jarVisualSVG(Math.min(100, Math.round(((jar.balance||0) / Math.max(50, jar.balance||0)) * 100)), jar.color, jar.color, 130, 172).replace(/jarClip/g, 'jarClipDetail')}
-      <div class="jar-detail-name">${esc(jar.name)}</div>
+      ${jarVisualSVG(fillPct, jar.color, jar.color, 130, 172).replace(/jarClip/g, 'jarClipDetail')}
+      <div class="jar-detail-name" id="jarDetailName">${esc(jar.name)}</div>
       <div class="jar-detail-balance">$${fmtNum(jar.balance || 0)}</div>
     </div>
+
+    <!-- Edit actions (PIN-gated) -->
+    <div class="card" style="margin-bottom:var(--space-3);">
+      <div style="display:flex;gap:var(--space-2);margin-bottom:var(--space-3);">
+        <button class="btn-sm btn-outline" style="flex:1;" onclick="requestPinFor('jar-edit-name','${jar.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+          Rename
+        </button>
+        <button class="btn-sm btn-outline" style="flex:1;color:var(--green-600);" onclick="requestPinFor('jar-add-money','${jar.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Add
+        </button>
+        <button class="btn-sm btn-outline" style="flex:1;color:#DC2626;" onclick="requestPinFor('jar-withdraw','${jar.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Withdraw
+        </button>
+      </div>
+      <div id="jarEditArea"></div>
+    </div>
+
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3);">
         <span class="form-label" style="margin:0;">Transactions</span>
@@ -4223,7 +4194,108 @@ function renderJarDetail() {
 
 function backFromJarDetail() {
   currentJarId = null;
-  renderJarsView();
+  showView('homeView');
+}
+
+/* Jar edit actions — called after PIN unlock */
+async function jarEditName(jarId) {
+  const jar = jars.find(j => j.id === jarId);
+  if (!jar) return;
+  const area = document.getElementById('jarEditArea');
+  area.innerHTML = `
+    <div style="display:flex;gap:var(--space-2);align-items:center;">
+      <input type="text" id="jarRenameInput" class="form-input" value="${esc(jar.name)}" style="flex:1;">
+      <button class="btn-primary" style="padding:8px 16px;" onclick="saveJarRename('${jarId}')">Save</button>
+      <button class="btn-outline btn-sm" onclick="document.getElementById('jarEditArea').innerHTML=''">Cancel</button>
+    </div>`;
+  document.getElementById('jarRenameInput').focus();
+}
+
+async function saveJarRename(jarId) {
+  const jar = jars.find(j => j.id === jarId);
+  if (!jar) return;
+  const val = document.getElementById('jarRenameInput').value.trim();
+  if (!val) return;
+  jar.name = val;
+  await dbPutJar(jar);
+  renderJarDetail();
+}
+
+async function jarAddMoney(jarId) {
+  const area = document.getElementById('jarEditArea');
+  area.innerHTML = `
+    <div style="margin-bottom:var(--space-2);">
+      <label class="form-label">Amount to add</label>
+      <input type="number" id="jarAddAmountInput" class="form-input" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal">
+    </div>
+    <div style="margin-bottom:var(--space-2);">
+      <label class="form-label">Note (optional)</label>
+      <input type="text" id="jarAddNoteInput" class="form-input" placeholder="e.g. Birthday money">
+    </div>
+    <div style="display:flex;gap:var(--space-2);">
+      <button class="btn-primary" style="flex:1;" onclick="saveJarAdd('${jarId}')">Add Money</button>
+      <button class="btn-outline btn-sm" onclick="document.getElementById('jarEditArea').innerHTML=''">Cancel</button>
+    </div>`;
+  document.getElementById('jarAddAmountInput').focus();
+}
+
+async function saveJarAdd(jarId) {
+  const jar = jars.find(j => j.id === jarId);
+  if (!jar) return;
+  const amt = parseFloat(document.getElementById('jarAddAmountInput').value);
+  if (!amt || amt <= 0) return;
+  const note = document.getElementById('jarAddNoteInput').value.trim() || 'Manual deposit';
+  jar.balance = Math.round(((jar.balance || 0) + amt) * 100) / 100;
+  await dbPutJar(jar);
+  const tx = {
+    id: 'tx_' + Date.now(),
+    jarId, userId: currentUserId, amount: amt,
+    type: 'manual', note,
+    date: new Date().toISOString().split('T')[0],
+    createdAt: new Date().toISOString(),
+  };
+  await dbPutJarTx(tx);
+  jarTxs.push(tx);
+  renderJarDetail();
+}
+
+async function jarWithdraw(jarId) {
+  const jar = jars.find(j => j.id === jarId);
+  if (!jar) return;
+  const area = document.getElementById('jarEditArea');
+  area.innerHTML = `
+    <div style="margin-bottom:var(--space-2);">
+      <label class="form-label">Amount to withdraw (max $${fmtNum(jar.balance||0)})</label>
+      <input type="number" id="jarWithdrawAmountInput" class="form-input" placeholder="0.00" min="0.01" max="${jar.balance||0}" step="0.01" inputmode="decimal">
+    </div>
+    <div style="margin-bottom:var(--space-2);">
+      <label class="form-label">Note (optional)</label>
+      <input type="text" id="jarWithdrawNoteInput" class="form-input" placeholder="e.g. Bought a toy">
+    </div>
+    <div style="display:flex;gap:var(--space-2);">
+      <button class="btn-primary" style="flex:1;background:#DC2626;" onclick="saveJarWithdraw('${jarId}')">Withdraw</button>
+      <button class="btn-outline btn-sm" onclick="document.getElementById('jarEditArea').innerHTML=''">Cancel</button>
+    </div>`;
+  document.getElementById('jarWithdrawAmountInput').focus();
+}
+
+async function saveJarWithdraw(jarId) {
+  const jar = jars.find(j => j.id === jarId);
+  if (!jar) return;
+  const amt = parseFloat(document.getElementById('jarWithdrawAmountInput').value);
+  if (!amt || amt <= 0 || amt > (jar.balance || 0)) return;
+  jar.balance = Math.round(((jar.balance || 0) - amt) * 100) / 100;
+  await dbPutJar(jar);
+  const tx = {
+    id: 'tx_' + Date.now(),
+    jarId, userId: currentUserId, amount: -amt,
+    type: 'manual', note: document.getElementById('jarWithdrawNoteInput').value.trim() || 'Withdrawal',
+    date: new Date().toISOString().split('T')[0],
+    createdAt: new Date().toISOString(),
+  };
+  await dbPutJarTx(tx);
+  jarTxs.push(tx);
+  renderJarDetail();
 }
 
 // ---- Auto-create default jars for new users ----
