@@ -2133,6 +2133,14 @@ function dbGetAllJarTxs() {
     req.onerror = (e) => reject(e.target.error);
   });
 }
+function dbDeleteJarTx(id) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(JAR_TX_STORE, 'readwrite');
+    tx.objectStore(JAR_TX_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e.target.error);
+  });
+}
 
 // ---- Chores DB helpers ----
 function dbPutChore(chore) {
@@ -2511,15 +2519,24 @@ async function removeUser(id) {
 }
 
 async function doRemoveUser(id) {
-  // Delete user and all their goals
+  // Delete user and all their goals, jars, and jar transactions
   const allGoals = await dbGetAll();
   const userGoals = allGoals.filter(g => g.userId === id);
   for (const g of userGoals) {
     await dbDelete(g.id);
   }
+  const allJars = await dbGetAllJars();
+  for (const j of allJars.filter(j => j.userId === id)) {
+    await dbDeleteJar(j.id);
+  }
+  const allTxs = await dbGetAllJarTxs();
+  for (const t of allTxs.filter(t => t.userId === id)) {
+    await dbDeleteJarTx(t.id);
+  }
   await dbDeleteUser(id);
   users = await dbGetAllUsers();
   managingUsers = users.length > 0;
+  if (currentUserId === id) currentUserId = users.length > 0 ? users[0].id : null;
   renderUserSelect();
 }
 
@@ -3460,36 +3477,40 @@ async function renderParentSettings() {
     choreItems = '<p style="color:var(--text-muted);font-size:0.9rem;padding:var(--space-3) 0;">No chores set up yet.</p>';
   }
   
-  // --- Jars Section ---
-  const userJars = jars.filter(j => j.userId === currentUserId);
-  const hasJars = userJars.length > 0;
-  let jarsContent;
-  if (hasJars) {
-    jarsContent = `
-      <div style="display:flex;gap:var(--space-3);margin-bottom:var(--space-3);">
-        ${userJars.map(j => `
-          <div style="flex:1;text-align:center;padding:var(--space-3);background:var(--purple-50);border-radius:var(--radius-lg);">
-            <div style="font-weight:600;font-size:0.85rem;color:var(--purple-700);">${esc(j.label || j.type)}</div>
-            <div style="font-family:var(--font-display);font-weight:700;font-size:1.1rem;">$${fmtNum(j.balance || 0)}</div>
-          </div>`).join('')}
-      </div>
-      <div style="display:flex;gap:var(--space-3);">
-        <button class="btn btn-outline btn-block btn-sm" onclick="parentTransferJars()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
-          Transfer
-        </button>
-        <button class="btn btn-outline btn-sm" onclick="parentEditJars()" style="white-space:nowrap;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-          Edit Jars
-        </button>
-      </div>`;
+  // --- Jars Section (per-user) ---
+  let jarsContent = '';
+  if (users.length === 0) {
+    jarsContent = '<p style="color:var(--text-muted);font-size:0.9rem;">Add users first to set up jars.</p>';
   } else {
-    jarsContent = `
-      <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:var(--space-3);">No jars set up yet.</p>
-      <button class="btn btn-primary btn-block btn-sm" onclick="parentEditJars()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Set Up Jars
-      </button>`;
+    const jarCards = users.map((u, idx) => {
+      const uJars = jars.filter(j => j.userId === u.id);
+      const c = getAvatarColor(idx);
+      if (uJars.length === 0) {
+        return `
+          <div style="margin-bottom:var(--space-3);padding:var(--space-3);background:var(--purple-50);border-radius:var(--radius-lg);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:var(--space-2);">
+              <div style="width:24px;height:24px;border-radius:50%;background:${c};color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">${esc(u.name.charAt(0).toUpperCase())}</div>
+              <span style="font-weight:600;font-size:0.9rem;">${esc(u.name)}</span>
+            </div>
+            <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">No jars yet</p>
+          </div>`;
+      }
+      return `
+        <div style="margin-bottom:var(--space-3);padding:var(--space-3);background:var(--purple-50);border-radius:var(--radius-lg);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:var(--space-2);">
+            <div style="width:24px;height:24px;border-radius:50%;background:${c};color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">${esc(u.name.charAt(0).toUpperCase())}</div>
+            <span style="font-weight:600;font-size:0.9rem;">${esc(u.name)}</span>
+          </div>
+          <div style="display:flex;gap:var(--space-2);">
+            ${uJars.map(j => `
+              <div style="flex:1;text-align:center;padding:var(--space-2);background:var(--surface);border-radius:var(--radius-md);">
+                <div style="font-weight:600;font-size:0.75rem;color:var(--purple-700);text-transform:uppercase;">${esc(j.name || j.type)}</div>
+                <div style="font-family:var(--font-display);font-weight:700;font-size:0.95rem;">$${fmtNum(j.balance || 0)}</div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+    }).join('');
+    jarsContent = jarCards;
   }
   
   // --- Users Section ---
@@ -3708,11 +3729,11 @@ async function saveUserFromParent() {
   renderParentSettings();
 }
 
-function removeUserFromParent(userId) {
+async function removeUserFromParent(userId) {
   if (users.length <= 1) return;
   if (confirm('Remove this user and all their data?')) {
-    doRemoveUser(userId);
-    renderParentSettings();
+    await doRemoveUser(userId);
+    await renderParentSettings();
   }
 }
 
@@ -4059,6 +4080,57 @@ async function autoCreateJarsForUser(userId) {
       createdAt: now,
     });
   }
+}
+
+// ---- Preload Test Data (called from Playwright tests) ----
+async function preloadTestData() {
+  // Create two test users if none exist
+  let allUsers = await dbGetAllUsers();
+  if (allUsers.length === 0) {
+    const testUsers = [
+      { id: 'testuser1', name: 'Emma' },
+      { id: 'testuser2', name: 'Liam' },
+    ];
+    for (const u of testUsers) {
+      await dbPutUser(u);
+      await autoCreateJarsForUser(u.id);
+    }
+    allUsers = testUsers;
+  }
+  // Seed chores if none exist
+  const existingChores = await dbGetAllChores();
+  if (existingChores.length === 0) {
+    const userIds = allUsers.map(u => u.id);
+    const sampleChores = [
+      { name: 'Make bed', amount: 0.50, recurring: 'daily', choreDays: [], assignedTo: userIds },
+      { name: 'Clean room', amount: 2.00, recurring: 'weekly', choreDays: [], assignedTo: userIds },
+      { name: 'Homework', amount: 1.00, recurring: 'specific', choreDays: [1,2,3,4,5], assignedTo: userIds },
+      { name: 'Feed the dog', amount: 0.75, recurring: 'daily', choreDays: [], assignedTo: [userIds[0]] },
+      { name: 'Take out trash', amount: 1.50, recurring: 'weekly', choreDays: [], assignedTo: [userIds[1]] },
+      { name: 'Brush teeth', amount: 0.25, recurring: 'daily', choreDays: [], assignedTo: userIds },
+      { name: 'Put away dishes', amount: 0.50, recurring: 'daily', choreDays: [], assignedTo: userIds },
+      { name: 'Read for 20 min', amount: 1.00, recurring: 'daily', choreDays: [], assignedTo: [userIds[0]] },
+    ];
+    const now = new Date().toISOString();
+    for (let i = 0; i < sampleChores.length; i++) {
+      const sc = sampleChores[i];
+      await dbPutChore({
+        id: 'chore_test_' + i,
+        name: sc.name,
+        amount: sc.amount,
+        recurring: sc.recurring,
+        choreDays: sc.choreDays,
+        assignedTo: sc.assignedTo,
+        createdAt: now,
+      });
+    }
+  }
+  // Set a default PIN if not set
+  const pin = await dbGetSetting('parentPin');
+  if (!pin) await dbPutSetting('parentPin', '12345');
+  // Refresh state
+  users = await dbGetAllUsers();
+  return { users: users.length, chores: (await dbGetAllChores()).length };
 }
 
 // ---- Jar Setup ----
