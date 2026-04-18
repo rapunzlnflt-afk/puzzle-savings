@@ -4372,6 +4372,10 @@ async function openEditChoreModal(id) {
     b.classList.toggle('selected', b.dataset.val === c.recurring);
   });
   populateChoreUserCheckboxes(c.assignedTo);
+  // If parent settings is open, use parent flow (no extra PIN needed)
+  if (document.getElementById('parentSettingsView').style.display !== 'none') {
+    window._choreFromParent = true;
+  }
   document.getElementById('addChoreModal').classList.add('active');
 }
 
