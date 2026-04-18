@@ -2368,8 +2368,11 @@ async function submitPin() {
     closePinOverlay();
     parentUnlocked = true;
     _submittingPin = false;
-    // Now proceed to add user form
-    showAddUserForm();
+    // Go straight to parent settings for initial setup
+    document.getElementById('app').style.display = '';
+    document.getElementById('userSelectScreen').style.display = 'none';
+    showView('parentSettingsView');
+    renderParentSettings();
     return;
   }
 
@@ -2912,15 +2915,26 @@ function renderPuzzle() {
   const hasImage = !!goal.imageData;
 
   if (hasImage) {
-    container.innerHTML = `
-      <img class="reveal-img-faded" src="${goal.imageData}" alt="${esc(goal.name)}">
-      <img class="reveal-img-clear" src="${goal.imageData}" alt="${esc(goal.name)}"
-           style="clip-path: inset(${clipTop}% 0 0 0);">
-      <div class="reveal-pct-overlay">${Math.round(pct)}%</div>`;
-    if (isComplete) {
-      container.classList.add('complete');
-    } else {
+    if (pct <= 0 && !isComplete) {
+      // No savings yet — show pig icon instead of greyed-out image
+      const pigSrc = document.querySelector('#startView img[alt="Puzzle Pig"]')?.src || '';
+      container.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1;background:var(--surface-2,#F5F5F7);border-radius:var(--radius-2,12px);">
+          <img src="${pigSrc}" width="120" height="120" alt="Start saving!" style="opacity:0.8;">
+        </div>
+        <div class="reveal-pct-overlay">0%</div>`;
       container.classList.remove('complete');
+    } else {
+      container.innerHTML = `
+        <img class="reveal-img-faded" src="${goal.imageData}" alt="${esc(goal.name)}">
+        <img class="reveal-img-clear" src="${goal.imageData}" alt="${esc(goal.name)}"
+             style="clip-path: inset(${clipTop}% 0 0 0);">
+        <div class="reveal-pct-overlay">${Math.round(pct)}%</div>`;
+      if (isComplete) {
+        container.classList.add('complete');
+      } else {
+        container.classList.remove('complete');
+      }
     }
   } else {
     container.innerHTML = `
@@ -3333,28 +3347,47 @@ async function renderParentSettings() {
       </div>`;
   }
   
-  // --- Chores Section (global list with user tags) ---
-  const choreItems = allChoresGlobal.length > 0 ? allChoresGlobal.map(c => {
-    const assignedNames = c.assignedTo.map(uid => {
-      const u = users.find(u => u.id === uid);
-      return u ? esc(u.name) : '';
-    }).filter(Boolean);
-    const userTags = assignedNames.length > 0
-      ? assignedNames.map(n => `<span class="chore-user-tag">${n}</span>`).join(' ')
-      : '<span class="chore-user-tag" style="opacity:0.5;">Unassigned</span>';
-    return `
+  // --- Chores Section (global list + inline user assignment) ---
+  let choreItems;
+  if (allChoresGlobal.length > 0) {
+    const choreList = allChoresGlobal.map(c => `
     <div class="parent-chore-item">
       <div class="parent-chore-info">
         <div class="parent-chore-name">${esc(c.name)}</div>
         <div class="parent-chore-meta">$${fmtNum(c.amount)} &middot; ${c.recurring}</div>
-        <div class="parent-chore-users">${userTags}</div>
       </div>
       <div class="parent-chore-actions">
         <button class="btn btn-sm btn-outline" onclick="openEditChoreModal('${c.id}')">Edit</button>
         <button class="btn btn-sm btn-danger" onclick="deleteChoreFromParent('${c.id}')">Delete</button>
       </div>
-    </div>`;
-  }).join('') : '<p style="color:var(--text-muted);font-size:0.9rem;padding:var(--space-3) 0;">No chores set up yet.</p>';
+    </div>`).join('');
+
+    // User assignment grid (user names as headers, checkboxes per chore)
+    let assignGrid = '';
+    if (users.length > 0) {
+      const headerCells = users.map(u => `<th style="font-size:0.75rem;font-weight:600;text-align:center;padding:4px 6px;">${esc(u.name)}</th>`).join('');
+      const rows = allChoresGlobal.map(c => {
+        const cells = users.map(u => {
+          const checked = c.assignedTo.includes(u.id) ? 'checked' : '';
+          return `<td style="text-align:center;padding:4px 6px;"><input type="checkbox" ${checked} onchange="toggleChoreUser('${c.id}','${u.id}',this.checked)" style="width:18px;height:18px;accent-color:var(--purple-500,#8E6BBF);"></td>`;
+        }).join('');
+        return `<tr><td style="font-size:0.85rem;padding:4px 6px;">${esc(c.name)}</td>${cells}</tr>`;
+      }).join('');
+      assignGrid = `
+        <div style="margin-top:var(--space-3);border-top:1px solid var(--border);padding-top:var(--space-3);">
+          <div style="font-size:0.85rem;font-weight:600;color:var(--text-muted);margin-bottom:var(--space-2);">Assign Chores to Users</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr><th style="text-align:left;font-size:0.75rem;padding:4px 6px;">Chore</th>${headerCells}</tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+    choreItems = choreList + assignGrid;
+  } else {
+    choreItems = '<p style="color:var(--text-muted);font-size:0.9rem;padding:var(--space-3) 0;">No chores set up yet.</p>';
+  }
   
   // --- Jars Section ---
   const userJars = jars.filter(j => j.userId === currentUserId);
@@ -3406,10 +3439,7 @@ async function renderParentSettings() {
         Back
       </button>
       <h2>Parent Settings</h2>
-      <button class="parent-lock-btn" onclick="closeParentSettings()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Lock
-      </button>
+      <div style="width:60px;"></div>
     </div>
     
     ${pendingHTML}
@@ -3509,6 +3539,26 @@ async function rejectChoreFromParent(logId) {
   await dbPutChoreLog(cl);
   updateChoresBadge();
   renderParentSettings();
+}
+
+async function toggleChoreUser(choreId, userId, isChecked) {
+  const allC = await dbGetAllChores();
+  const c = allC.find(x => x.id === choreId);
+  if (!c) return;
+  if (!c.assignedTo) c.assignedTo = c.userId ? [c.userId] : [];
+  if (isChecked && !c.assignedTo.includes(userId)) {
+    c.assignedTo.push(userId);
+  } else if (!isChecked) {
+    c.assignedTo = c.assignedTo.filter(id => id !== userId);
+  }
+  await dbPutChore(c);
+  // Update local chores array for current user
+  if (c.assignedTo.includes(currentUserId)) {
+    const idx = chores.findIndex(x => x.id === choreId);
+    if (idx >= 0) chores[idx] = c; else chores.push(c);
+  } else {
+    chores = chores.filter(x => x.id !== choreId);
+  }
 }
 
 async function deleteChoreFromParent(choreId) {
