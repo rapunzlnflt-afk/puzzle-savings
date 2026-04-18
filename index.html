@@ -2302,6 +2302,16 @@ async function selectUser(id) {
   const allChoreLogs = await dbGetAllChoreLogs();
   choreLogs = allChoreLogs.filter(cl => cl.userId === id);
 
+  // Sync Save jar balance with goal history
+  const saveJar = jars.find(j => j.type === 'save');
+  if (saveJar) {
+    const totalGoalSaved = goals.reduce((sum, g) => sum + g.history.reduce((s, h) => s + h.amount, 0), 0);
+    if (saveJar.balance < totalGoalSaved) {
+      saveJar.balance = totalGoalSaved;
+      await dbPutJar(saveJar);
+    }
+  }
+
   // Show the main app
   document.getElementById('userSelectScreen').style.display = 'none';
   document.getElementById('app').style.display = '';
@@ -4371,6 +4381,10 @@ async function autoCreateJarsForUser(userId) {
   const allJars = await dbGetAllJars();
   const userJars = allJars.filter(j => j.userId === userId);
   if (userJars.length > 0) return; // already has jars
+  // Sync Save jar balance with existing goal savings
+  const allGoals = await dbGetAll();
+  const userGoals = allGoals.filter(g => g.userId === userId);
+  const totalSaved = userGoals.reduce((sum, g) => sum + g.history.reduce((s, h) => s + h.amount, 0), 0);
   const now = new Date().toISOString();
   for (let i = 0; i < DEFAULT_JARS.length; i++) {
     const d = DEFAULT_JARS[i];
@@ -4379,7 +4393,7 @@ async function autoCreateJarsForUser(userId) {
       userId,
       name: d.name,
       type: d.type,
-      balance: 0,
+      balance: d.type === 'save' ? totalSaved : 0,
       color: d.color,
       order: i,
       createdAt: now,
@@ -4534,8 +4548,10 @@ function cancelJarSetup() {
 }
 
 // Calculate total saved across all goals for this user
-function calcTotalGoalSaved() {
-  return goals.reduce((total, g) => total + g.history.reduce((s, h) => s + h.amount, 0), 0);
+async function calcTotalGoalSaved() {
+  const allGoals = await dbGetAll();
+  const userGoals = allGoals.filter(g => g.userId === currentUserId);
+  return userGoals.reduce((total, g) => total + g.history.reduce((s, h) => s + h.amount, 0), 0);
 }
 
 async function saveJarSetup() {
@@ -4544,6 +4560,7 @@ async function saveJarSetup() {
   const selections = jarSetupSelections.filter(s => s.checked);
   if (selections.length === 0) return;
   const now = new Date().toISOString();
+  const totalGoalSaved = await calcTotalGoalSaved();
   const newJars = [];
   for (let i = 0; i < selections.length; i++) {
     const s = selections[i];
@@ -4553,7 +4570,7 @@ async function saveJarSetup() {
       userId: currentUserId,
       name: s.name || s.type,
       type: s.type,
-      balance: existing ? (existing.balance || 0) : (s.type === 'save' ? calcTotalGoalSaved() : 0),
+      balance: existing ? (existing.balance || 0) : (s.type === 'save' ? totalGoalSaved : 0),
       color: s.color,
       order: i,
       createdAt: existing ? existing.createdAt : now,
