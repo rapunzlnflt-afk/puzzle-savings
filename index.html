@@ -2379,6 +2379,7 @@ async function requestPinFor(action, extra) {
 function closePinOverlay() {
   document.getElementById('pinOverlay').classList.remove('active');
   pinCallback = null;
+  _submittingPin = false;
 }
 
 let _submittingPin = false;
@@ -2407,6 +2408,7 @@ async function submitPin() {
     const firstPin = pinCallback.extra;
     if (pin !== firstPin) {
       document.getElementById('pinError').textContent = 'PINs do not match. Try again.';
+      _submittingPin = false;
       return;
     }
     await dbPutSetting('parentPin', pin);
@@ -2427,6 +2429,7 @@ async function submitPin() {
     document.getElementById('pinError').textContent = 'Incorrect PIN';
     document.querySelectorAll('.pin-digit').forEach(d => d.value = '');
     document.querySelector('.pin-digit[data-idx="0"]').focus();
+    _submittingPin = false;
     return;
   }
 
