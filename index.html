@@ -996,25 +996,40 @@ a { color: inherit; text-decoration: none; }
 
 /* Jar celebration animation */
 .home-jar-pill.jar-celebrate {
-  animation: jarBounce 0.6s ease;
-  box-shadow: 0 0 16px rgba(123, 94, 167, 0.4);
+  animation: jarBounce 0.8s ease;
+  box-shadow: 0 0 24px rgba(123, 94, 167, 0.5), 0 0 48px rgba(123, 94, 167, 0.2);
   border-color: var(--purple-400);
+  z-index: 10;
 }
 @keyframes jarBounce {
   0% { transform: scale(1); }
-  25% { transform: scale(1.1); }
-  50% { transform: scale(0.95); }
+  15% { transform: scale(1.18) rotate(-2deg); }
+  30% { transform: scale(0.92) rotate(1deg); }
+  45% { transform: scale(1.12) rotate(-1deg); }
+  60% { transform: scale(0.97); }
   75% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
 .jar-coin-particle {
-  position: absolute; pointer-events: none; font-size: 1rem;
-  animation: coinFloat 1.2s ease-out forwards;
+  position: absolute; pointer-events: none;
+  animation: coinFloat 1.6s ease-out forwards;
+  font-weight: 700;
 }
 @keyframes coinFloat {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  60% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-60px) scale(0.5); }
+  0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-80px) scale(0.4) rotate(20deg); }
+}
+.jar-celebrate-ring {
+  position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+  border-radius: 50%; pointer-events: none;
+  border: 2px solid var(--purple-400);
+  animation: ringPulse 0.8s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+@keyframes ringPulse {
+  0% { width: 0; height: 0; opacity: 0.8; }
+  100% { width: 120px; height: 120px; opacity: 0; }
 }
 
 /* ============ HOME CHORES SECTION ============ */
@@ -4013,27 +4028,51 @@ function celebrateJarDeposit(jarIdx, amount) {
   const pill = pills[jarIdx];
   if (!pill) return;
   pill.classList.remove('jar-celebrate');
-  void pill.offsetWidth; // reflow
+  void pill.offsetWidth;
   pill.classList.add('jar-celebrate');
   pill.style.position = 'relative';
-  // Spawn coin particles
-  const coins = ['$', '$', '$'];
-  coins.forEach((c, i) => {
+  pill.style.overflow = 'visible';
+
+  // Expanding ring
+  const ring = document.createElement('span');
+  ring.className = 'jar-celebrate-ring';
+  pill.appendChild(ring);
+
+  // Spawn lots of coin/star particles in waves
+  const symbols = ['$', '$', '$', '$', '$', '$'];
+  const colors = ['var(--purple-500)', 'var(--purple-400)', 'var(--pink-400)', 'var(--green-500)', 'var(--sky-500)'];
+  symbols.forEach((c, i) => {
     const p = document.createElement('span');
     p.className = 'jar-coin-particle';
     p.textContent = c;
-    p.style.left = (30 + Math.random() * 40) + '%';
-    p.style.top = '20%';
-    p.style.animationDelay = (i * 0.15) + 's';
-    p.style.color = 'var(--purple-500)';
+    p.style.left = (10 + Math.random() * 80) + '%';
+    p.style.top = (10 + Math.random() * 30) + '%';
+    p.style.animationDelay = (i * 0.12) + 's';
+    p.style.color = colors[Math.floor(Math.random() * colors.length)];
+    p.style.fontSize = (0.9 + Math.random() * 0.8) + 'rem';
     pill.appendChild(p);
   });
+
+  // Second wave of sparkle stars
+  const stars = ['\u2726', '\u2728', '\u2605'];
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('span');
+    s.className = 'jar-coin-particle';
+    s.textContent = stars[Math.floor(Math.random() * stars.length)];
+    s.style.left = (5 + Math.random() * 90) + '%';
+    s.style.top = (5 + Math.random() * 40) + '%';
+    s.style.animationDelay = (0.3 + i * 0.1) + 's';
+    s.style.color = colors[Math.floor(Math.random() * colors.length)];
+    s.style.fontSize = (0.6 + Math.random() * 0.6) + 'rem';
+    pill.appendChild(s);
+  }
+
   // Show encouragement toast
   showEncouragement(amount);
   setTimeout(() => {
     pill.classList.remove('jar-celebrate');
-    pill.querySelectorAll('.jar-coin-particle').forEach(p => p.remove());
-  }, 1800);
+    pill.querySelectorAll('.jar-coin-particle, .jar-celebrate-ring').forEach(p => p.remove());
+  }, 2500);
 }
 
 function showEncouragement(amount) {
