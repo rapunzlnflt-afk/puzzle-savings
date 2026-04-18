@@ -987,6 +987,29 @@ a { color: inherit; text-decoration: none; }
 .home-jar-pill-name { font-weight: 600; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
 .home-jar-pill-amount { font-family: var(--font-display); font-weight: 700; color: var(--text); font-size: 0.9rem; }
 
+/* Jar celebration animation */
+.home-jar-pill.jar-celebrate {
+  animation: jarBounce 0.6s ease;
+  box-shadow: 0 0 16px rgba(123, 94, 167, 0.4);
+  border-color: var(--purple-400);
+}
+@keyframes jarBounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.jar-coin-particle {
+  position: absolute; pointer-events: none; font-size: 1rem;
+  animation: coinFloat 1.2s ease-out forwards;
+}
+@keyframes coinFloat {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  60% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-60px) scale(0.5); }
+}
+
 /* ============ HOME CHORES SECTION ============ */
 .home-chores {
   background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-4);
@@ -2717,13 +2740,21 @@ function renderHome() {
         <div class="home-jar-pill-amount">$${fmtNum(j.balance || 0)}</div>
       </div>`;}).join('');
     jarsBar.innerHTML = `
-      <div class="home-jars-total-row">
-        <div class="home-jars-total">$${fmtNum(totalBalance)}</div>
-        <div class="home-jars-label">saved across all jars</div>
-      </div>
       <div class="home-jars-row">${pills}</div>
     `;
     jarsBar.style.display = '';
+
+    // Celebrate any jar that gained money since last render
+    const uid = currentUserId || '';
+    if (!lastSeenJarBalances[uid]) lastSeenJarBalances[uid] = {};
+    jars.forEach((j, idx) => {
+      const prev = lastSeenJarBalances[uid][j.id];
+      const cur = j.balance || 0;
+      if (prev !== undefined && cur > prev) {
+        setTimeout(() => celebrateJarDeposit(idx, cur - prev), 300);
+      }
+      lastSeenJarBalances[uid][j.id] = cur;
+    });
   } else {
     jarsBar.style.display = 'none';
   }
@@ -3957,6 +3988,36 @@ const encouragements = [
   "Your picture is revealing!"
 ];
 let lastEncouragementIdx = -1;
+let lastSeenJarBalances = {};
+
+function celebrateJarDeposit(jarIdx, amount) {
+  const pills = document.querySelectorAll('.home-jar-pill');
+  const pill = pills[jarIdx];
+  if (!pill) return;
+  pill.classList.remove('jar-celebrate');
+  void pill.offsetWidth; // reflow
+  pill.classList.add('jar-celebrate');
+  pill.style.position = 'relative';
+  // Spawn coin particles
+  const coins = ['$', '$', '$'];
+  coins.forEach((c, i) => {
+    const p = document.createElement('span');
+    p.className = 'jar-coin-particle';
+    p.textContent = c;
+    p.style.left = (30 + Math.random() * 40) + '%';
+    p.style.top = '20%';
+    p.style.animationDelay = (i * 0.15) + 's';
+    p.style.color = 'var(--purple-500)';
+    pill.appendChild(p);
+  });
+  // Show encouragement toast
+  showEncouragement(amount);
+  setTimeout(() => {
+    pill.classList.remove('jar-celebrate');
+    pill.querySelectorAll('.jar-coin-particle').forEach(p => p.remove());
+  }, 1800);
+}
+
 function showEncouragement(amount) {
   let idx;
   do { idx = Math.floor(Math.random() * encouragements.length); } while (idx === lastEncouragementIdx);
