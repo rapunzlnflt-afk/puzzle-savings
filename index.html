@@ -1408,6 +1408,9 @@ a { color: inherit; text-decoration: none; }
   #userSelectScreen { display: none !important; }
   .current-user-bar { display: none !important; }
 
+  /* Home print: show name/date header */
+  #homeView .print-home-header { display: block !important; }
+
   /* Journal print: hide form, show only journal with goal thumbnail */
   #savingsEntryView .card:first-of-type { display: none !important; }
   #savingsEntryView .view-title { display: none !important; }
@@ -1482,6 +1485,13 @@ a { color: inherit; text-decoration: none; }
 
   <!-- ===== HOME VIEW ===== -->
   <div id="homeView" class="view active">
+    <!-- Print-only header with name/date lines -->
+    <div class="print-home-header" style="display:none; margin-bottom:20pt; border-bottom:1px solid #CCC; padding-bottom:12pt;">
+      <div style="display:flex; gap:24pt; margin-bottom:8pt;">
+        <div style="flex:1;"><span style="font-weight:600; font-size:11pt;">Name:</span> <span style="border-bottom:1px solid #999; display:inline-block; width:calc(100% - 50pt);">&nbsp;</span></div>
+        <div style="flex:1;"><span style="font-weight:600; font-size:11pt;">Date:</span> <span style="border-bottom:1px solid #999; display:inline-block; width:calc(100% - 40pt);">&nbsp;</span></div>
+      </div>
+    </div>
     <div id="homeJarsBar" class="home-jars-bar" style="display:none;"></div>
     <div id="homeChoresSection" style="display:none;"></div>
     <div id="goalsList"></div>
