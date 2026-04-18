@@ -189,9 +189,14 @@ a { color: inherit; text-decoration: none; }
 .goal-card-thumb {
   width: 56px; height: 56px; border-radius: var(--radius-md); overflow: hidden;
   background: var(--purple-100); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  position: relative;
 }
 .goal-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .goal-card-thumb .placeholder-icon { font-size: 1.5rem; }
+.thumb-pig-bg {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: var(--purple-100);
+}
 .goal-card-info { flex: 1; min-width: 0; }
 .goal-card-name {
   font-family: var(--font-display); font-weight: 600; font-size: 1rem;
@@ -653,10 +658,12 @@ a { color: inherit; text-decoration: none; }
 
 /* ============ BOTTOM NAV ============ */
 .bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface);
-  border-top: 1px solid var(--border); padding: var(--space-2) var(--space-3);
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--purple-50); border-top: 1.5px solid var(--purple-200);
+  padding: var(--space-2) var(--space-3);
   display: flex; justify-content: space-around; z-index: 100;
   max-width: 480px; margin: 0 auto;
+  box-shadow: 0 -2px 8px rgba(123, 94, 167, 0.08);
 }
 .nav-item {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
@@ -1456,7 +1463,7 @@ a { color: inherit; text-decoration: none; }
 
   <!-- ===== HOME VIEW ===== -->
   <div id="homeView" class="view active">
-    <div id="homeJarsBar" style="display:none;"></div>
+    <div id="homeJarsBar" class="home-jars-bar" style="display:none;"></div>
     <div id="homeChoresSection" style="display:none;"></div>
     <div id="goalsList"></div>
     <div id="goalsEmpty" class="goals-empty" style="display:none;">
@@ -2825,7 +2832,18 @@ function renderHome() {
 
     let thumbHTML = '';
     if (g.imageData) {
-      thumbHTML = `<img src="${g.imageData}" alt="${esc(g.name)}">`;
+      const clipTop = 100 - pct;
+      if (pct >= 100) {
+        thumbHTML = `<img src="${g.imageData}" alt="${esc(g.name)}">`;
+      } else {
+        // Pig icon bg with image revealing from bottom
+        const pigSrc = document.querySelector('.app-logo img')?.src || '';
+        thumbHTML = `
+          <div class="thumb-pig-bg">
+            ${pigSrc ? `<img src="${pigSrc}" alt="" style="width:24px;height:24px;opacity:0.5;">` : ''}
+          </div>
+          ${pct > 0 ? `<img src="${g.imageData}" alt="${esc(g.name)}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;clip-path:inset(${clipTop}% 0 0 0);">` : ''}`;
+      }
     } else {
       thumbHTML = `<span class="placeholder-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.125em;"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="4" y1="12" x2="20" y2="12"/></svg></span>`;
     }
