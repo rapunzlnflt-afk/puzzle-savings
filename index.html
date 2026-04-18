@@ -1497,13 +1497,6 @@ a { color: inherit; text-decoration: none; }
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="pieceAmount">How much will you save at a time?</label>
-        <div class="amount-input-wrap">
-          <input type="number" id="pieceAmount" class="form-input" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal">
-        </div>
-      </div>
-
       <!-- Step 5: Goal Date (optional) -->
       <div class="form-group">
         <label class="form-label" for="goalDate">Goal date <span style="font-weight:400; color:var(--text-faint);">(optional)</span></label>
@@ -2881,23 +2874,19 @@ function hidePhotoPreview() {
 // ---- Calculation ----
 function setupCalcListeners() {
   const goalInput = document.getElementById('goalAmount');
-  const pieceInput = document.getElementById('pieceAmount');
   const dateInput = document.getElementById('goalDate');
   const calc = () => { updateCalcInfo(); updateDateInfo(); };
   goalInput.addEventListener('input', calc);
-  pieceInput.addEventListener('input', calc);
   dateInput.addEventListener('input', calc);
 }
 
 function updateCalcInfo() {
   const goalAmt = parseFloat(document.getElementById('goalAmount').value);
-  const pieceAmt = parseFloat(document.getElementById('pieceAmount').value);
   const el = document.getElementById('calcInfo');
   const txt = document.getElementById('calcInfoText');
 
-  if (goalAmt > 0 && pieceAmt > 0 && pieceAmt <= goalAmt) {
-    const steps = Math.max(1, Math.ceil(goalAmt / pieceAmt));
-    txt.textContent = `Your picture will reveal in ${steps} step${steps !== 1 ? 's' : ''} as you save!`;
+  if (goalAmt > 0) {
+    txt.textContent = `Your picture will reveal as you save toward $${fmtNum(goalAmt)}!`;
     el.style.display = '';
   } else {
     el.style.display = 'none';
@@ -2906,7 +2895,6 @@ function updateCalcInfo() {
 
 function updateDateInfo() {
   const goalAmt = parseFloat(document.getElementById('goalAmount').value);
-  const pieceAmt = parseFloat(document.getElementById('pieceAmount').value);
   const dateVal = document.getElementById('goalDate').value;
   const el = document.getElementById('dateInfo');
   const txt = document.getElementById('dateInfoText');
@@ -2932,7 +2920,6 @@ function updateDateInfo() {
 async function saveGoal() {
   const name = document.getElementById('goalName').value.trim();
   const goalAmount = parseFloat(document.getElementById('goalAmount').value);
-  const pieceAmount = parseFloat(document.getElementById('pieceAmount').value);
   const goalDate = document.getElementById('goalDate').value || null;
 
   if (!uploadedImageData) {
@@ -2942,14 +2929,12 @@ async function saveGoal() {
   }
   if (!name) return shakeInput('goalName');
   if (!goalAmount || goalAmount <= 0) return shakeInput('goalAmount');
-  if (!pieceAmount || pieceAmount <= 0 || pieceAmount > goalAmount) return shakeInput('pieceAmount');
 
   if (editingGoalId) {
     const goal = goals.find(g => g.id === editingGoalId);
     if (goal) {
       goal.name = name;
       goal.goalAmount = goalAmount;
-      goal.pieceAmount = pieceAmount;
       goal.goalDate = goalDate;
       goal.category = selectedCategory;
       if (uploadedImageData) goal.imageData = uploadedImageData;
@@ -2966,7 +2951,6 @@ async function saveGoal() {
     userId: currentUserId,
     name,
     goalAmount,
-    pieceAmount,
     goalDate,
     category: selectedCategory,
     imageData: uploadedImageData,
@@ -2991,7 +2975,7 @@ function shakeInput(id) {
 function resetCreateForm() {
   document.getElementById('goalName').value = '';
   document.getElementById('goalAmount').value = '';
-  document.getElementById('pieceAmount').value = '';
+
   document.getElementById('goalDate').value = '';
   document.getElementById('calcInfo').style.display = 'none';
   document.getElementById('dateInfo').style.display = 'none';
@@ -3526,14 +3510,17 @@ async function renderParentSettings() {
     const pendingItems = pendingLogs.map(cl => {
       const c = allChoresGlobal.find(ch => ch.id === cl.choreId);
       const user = users.find(u => u.id === cl.userId);
+      const uJars = allJarsGlobal.filter(j => j.userId === cl.userId);
+      const jarOpts = uJars.map(j => `<option value="${j.id}"${j.type === 'save' ? ' selected' : ''}>${esc(j.name)}</option>`).join('');
       return `
-        <div class="parent-pending-item">
+        <div class="parent-pending-item" style="flex-wrap:wrap;">
           <div class="parent-pending-info">
             <div class="parent-pending-name">${c ? esc(c.name) : 'Unknown'}</div>
             <div class="parent-pending-detail">${user ? esc(user.name) : ''} &middot; $${c ? fmtNum(c.amount) : '0'}</div>
           </div>
           <div class="parent-pending-actions">
-            <button class="parent-btn-approve" onclick="approveChoreFromParent('${cl.id}')">Approve</button>
+            <select id="jarPick_${cl.id}" style="font-size:0.75rem;padding:2px 4px;border-radius:var(--radius-md);border:1px solid var(--border);">${jarOpts}</select>
+            <button class="parent-btn-approve" onclick="approveChoreFromParent('${cl.id}', document.getElementById('jarPick_${cl.id}').value)">Approve</button>
             <button class="parent-btn-reject" onclick="rejectChoreFromParent('${cl.id}')">Reject</button>
           </div>
         </div>`;
@@ -3624,13 +3611,15 @@ async function renderParentSettings() {
         <div style="margin-bottom:var(--space-3);padding:var(--space-3);background:var(--purple-50);border-radius:var(--radius-lg);">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:var(--space-2);">
             <div style="width:24px;height:24px;border-radius:50%;background:${c};color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;">${esc(u.name.charAt(0).toUpperCase())}</div>
-            <span style="font-weight:600;font-size:0.9rem;">${esc(u.name)}</span>
+            <span style="font-weight:600;font-size:0.9rem;flex:1;">${esc(u.name)}</span>
+            <button class="btn btn-sm btn-outline" style="font-size:0.7rem;padding:2px 8px;" onclick="setupJarsForUser('${u.id}')">Edit Jars</button>
           </div>
           <div style="display:flex;gap:var(--space-2);">
             ${uJars.map(j => `
-              <div style="flex:1;text-align:center;padding:var(--space-2);background:var(--surface);border-radius:var(--radius-md);">
+              <div style="flex:1;text-align:center;padding:var(--space-2);background:var(--surface);border-radius:var(--radius-md);cursor:pointer;" onclick="parentJarAction('${j.id}','${u.id}')">
                 <div style="font-weight:600;font-size:0.75rem;color:var(--purple-700);text-transform:uppercase;">${esc(j.name || j.type)}</div>
                 <div style="font-family:var(--font-display);font-weight:700;font-size:0.95rem;">$${fmtNum(j.balance || 0)}</div>
+                <div style="font-size:0.65rem;color:var(--text-muted);margin-top:2px;">tap to add/withdraw</div>
               </div>`).join('')}
           </div>
         </div>`;
@@ -3691,7 +3680,7 @@ async function renderParentSettings() {
       </div>
     </div>
     
-    <div class="parent-section">
+    <div class="parent-section" data-section="jars">
       <div class="parent-section-header">
         <div class="parent-section-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2h8l1 4H7L8 2z"/><rect x="5" y="6" width="14" height="14" rx="2"/><path d="M9 11h6M9 15h4"/></svg>
@@ -3731,7 +3720,7 @@ async function renderParentSettings() {
 }
 
 // Parent Settings action wrappers (no PIN needed — already unlocked)
-async function approveChoreFromParent(logId) {
+async function approveChoreFromParent(logId, targetJarId) {
   const allLogs = await dbGetAllChoreLogs();
   const cl = allLogs.find(l => l.id === logId);
   if (!cl) return;
@@ -3741,21 +3730,21 @@ async function approveChoreFromParent(logId) {
   updateChoresBadge();
   const allC = await dbGetAllChores();
   const chore = allC.find(c => c.id === cl.choreId);
-  const choreUserId = cl.userId; // credit the user who did the chore
+  const choreUserId = cl.userId;
   const allJarsNow = await dbGetAllJars();
   const userJars = allJarsNow.filter(j => j.userId === choreUserId);
   if (chore && userJars.length > 0) {
-    // Allocate to this user's Save jar by default
-    const saveJar = userJars.find(j => j.type === 'save') || userJars[0];
-    saveJar.balance = (saveJar.balance || 0) + chore.amount;
-    await dbPutJar(saveJar);
+    // Use selected jar, or fall back to Save jar
+    const jar = (targetJarId && userJars.find(j => j.id === targetJarId)) || userJars.find(j => j.type === 'save') || userJars[0];
+    jar.balance = (jar.balance || 0) + chore.amount;
+    await dbPutJar(jar);
     const now = new Date().toISOString();
     const note = 'Chore: ' + chore.name;
-    const txEntry = { id: 'jartx_' + Date.now() + '_chore', jarId: saveJar.id, userId: choreUserId, amount: chore.amount, type: 'chore', note, createdAt: now };
+    const txEntry = { id: 'jartx_' + Date.now() + '_chore', jarId: jar.id, userId: choreUserId, amount: chore.amount, type: 'chore', note, createdAt: now };
     await dbPutJarTx(txEntry);
 
-    // Credit this user's active goals
-    if (saveJar.type === 'save') {
+    // Credit goals only if money goes to Save jar
+    if (jar.type === 'save') {
       const allGoalsNow = await dbGetAll();
       const userGoals = allGoalsNow.filter(g => g.userId === choreUserId);
       await creditGoalsForUser(chore.amount, now, note, userGoals);
@@ -3839,6 +3828,58 @@ async function setupJarsForUser(userId) {
   document.getElementById('currentUserBar').style.display = 'none';
   document.getElementById('app').classList.add('no-nav');
   showJarSetup();
+}
+
+async function parentJarAction(jarId, userId) {
+  // Show inline add/withdraw form for this jar in parent settings
+  const allJ = await dbGetAllJars();
+  const jar = allJ.find(j => j.id === jarId);
+  if (!jar) return;
+  const existing = document.getElementById('parentJarActionForm');
+  if (existing) existing.remove();
+  const parentCard = document.querySelector('#parentSettingsView .parent-section[data-section="jars"] .parent-card');
+  if (!parentCard) return;
+  const formDiv = document.createElement('div');
+  formDiv.id = 'parentJarActionForm';
+  formDiv.style.cssText = 'margin-top:var(--space-3);padding:var(--space-3);background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);';
+  formDiv.innerHTML = `
+    <div style="font-weight:600;font-size:0.9rem;margin-bottom:var(--space-2);">${esc(jar.name)} — ${esc(users.find(u=>u.id===userId)?.name||'')} ($${fmtNum(jar.balance||0)})</div>
+    <div style="display:flex;gap:var(--space-2);align-items:center;">
+      <input type="number" id="parentJarAmt" class="form-input" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" style="flex:1;font-size:0.9rem;padding:6px 10px;">
+      <button class="btn btn-sm btn-primary" style="font-size:0.8rem;" onclick="parentJarDoAction('${jarId}','${userId}','add')">Add</button>
+      <button class="btn btn-sm btn-outline" style="font-size:0.8rem;color:#DC2626;border-color:#DC2626;" onclick="parentJarDoAction('${jarId}','${userId}','withdraw')">Withdraw</button>
+      <button class="btn btn-sm btn-outline" style="font-size:0.8rem;" onclick="document.getElementById('parentJarActionForm').remove()">Cancel</button>
+    </div>
+  `;
+  parentCard.appendChild(formDiv);
+  setTimeout(() => document.getElementById('parentJarAmt')?.focus(), 100);
+}
+
+async function parentJarDoAction(jarId, userId, action) {
+  const amt = parseFloat(document.getElementById('parentJarAmt')?.value);
+  if (!amt || amt <= 0) return;
+  const allJ = await dbGetAllJars();
+  const jar = allJ.find(j => j.id === jarId);
+  if (!jar) return;
+  const now = new Date().toISOString();
+  if (action === 'add') {
+    jar.balance = (jar.balance || 0) + amt;
+    const txEntry = { id: 'jartx_' + Date.now(), jarId, userId, amount: amt, type: 'deposit', note: 'Added by parent', createdAt: now };
+    await dbPutJarTx(txEntry);
+    // If it's the Save jar, also credit goals
+    if (jar.type === 'save') {
+      const allGoalsNow = await dbGetAll();
+      const userGoals = allGoalsNow.filter(g => g.userId === userId);
+      await creditGoalsForUser(amt, now, 'Added by parent', userGoals);
+    }
+  } else {
+    jar.balance = Math.max(0, (jar.balance || 0) - amt);
+    const txEntry = { id: 'jartx_' + Date.now(), jarId, userId, amount: -amt, type: 'withdraw', note: 'Withdrawn by parent', createdAt: now };
+    await dbPutJarTx(txEntry);
+  }
+  await dbPutJar(jar);
+  document.getElementById('parentJarActionForm')?.remove();
+  renderParentSettings();
 }
 
 function addUserFromParent() {
@@ -4034,7 +4075,7 @@ function editCurrentGoal() {
   document.getElementById('saveGoalBtn').textContent = 'Save Changes';
   document.getElementById('goalName').value = goal.name;
   document.getElementById('goalAmount').value = goal.goalAmount;
-  document.getElementById('pieceAmount').value = goal.pieceAmount;
+
   document.getElementById('goalDate').value = goal.goalDate || '';
   selectedCategory = goal.category;
   if (goal.imageData) {
@@ -4394,13 +4435,13 @@ async function preloadTestData() {
   if (existingGoals.length === 0) {
     const emmaGoal = {
       id: 'goal_emma_test1', userId: 'testuser1', name: 'Art Supplies',
-      goalAmount: 30, pieceAmount: 3, goalDate: '', category: 'Art',
+      goalAmount: 30, goalDate: '', category: 'Art',
       imageData: '', history: [{amount: 5, date: new Date().toISOString().split('T')[0], note: 'Birthday money'}],
       createdAt: new Date().toISOString(),
     };
     const liamGoal = {
       id: 'goal_liam_test1', userId: 'testuser2', name: 'New Skateboard',
-      goalAmount: 50, pieceAmount: 5, goalDate: '', category: 'Sports',
+      goalAmount: 50, goalDate: '', category: 'Sports',
       imageData: '', history: [],
       createdAt: new Date().toISOString(),
     };
