@@ -694,6 +694,27 @@ a { color: inherit; text-decoration: none; }
   width: 32px; height: 32px; border-radius: var(--radius-md);
   background: var(--purple-100); display: flex; align-items: center; justify-content: center;
 }
+/* Avatar row for direct user selection from parent settings */
+.parent-avatar-row {
+  display: flex; align-items: center; gap: var(--space-3);
+  margin-bottom: var(--space-4); padding: var(--space-3);
+  background: var(--surface); border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+.parent-avatar-picks {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.parent-avatar-pick {
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  color: #fff; font-weight: 700; font-size: 0.95rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.parent-avatar-pick:hover {
+  transform: scale(1.12);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
 .parent-card {
   background: var(--surface); border-radius: var(--radius-xl); padding: var(--space-4);
   box-shadow: var(--shadow-sm); border: 1px solid var(--border);
@@ -3318,7 +3339,26 @@ function openParentSettings() {
 
 function closeParentSettings() {
   lockParent();
-  showView('homeView');
+  // Go to user sign-in page (avatar picker) instead of homeView
+  switchUser();
+}
+
+function toggleChoreListCollapse() {
+  const el = document.getElementById('choreListCollapse');
+  const icon = document.getElementById('choreCollapseIcon');
+  const label = document.getElementById('choreCollapseLabel');
+  if (!el) return;
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? '' : 'none';
+  if (icon) icon.style.transform = isHidden ? 'rotate(180deg)' : '';
+  if (label) label.textContent = isHidden
+    ? 'Hide Chore List'
+    : 'Show Chore List (' + (allChoresGlobal ? allChoresGlobal.length : 0) + ')';
+}
+
+function selectUserFromParent(userId) {
+  lockParent();
+  selectUser(userId);
 }
 
 async function renderParentSettings() {
@@ -3362,7 +3402,8 @@ async function renderParentSettings() {
   
   // --- Chores Section (global list + inline user assignment) ---
   let choreItems;
-  if (allChoresGlobal.length > 0) {
+  const hasChores = allChoresGlobal.length > 0;
+  if (hasChores) {
     const choreList = allChoresGlobal.map(c => `
     <div class="parent-chore-item">
       <div class="parent-chore-info">
@@ -3397,7 +3438,15 @@ async function renderParentSettings() {
           </div>
         </div>`;
     }
-    choreItems = choreList + assignGrid;
+    choreItems = `
+      <div id="choreListCollapse" style="display:none;">
+        ${choreList}
+      </div>
+      <button class="btn btn-outline btn-block btn-sm" onclick="toggleChoreListCollapse()" id="choreCollapseBtn" style="margin-bottom:var(--space-2);font-size:0.8rem;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="choreCollapseIcon"><path d="M6 9l6 6 6-6"/></svg>
+        <span id="choreCollapseLabel">Show Chore List (${allChoresGlobal.length})</span>
+      </button>
+      ${assignGrid}`;
   } else {
     choreItems = '<p style="color:var(--text-muted);font-size:0.9rem;padding:var(--space-3) 0;">No chores set up yet.</p>';
   }
@@ -3445,15 +3494,24 @@ async function renderParentSettings() {
       </div>`;
   }).join('');
   
+  // --- Avatar row for user selection ---
+  const avatarRow = users.length > 0 ? users.map((u, idx) => {
+    const c = getAvatarColor(idx);
+    return `
+      <button class="parent-avatar-pick" onclick="selectUserFromParent('${u.id}')" title="Sign in as ${esc(u.name)}" style="background:${c};">
+        ${esc(u.name.charAt(0).toUpperCase())}
+      </button>`;
+  }).join('') : '';
+
   view.innerHTML = `
     <div class="parent-page-header">
-      <button class="puzzle-back" onclick="closeParentSettings()" data-testid="btn-close-parent">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-        Back
-      </button>
-      <h2>Parent Settings</h2>
-      <div style="width:60px;"></div>
+      <h2 style="flex:1;">Parent Settings</h2>
     </div>
+    ${users.length > 0 ? `
+    <div class="parent-avatar-row">
+      <span style="font-size:0.8rem;color:var(--text-muted);font-weight:600;">Sign in as:</span>
+      <div class="parent-avatar-picks">${avatarRow}</div>
+    </div>` : ''}
     
     ${pendingHTML}
     
