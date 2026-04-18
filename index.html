@@ -922,6 +922,12 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
 }
 .chore-recurring-option.selected { border-color: var(--purple-500); background: var(--purple-100); color: var(--purple-700); }
+.chore-recurring-options { flex-wrap: wrap; }
+.chore-days-picker { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-2); }
+.day-chip { display: inline-flex; cursor: pointer; }
+.day-chip input { display: none; }
+.day-chip span { display: inline-block; padding: 6px 10px; border-radius: var(--radius-md); border: 2px solid var(--border); font-size: 0.75rem; font-weight: 600; color: var(--text-muted); background: var(--surface); transition: all var(--transition-fast); }
+.day-chip input:checked + span { border-color: var(--purple-500); background: var(--purple-100); color: var(--purple-700); }
 
 /* Home jars bar */
 .home-jars-bar {
@@ -1707,7 +1713,17 @@ a { color: inherit; text-decoration: none; }
       <div class="chore-recurring-options" id="choreRecurringOptions">
         <button class="chore-recurring-option selected" data-val="daily" onclick="selectChoreRecurring('daily')">Daily</button>
         <button class="chore-recurring-option" data-val="weekly" onclick="selectChoreRecurring('weekly')">Weekly</button>
+        <button class="chore-recurring-option" data-val="specific" onclick="selectChoreRecurring('specific')">Specific Days</button>
         <button class="chore-recurring-option" data-val="once" onclick="selectChoreRecurring('once')">Once</button>
+      </div>
+      <div id="choreDaysPicker" class="chore-days-picker" style="display:none;">
+        <label class="day-chip"><input type="checkbox" value="0"><span>Sun</span></label>
+        <label class="day-chip"><input type="checkbox" value="1"><span>Mon</span></label>
+        <label class="day-chip"><input type="checkbox" value="2"><span>Tue</span></label>
+        <label class="day-chip"><input type="checkbox" value="3"><span>Wed</span></label>
+        <label class="day-chip"><input type="checkbox" value="4"><span>Thu</span></label>
+        <label class="day-chip"><input type="checkbox" value="5"><span>Fri</span></label>
+        <label class="day-chip"><input type="checkbox" value="6"><span>Sat</span></label>
       </div>
     </div>
     <div class="form-group">
@@ -2916,12 +2932,9 @@ function renderPuzzle() {
 
   if (hasImage) {
     if (pct <= 0 && !isComplete) {
-      // No savings yet — show pig icon instead of greyed-out image
-      const pigSrc = document.querySelector('#startView img[alt="Puzzle Pig"]')?.src || '';
+      // No savings yet — show goal image fully greyscale
       container.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:1;background:var(--surface-2,#F5F5F7);border-radius:var(--radius-2,12px);">
-          <img src="${pigSrc}" width="120" height="120" alt="Start saving!" style="opacity:0.8;">
-        </div>
+        <img class="reveal-img-faded" src="${goal.imageData}" alt="${esc(goal.name)}" style="filter:grayscale(100%) brightness(0.85);">
         <div class="reveal-pct-overlay">0%</div>`;
       container.classList.remove('complete');
     } else {
@@ -3354,7 +3367,7 @@ async function renderParentSettings() {
     <div class="parent-chore-item">
       <div class="parent-chore-info">
         <div class="parent-chore-name">${esc(c.name)}</div>
-        <div class="parent-chore-meta">$${fmtNum(c.amount)} &middot; ${c.recurring}</div>
+        <div class="parent-chore-meta">$${fmtNum(c.amount)} &middot; ${c.recurring === 'specific' ? formatChoreDays(c.choreDays) : c.recurring}</div>
       </div>
       <div class="parent-chore-actions">
         <button class="btn btn-sm btn-outline" onclick="openEditChoreModal('${c.id}')">Edit</button>
@@ -3576,6 +3589,8 @@ function openAddChoreFromParent() {
   document.querySelectorAll('.chore-recurring-option').forEach(b => {
     b.classList.toggle('selected', b.dataset.val === 'daily');
   });
+  document.getElementById('choreDaysPicker').style.display = 'none';
+  document.querySelectorAll('#choreDaysPicker input').forEach(cb => cb.checked = false);
   populateChoreUserCheckboxes(users.map(u => u.id));
   document.getElementById('addChoreModal').classList.add('active');
   window._choreFromParent = true;
@@ -4168,10 +4183,17 @@ function renderChoresView() {
 
   const pendingLogs = choreLogs.filter(cl => cl.status === 'pending');
 
+  const todayDayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, ...
+
   const choreCards = chores.map(c => {
+    // Skip "specific days" chores if today is not one of the selected days
+    if (c.recurring === 'specific' && c.choreDays && c.choreDays.length > 0 && !c.choreDays.includes(todayDayOfWeek)) {
+      return ''; // don't show this chore today
+    }
+
     const hasPending = choreLogs.some(cl => cl.choreId === c.id && cl.status === 'pending');
     const todayApproved = choreLogs.filter(cl => cl.choreId === c.id && cl.status === 'approved' && cl.date === today);
-    const isDoneToday = c.recurring === 'daily' && todayApproved.length > 0;
+    const isDoneToday = (c.recurring === 'daily' || c.recurring === 'specific') && todayApproved.length > 0;
     const isOnceCompleted = c.recurring === 'once' && choreLogs.some(cl => cl.choreId === c.id && cl.status === 'approved');
     // Weekly: check if approved any day this week (Mon–Sun)
     let isDoneThisWeek = false;
@@ -4208,12 +4230,21 @@ function renderChoresView() {
             <div class="chore-name">${esc(c.name)}</div>
             <div class="chore-amount">Earn <strong>$${fmtNum(c.amount)}</strong></div>
           </div>
-          <div><span class="chore-badge">${c.recurring}</span></div>
+          <div><span class="chore-badge">${c.recurring === 'specific' ? formatChoreDays(c.choreDays) : c.recurring}</span></div>
         </div>
         ${actionHTML}
       </div>
     `;
   }).join('');
+
+  // If all chores are hidden for today (specific days), show a friendly message
+  const visibleChores = choreCards.replace(/\s/g, '');
+  const noChoresToday = chores.length > 0 && visibleChores.length === 0;
+  const noChoreTodayMsg = noChoresToday ? `
+    <div class="card" style="text-align:center;padding:var(--space-5);">
+      <p style="color:var(--text-muted);font-size:0.9rem;">No chores scheduled for today.</p>
+      <p style="color:var(--text-faint);font-size:0.8rem;margin-top:var(--space-1);">Check back on your assigned days.</p>
+    </div>` : '';
 
   const reviewBtn = pendingLogs.length > 0 ? `
     <div style="background:#FEF3C7;border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);text-align:center;">
@@ -4236,7 +4267,7 @@ function renderChoresView() {
   view.innerHTML = `
     <h2 class="view-title">Chores</h2>
     ${reviewBtn}
-    ${choreCards}
+    ${noChoresToday ? noChoreTodayMsg : choreCards}
     ${mgmtSection}
     ${historyBtn}
   `;
@@ -4348,7 +4379,7 @@ function buildManageChoresSection() {
       <div class="chore-icon" style="width:36px;height:36px;">${choreIconSVG()}</div>
       <div class="chore-manage-info">
         <div class="chore-manage-name">${esc(c.name)}</div>
-        <div class="chore-manage-meta">$${fmtNum(c.amount)} &middot; ${c.recurring}</div>
+        <div class="chore-manage-meta">$${fmtNum(c.amount)} &middot; ${c.recurring === 'specific' ? formatChoreDays(c.choreDays) : c.recurring}</div>
       </div>
       <button class="btn btn-sm btn-outline" onclick="openEditChoreModal('${c.id}')" style="margin-right:4px;">Edit</button>
       <button class="btn btn-sm btn-danger" onclick="requestPinFor('delete-chore','${c.id}')">Delete</button>
@@ -4402,6 +4433,8 @@ function openAddChoreModal() {
   document.querySelectorAll('.chore-recurring-option').forEach(b => {
     b.classList.toggle('selected', b.dataset.val === 'daily');
   });
+  document.getElementById('choreDaysPicker').style.display = 'none';
+  document.querySelectorAll('#choreDaysPicker input').forEach(cb => cb.checked = false);
   populateChoreUserCheckboxes(users.map(u => u.id)); // default: all users
   document.getElementById('addChoreModal').classList.add('active');
 }
@@ -4421,6 +4454,13 @@ async function openEditChoreModal(id) {
   document.querySelectorAll('.chore-recurring-option').forEach(b => {
     b.classList.toggle('selected', b.dataset.val === c.recurring);
   });
+  // Restore days picker state
+  const daysPicker = document.getElementById('choreDaysPicker');
+  daysPicker.style.display = c.recurring === 'specific' ? 'flex' : 'none';
+  const choreDays = c.choreDays || [];
+  document.querySelectorAll('#choreDaysPicker input').forEach(cb => {
+    cb.checked = choreDays.includes(parseInt(cb.value));
+  });
   populateChoreUserCheckboxes(c.assignedTo);
   // If parent settings is open, use parent flow (no extra PIN needed)
   if (document.getElementById('parentSettingsView').style.display !== 'none') {
@@ -4438,6 +4478,23 @@ function selectChoreRecurring(val) {
   document.querySelectorAll('.chore-recurring-option').forEach(b => {
     b.classList.toggle('selected', b.dataset.val === val);
   });
+  document.getElementById('choreDaysPicker').style.display = val === 'specific' ? 'flex' : 'none';
+}
+
+function getSelectedChoreDays() {
+  if (newChoreRecurring !== 'specific') return [];
+  const days = [];
+  document.querySelectorAll('#choreDaysPicker input:checked').forEach(cb => days.push(parseInt(cb.value)));
+  return days;
+}
+
+function formatChoreDays(days) {
+  const names = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  if (!days || days.length === 0) return 'specific';
+  if (days.length === 7) return 'daily';
+  if (days.length === 5 && [1,2,3,4,5].every(d => days.includes(d))) return 'weekdays';
+  if (days.length === 2 && [0,6].every(d => days.includes(d))) return 'weekends';
+  return days.sort((a,b) => a-b).map(d => names[d]).join(', ');
 }
 
 function saveChore() {
@@ -4445,6 +4502,13 @@ function saveChore() {
   const amount = parseFloat(document.getElementById('choreAmountInput').value);
   if (!name) { shakeInput('choreName'); return; }
   if (!amount || amount <= 0) { shakeInput('choreAmountInput'); return; }
+  if (newChoreRecurring === 'specific' && getSelectedChoreDays().length === 0) {
+    // Flash the days picker to indicate at least one day is needed
+    const picker = document.getElementById('choreDaysPicker');
+    picker.style.outline = '2px solid var(--red-500,#EF4444)';
+    setTimeout(() => picker.style.outline = '', 1500);
+    return;
+  }
   closeAddChoreModal();
   if (window._choreFromParent) {
     window._choreFromParent = false;
@@ -4465,6 +4529,7 @@ async function doSaveChore() {
     const c = allC.find(x => x.id === editingChoreId);
     if (c) {
       c.name = name; c.amount = amount; c.recurring = newChoreRecurring;
+      c.choreDays = getSelectedChoreDays();
       c.assignedTo = assignedTo;
       await dbPutChore(c);
       // Update local filtered list
@@ -4479,6 +4544,7 @@ async function doSaveChore() {
       id: 'chore_' + Date.now(),
       assignedTo,
       name, amount, recurring: newChoreRecurring,
+      choreDays: getSelectedChoreDays(),
       icon: '', createdAt: new Date().toISOString(),
     };
     if (assignedTo.includes(currentUserId)) chores.push(chore);
