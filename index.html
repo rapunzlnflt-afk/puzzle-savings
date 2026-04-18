@@ -1381,10 +1381,7 @@ a { color: inherit; text-decoration: none; }
   .app-logo-text { color: #333 !important; background: none !important; -webkit-background-clip: unset !important; -webkit-text-fill-color: #333 !important; background-clip: unset !important; }
   .app-logo svg { display: none; }
 
-  /* Puzzle prints revealed pieces naturally */
-  .puzzle-container { box-shadow: none !important; break-inside: avoid; }
-
-  /* Stats */
+  /* Goal detail stats */
   .puzzle-stats { break-inside: avoid; }
   .puzzle-stat { border: 1px solid #CCC !important; }
   .puzzle-stat-value { color: #333 !important; }
@@ -1410,6 +1407,13 @@ a { color: inherit; text-decoration: none; }
 
   #userSelectScreen { display: none !important; }
   .current-user-bar { display: none !important; }
+
+  /* Journal print: hide form, show only journal with goal thumbnail */
+  #savingsEntryView .card:first-of-type { display: none !important; }
+  #savingsEntryView .view-title { display: none !important; }
+  #savingsEntryView #savingsEntryGoalName { display: none !important; }
+  #savingsEntryView .print-journal-header { display: flex !important; }
+
   /* Page setup */
   @page { margin: 0.75in; }
 }
@@ -1573,10 +1577,6 @@ a { color: inherit; text-decoration: none; }
         Goals
       </button>
       <div style="display:flex; align-items:center; gap:var(--space-2);">
-        <button class="print-btn" onclick="window.print()" title="Print this page" style="padding:6px 10px; font-size:0.8rem;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Print
-        </button>
         <button class="puzzle-menu-btn" onclick="openGoalMenu()" data-testid="btn-goal-menu" aria-label="Goal options">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
         </button>
@@ -1636,6 +1636,15 @@ a { color: inherit; text-decoration: none; }
 
     <h2 class="view-title" style="text-align:center; margin-bottom:var(--space-2);">Log Your Savings</h2>
     <p id="savingsEntryGoalName" style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:var(--space-4);"></p>
+
+    <!-- Print-only header with goal thumbnail -->
+    <div class="print-journal-header" id="printJournalHeader" style="display:none; align-items:center; gap:var(--space-3); margin-bottom:var(--space-4); padding:var(--space-3); border:1px solid #CCC; border-radius:var(--radius-lg);">
+      <div id="printJournalThumb" style="width:56px; height:56px; border-radius:var(--radius-md); overflow:hidden; flex-shrink:0; background:var(--purple-100);"></div>
+      <div>
+        <div id="printJournalGoalName" style="font-family:var(--font-display); font-weight:700; font-size:1.1rem;"></div>
+        <div id="printJournalGoalStats" style="font-size:0.85rem; color:var(--text-muted);"></div>
+      </div>
+    </div>
 
     <div class="card">
       <div class="form-group">
@@ -3200,6 +3209,18 @@ function renderSavingsEntry() {
   document.getElementById('savingsNote').value = '';
   document.getElementById('savingsPreview').style.display = 'none';
   window.scrollTo(0, 0);
+
+  // Populate print-only journal header
+  const saved = goal.history.reduce((s, h) => s + h.amount, 0);
+  const pct = goal.goalAmount > 0 ? Math.min(100, Math.round((saved / goal.goalAmount) * 100)) : 0;
+  document.getElementById('printJournalGoalName').textContent = goal.name;
+  document.getElementById('printJournalGoalStats').textContent = `$${fmtNum(saved)} of $${fmtNum(goal.goalAmount)} saved (${pct}%)`;
+  const thumbEl = document.getElementById('printJournalThumb');
+  if (goal.photo) {
+    thumbEl.innerHTML = `<img src="${goal.photo}" style="width:100%;height:100%;object-fit:cover;" alt="${esc(goal.name)}">`;
+  } else {
+    thumbEl.innerHTML = `<div class="thumb-pig-bg"><svg width="28" height="28" viewBox="0 0 100 100" fill="none"><ellipse cx="50" cy="58" rx="30" ry="24" fill="var(--purple-300)"/><circle cx="38" cy="50" r="4" fill="#FFF"/><circle cx="62" cy="50" r="4" fill="#FFF"/><circle cx="38" cy="50" r="2" fill="#333"/><circle cx="62" cy="50" r="2" fill="#333"/><ellipse cx="50" cy="62" rx="8" ry="5" fill="var(--purple-400)"/><circle cx="47" cy="62" r="1.5" fill="var(--purple-600)"/><circle cx="53" cy="62" r="1.5" fill="var(--purple-600)"/><ellipse cx="35" cy="40" rx="10" ry="8" fill="var(--purple-300)" transform="rotate(-15 35 40)"/><ellipse cx="65" cy="40" rx="10" ry="8" fill="var(--purple-300)" transform="rotate(15 65 40)"/></svg></div>`;
+  }
 
   renderSavingsJournal(goal);
 }
