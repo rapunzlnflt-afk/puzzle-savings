@@ -337,9 +337,10 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden; box-shadow: var(--shadow-lg); margin-bottom: var(--space-4);
   background: var(--purple-100);
 }
-.reveal-img-faded {
-  width: 100%; height: 100%; object-fit: cover; position: absolute;
-  top: 0; left: 0; filter: grayscale(100%) brightness(0.3);
+.reveal-pig-bg {
+  width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--purple-100);
 }
 .reveal-img-clear {
   width: 100%; height: 100%; object-fit: cover; position: absolute;
@@ -3067,27 +3068,23 @@ function renderPuzzle() {
   const hasImage = !!goal.imageData;
 
   if (hasImage) {
-    if (pct <= 0 && !isComplete) {
-      // No savings yet — show pig icon covering the goal image
-      const pigSrc = document.querySelector('.app-logo img')?.src || '';
+    const pigSrc = document.querySelector('.app-logo img')?.src || '';
+    if (isComplete) {
+      // Fully revealed — just show the clear image
       container.innerHTML = `
-        <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--purple-100);">
-          ${pigSrc ? `<img src="${pigSrc}" alt="Puzzle Pig" style="width:72px;height:72px;margin-bottom:var(--space-2);">` : ''}
-          <span style="font-family:var(--font-display);font-weight:700;font-size:0.95rem;color:var(--purple-600);">Start saving!</span>
-        </div>
-        <div class="reveal-pct-overlay">0%</div>`;
-      container.classList.remove('complete');
+        <img class="reveal-img-clear" src="${goal.imageData}" alt="${esc(goal.name)}" style="clip-path: none;">
+        <div class="reveal-pct-overlay">100%</div>`;
+      container.classList.add('complete');
     } else {
+      // Pig icon background with clear image revealing from bottom
       container.innerHTML = `
-        <img class="reveal-img-faded" src="${goal.imageData}" alt="${esc(goal.name)}">
-        <img class="reveal-img-clear" src="${goal.imageData}" alt="${esc(goal.name)}"
-             style="clip-path: inset(${clipTop}% 0 0 0);">
+        <div class="reveal-pig-bg">
+          ${pigSrc ? `<img src="${pigSrc}" alt="Puzzle Pig" style="width:72px;height:72px;opacity:0.5;">` : ''}
+          <span style="font-family:var(--font-display);font-weight:700;font-size:0.95rem;color:var(--purple-600);margin-top:var(--space-1);">${pct <= 0 ? 'Start saving!' : 'Keep going!'}</span>
+        </div>
+        ${pct > 0 ? `<img class="reveal-img-clear" src="${goal.imageData}" alt="${esc(goal.name)}" style="clip-path: inset(${clipTop}% 0 0 0);">` : ''}
         <div class="reveal-pct-overlay">${Math.round(pct)}%</div>`;
-      if (isComplete) {
-        container.classList.add('complete');
-      } else {
-        container.classList.remove('complete');
-      }
+      container.classList.remove('complete');
     }
   } else {
     container.innerHTML = `
