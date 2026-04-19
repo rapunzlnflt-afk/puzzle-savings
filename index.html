@@ -2390,6 +2390,12 @@ async function selectUser(id) {
   document.getElementById('bottomNav').style.display = '';
   showCurrentUserBar();
 
+  // Seed lastSeenJarBalances with pre-approval values so kid sees jar celebration
+  if (_preApprovalJarBalances[id]) {
+    lastSeenJarBalances[id] = { ..._preApprovalJarBalances[id] };
+    delete _preApprovalJarBalances[id];
+  }
+
   // If no jars yet, prompt jar setup (PIN-gated)
   if (jars.length === 0) {
     showView('jarsView');
@@ -3860,6 +3866,11 @@ async function approveChoreFromParent(logId, targetJarId) {
   if (chore && userJars.length > 0) {
     // Use selected jar, or fall back to Save jar
     const jar = (targetJarId && userJars.find(j => j.id === targetJarId)) || userJars.find(j => j.type === 'save') || userJars[0];
+    // Record pre-approval balance so kid sees celebration on login
+    if (!_preApprovalJarBalances[choreUserId]) _preApprovalJarBalances[choreUserId] = {};
+    if (_preApprovalJarBalances[choreUserId][jar.id] === undefined) {
+      _preApprovalJarBalances[choreUserId][jar.id] = jar.balance || 0;
+    }
     jar.balance = (jar.balance || 0) + chore.amount;
     await dbPutJar(jar);
     const now = new Date().toISOString();
@@ -4078,6 +4089,7 @@ const encouragements = [
 ];
 let lastEncouragementIdx = -1;
 let lastSeenJarBalances = {};
+let _preApprovalJarBalances = {}; // track balances before parent approves chores
 
 function celebrateJarDeposit(jarIdx, amount) {
   const pills = document.querySelectorAll('.home-jar-pill');
