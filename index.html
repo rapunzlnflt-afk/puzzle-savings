@@ -3830,7 +3830,24 @@ async function renderParentSettings() {
 }
 
 // Parent Settings action wrappers (no PIN needed — already unlocked)
+// Save all jar dropdown selections before re-render
+function saveJarSelections() {
+  const saved = {};
+  document.querySelectorAll('select[id^="jarPick_"]').forEach(sel => {
+    saved[sel.id] = sel.value;
+  });
+  return saved;
+}
+// Restore jar dropdown selections after re-render
+function restoreJarSelections(saved) {
+  Object.keys(saved).forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel) sel.value = saved[id];
+  });
+}
+
 async function approveChoreFromParent(logId, targetJarId) {
+  const jarSelections = saveJarSelections();
   const allLogs = await dbGetAllChoreLogs();
   const cl = allLogs.find(l => l.id === logId);
   if (!cl) return;
@@ -3860,17 +3877,20 @@ async function approveChoreFromParent(logId, targetJarId) {
       await creditGoalsForUser(chore.amount, now, note, userGoals);
     }
   }
-  renderParentSettings();
+  await renderParentSettings();
+  restoreJarSelections(jarSelections);
 }
 
 async function rejectChoreFromParent(logId) {
+  const jarSelections = saveJarSelections();
   const allLogs = await dbGetAllChoreLogs();
   const cl = allLogs.find(l => l.id === logId);
   if (!cl) return;
   cl.status = 'rejected';
   await dbPutChoreLog(cl);
   updateChoresBadge();
-  renderParentSettings();
+  await renderParentSettings();
+  restoreJarSelections(jarSelections);
 }
 
 async function toggleChoreUser(choreId, userId, isChecked) {
